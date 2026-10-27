@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes';
 import complaintRoutes from './routes/complaintRoutes';
 import referenceRoutes from './routes/referenceRoutes';
 import driveRoutes from './routes/driveRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/reference', referenceRoutes);
 app.use('/api/drive', driveRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Error Handling
 app.use(errorHandler);
