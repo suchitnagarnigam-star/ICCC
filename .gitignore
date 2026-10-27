@@ -20,6 +20,7 @@ build/
 server/uploads/
 uploads/
 drive_cache/
+stitch_extracted/
 
 # Credentials
 server/credentials/
