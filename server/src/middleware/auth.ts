@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { ENV } from '../config/env';
 import { JWTPayload, UserRole } from '../types/user';
 import { ComplaintRepository } from '../repositories/complaintRepository';
+import { getDbPool } from '../config/db';
 
 declare global {
   namespace Express {
@@ -174,7 +175,7 @@ export function authorizeComplaintAction(
         return next();
       }
 
-      // 3. Supervisors (SDO, XEN, SE)
+      // 3. Supervisors (SDO, XEN, SE) - Strictly Fail Closed
       if (role === 'sdo' || role === 'xen' || role === 'se') {
         if (action === 'resolve') {
           res.status(403).json({
@@ -184,20 +185,29 @@ export function authorizeComplaintAction(
           return;
         }
 
-        // Enforce branch/departmental boundary
-        if (req.user.branch && complaint.branch && req.user.branch !== complaint.branch) {
+        // Fail-Closed: Supervisor MUST have an assigned departmental branch
+        if (!req.user.branch) {
           res.status(403).json({
             success: false,
-            error: `Forbidden: Complaint branch (${complaint.branch}) is outside your authorized department (${req.user.branch}).`,
+            error: 'Forbidden: Supervisor account has no assigned departmental branch.',
           });
           return;
         }
 
-        // Enforce zone/territorial boundary
-        if (req.user.zone && complaint.zone && req.user.zone !== complaint.zone) {
+        // Branch matching (e.g. O&M, B&R, Light, Health)
+        if (!complaint.branch || req.user.branch.toUpperCase() !== complaint.branch.toUpperCase()) {
           res.status(403).json({
             success: false,
-            error: `Forbidden: Complaint zone (${complaint.zone}) is outside your assigned municipal zone (${req.user.zone}).`,
+            error: `Forbidden: Supervisor branch (${req.user.branch}) does not match complaint branch (${complaint.branch || 'unassigned'}).`,
+          });
+          return;
+        }
+
+        // Zonal matching if supervisor has an assigned zone
+        if (req.user.zone && complaint.zone && req.user.zone.toUpperCase() !== complaint.zone.toUpperCase()) {
+          res.status(403).json({
+            success: false,
+            error: `Forbidden: Supervisor zone (${req.user.zone}) does not match complaint zone (${complaint.zone}).`,
           });
           return;
         }
@@ -214,47 +224,99 @@ export function authorizeComplaintAction(
 }
 
 /**
- * In-memory Login Rate Limiting (Ponytail ultra mode)
- * Blocks brute-force login attempts (max 5 failed attempts per 15-minute window per IP)
+ * Persistent Rate Limiting backed by PostgreSQL rate_limit_entries table
+ * Multi-instance resilient and survives server restarts
  */
-interface RateLimitEntry {
+interface InMemoryRateLimitEntry {
   attempts: number;
   blockedUntil: number;
 }
+const loginAttempts = new Map<string, InMemoryRateLimitEntry>();
 
-const loginAttempts = new Map<string, RateLimitEntry>();
+export async function checkLoginRateLimit(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const ip = (req.ip || req.socket.remoteAddress || 'unknown').slice(0, 50);
+  const key = `login:${ip}`;
 
-export function checkLoginRateLimit(req: Request, res: Response, next: NextFunction): void {
-  const ip = req.ip || req.socket.remoteAddress || 'unknown';
-  const now = Date.now();
-  const entry = loginAttempts.get(ip);
+  try {
+    const pool = getDbPool();
+    const resEntry = await pool.query<any>(
+      'SELECT hits, reset_at FROM rate_limit_entries WHERE key = $1 LIMIT 1',
+      [key]
+    );
 
-  if (entry && entry.blockedUntil > now) {
-    const remainingSeconds = Math.ceil((entry.blockedUntil - now) / 1000);
-    res.status(429).json({
-      success: false,
-      error: `Too many failed login attempts. Please try again in ${remainingSeconds} seconds.`,
-    });
-    return;
+    if (resEntry.rows.length > 0) {
+      const entry = resEntry.rows[0];
+      const now = Date.now();
+      const resetTime = new Date(entry.reset_at).getTime();
+
+      if (resetTime > now) {
+        if (entry.hits >= 5) {
+          const remainingSeconds = Math.ceil((resetTime - now) / 1000);
+          res.status(429).json({
+            success: false,
+            error: `Too many failed login attempts. Please try again in ${remainingSeconds} seconds.`,
+          });
+          return;
+        }
+      } else {
+        await pool.query(
+          "UPDATE rate_limit_entries SET hits = 0, reset_at = NOW() + INTERVAL '15 minutes' WHERE key = $1",
+          [key]
+        );
+      }
+    }
+  } catch (err) {
+    // In-memory fallback
+    const now = Date.now();
+    const entry = loginAttempts.get(ip);
+    if (entry && entry.blockedUntil > now) {
+      const remainingSeconds = Math.ceil((entry.blockedUntil - now) / 1000);
+      res.status(429).json({
+        success: false,
+        error: `Too many failed login attempts. Please try again in ${remainingSeconds} seconds.`,
+      });
+      return;
+    }
   }
 
   next();
 }
 
-export function recordFailedLogin(req: Request): void {
-  const ip = req.ip || req.socket.remoteAddress || 'unknown';
-  const now = Date.now();
-  const entry = loginAttempts.get(ip) || { attempts: 0, blockedUntil: 0 };
+export async function recordFailedLogin(req: Request): Promise<void> {
+  const ip = (req.ip || req.socket.remoteAddress || 'unknown').slice(0, 50);
+  const key = `login:${ip}`;
 
-  entry.attempts += 1;
-  if (entry.attempts >= 5) {
-    entry.blockedUntil = now + 15 * 60 * 1000; // 15-minute lockout
-    entry.attempts = 0;
+  try {
+    const pool = getDbPool();
+    await pool.query(
+      `INSERT INTO rate_limit_entries (key, hits, reset_at)
+       VALUES ($1, 1, NOW() + INTERVAL '15 minutes')
+       ON CONFLICT (key) DO UPDATE
+       SET hits = CASE WHEN rate_limit_entries.reset_at < NOW() THEN 1 ELSE rate_limit_entries.hits + 1 END,
+           reset_at = CASE WHEN rate_limit_entries.reset_at < NOW() THEN NOW() + INTERVAL '15 minutes' ELSE rate_limit_entries.reset_at END`,
+      [key]
+    );
+  } catch (err) {
+    // In-memory fallback
+    const now = Date.now();
+    const entry = loginAttempts.get(ip) || { attempts: 0, blockedUntil: 0 };
+    entry.attempts += 1;
+    if (entry.attempts >= 5) {
+      entry.blockedUntil = now + 15 * 60 * 1000;
+      entry.attempts = 0;
+    }
+    loginAttempts.set(ip, entry);
   }
-  loginAttempts.set(ip, entry);
 }
 
-export function clearFailedLogin(req: Request): void {
-  const ip = req.ip || req.socket.remoteAddress || 'unknown';
-  loginAttempts.delete(ip);
+export async function clearFailedLogin(req: Request): Promise<void> {
+  const ip = (req.ip || req.socket.remoteAddress || 'unknown').slice(0, 50);
+  const key = `login:${ip}`;
+
+  try {
+    const pool = getDbPool();
+    await pool.query('DELETE FROM rate_limit_entries WHERE key = $1', [key]);
+  } catch (err) {
+    loginAttempts.delete(ip);
+  }
 }

@@ -92,6 +92,10 @@ export async function processNotificationOutboxBatch(
           );
 
           if (subsRes.rows.length > 0 && ENV.VAPID_PUBLIC_KEY && ENV.VAPID_PRIVATE_KEY) {
+            let pushSuccessCount = 0;
+            let pushFailCount = 0;
+            let pushLastError = '';
+
             for (const sub of subsRes.rows) {
               try {
                 await webpush.sendNotification(
@@ -104,6 +108,7 @@ export async function processNotificationOutboxBatch(
                   },
                   JSON.stringify(payload)
                 );
+                pushSuccessCount++;
               } catch (pushErr: any) {
                 // If browser endpoint is 404/410 Gone, unsubscribe user automatically
                 if (pushErr.statusCode === 404 || pushErr.statusCode === 410) {
@@ -112,9 +117,16 @@ export async function processNotificationOutboxBatch(
                     [sub.id]
                   );
                 } else {
+                  pushFailCount++;
+                  pushLastError = pushErr.message || 'Push delivery error';
                   console.warn(`[NotificationWorker] Push delivery failed for subscription ${sub.id}:`, pushErr.message);
                 }
               }
+            }
+
+            // If active push subscriptions existed and all failed without expiration, trigger outbox retry
+            if (subsRes.rows.length > 0 && pushFailCount > 0 && pushSuccessCount === 0) {
+              throw new Error(`Web push transmission failed: ${pushLastError}`);
             }
           }
         }

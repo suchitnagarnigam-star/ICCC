@@ -31,27 +31,65 @@ const router = Router();
  * In-memory rate limiter for public tracking endpoint (max 15 queries/min per IP)
  */
 const trackingRateLimit = new Map<string, { count: number; resetAt: number }>();
-function checkTrackRateLimit(req: Request, res: Response, next: NextFunction): void {
-  const ip = req.ip || req.socket.remoteAddress || 'unknown';
-  const now = Date.now();
-  const entry = trackingRateLimit.get(ip);
-  if (!entry || now > entry.resetAt) {
-    trackingRateLimit.set(ip, { count: 1, resetAt: now + 60000 });
-    return next();
+async function checkTrackRateLimit(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const ip = (req.ip || req.socket.remoteAddress || 'unknown').slice(0, 50);
+  const key = `track:${ip}`;
+  const pool = getDbPool();
+
+  try {
+    const resEntry = await pool.query<any>(
+      'SELECT hits, reset_at FROM rate_limit_entries WHERE key = $1 LIMIT 1',
+      [key]
+    );
+
+    if (resEntry.rows.length > 0) {
+      const entry = resEntry.rows[0];
+      const now = Date.now();
+      const resetTime = new Date(entry.reset_at).getTime();
+
+      if (resetTime > now) {
+        if (entry.hits >= 15) {
+          res.status(429).json({
+            success: false,
+            error: 'Too many tracking requests. Please try again after 1 minute.',
+          });
+          return;
+        }
+        await pool.query('UPDATE rate_limit_entries SET hits = hits + 1 WHERE key = $1', [key]);
+      } else {
+        await pool.query(
+          "UPDATE rate_limit_entries SET hits = 1, reset_at = NOW() + INTERVAL '1 minute' WHERE key = $1",
+          [key]
+        );
+      }
+    } else {
+      await pool.query(
+        "INSERT INTO rate_limit_entries (key, hits, reset_at) VALUES ($1, 1, NOW() + INTERVAL '1 minute')",
+        [key]
+      );
+    }
+  } catch (err) {
+    // In-memory fallback
+    const now = Date.now();
+    const entry = trackingRateLimit.get(ip);
+    if (!entry || now > entry.resetAt) {
+      trackingRateLimit.set(ip, { count: 1, resetAt: now + 60000 });
+      return next();
+    }
+    if (entry.count >= 15) {
+      res.status(429).json({
+        success: false,
+        error: 'Too many tracking requests. Please try again after 1 minute.',
+      });
+      return;
+    }
+    entry.count++;
   }
-  if (entry.count >= 15) {
-    res.status(429).json({
-      success: false,
-      error: 'Too many tracking requests. Please try again after 1 minute.',
-    });
-    return;
-  }
-  entry.count++;
-  return next();
+  next();
 }
 
 /**
- * Checks whether an authenticated user is permitted to view complaint details
+ * Checks whether an authenticated user is permitted to view complaint details (Fail Closed)
  */
 function canUserAccessComplaint(complaint: Complaint, user: any): boolean {
   if (['admin', 'operator', 'zc', 'jc'].includes(user.role)) {
@@ -69,10 +107,11 @@ function canUserAccessComplaint(complaint: Complaint, user: any): boolean {
     return Boolean(isAssigned || inWardScope);
   }
   if (['sdo', 'xen', 'se'].includes(user.role)) {
-    if (user.branch && complaint.branch && user.branch !== complaint.branch) {
+    // Fail-Closed: Supervisor MUST have an assigned branch matching the complaint branch
+    if (!user.branch || !complaint.branch || user.branch.toUpperCase() !== complaint.branch.toUpperCase()) {
       return false;
     }
-    if (user.zone && complaint.zone && user.zone !== complaint.zone) {
+    if (user.zone && complaint.zone && user.zone.toUpperCase() !== complaint.zone.toUpperCase()) {
       return false;
     }
     return true;
@@ -381,13 +420,44 @@ router.post(
         return;
       }
 
-      // Resolve Category and Municipal Branch
-      const category = INITIAL_COMPLAINT_CATEGORIES.find((c) => c.id === categoryId);
-      const branch: DepartmentBranch = category ? (category.branch as DepartmentBranch) : 'O&M';
-      const categoryName = category ? category.name : 'General Grievance';
+      // Resolve Category and Municipal Branch dynamically from PostgreSQL
+      const pool = getDbPool();
+      let branch: DepartmentBranch = 'O&M';
+      let categoryName = 'General Grievance';
 
-      // Server-side zone validation and automatic derivation
-      const derivedZone = wardNumber ? getZoneForWard(wardNumber) || body.zone : body.zone;
+      const isCatUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(categoryId);
+      const catQuery = isCatUuid
+        ? 'SELECT id, code, name, branch FROM complaint_categories WHERE id = $1 LIMIT 1'
+        : 'SELECT id, code, name, branch FROM complaint_categories WHERE code = $1 OR code = $2 LIMIT 1';
+      const catParams = isCatUuid
+        ? [categoryId]
+        : [categoryId.startsWith('cat_') ? categoryId : `cat_${categoryId.padStart(2, '0')}`, categoryId];
+
+      const catDbRes = await pool.query<any>(catQuery, catParams);
+      if (catDbRes.rows.length > 0) {
+        branch = catDbRes.rows[0].branch as DepartmentBranch;
+        categoryName = catDbRes.rows[0].name;
+      } else {
+        const staticCat = INITIAL_COMPLAINT_CATEGORIES.find((c) => c.id === categoryId);
+        if (staticCat) {
+          branch = staticCat.branch as DepartmentBranch;
+          categoryName = staticCat.name;
+        }
+      }
+
+      // Server-side zone validation and automatic derivation from PostgreSQL municipal_wards
+      let derivedZone = body.zone;
+      if (wardNumber) {
+        const wardDbRes = await pool.query<{ zone_code: string }>(
+          'SELECT zone_code FROM municipal_wards WHERE ward_number = $1 LIMIT 1',
+          [wardNumber]
+        );
+        if (wardDbRes.rows.length > 0) {
+          derivedZone = wardDbRes.rows[0].zone_code;
+        } else {
+          derivedZone = getZoneForWard(wardNumber) || body.zone;
+        }
+      }
 
       // Auto-assign Field Officer from live Database Roster (staff_area_assignments)
       let assignedOfficerUser = wardNumber ? await UserRepository.findOfficerForWardAndBranch(wardNumber, branch) : null;
