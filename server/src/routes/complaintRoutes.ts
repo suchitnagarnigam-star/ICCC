@@ -11,6 +11,11 @@ import { getZoneForWard } from '../services/officerMappingService';
 import { ComplaintRepository, CreateComplaintDbInput } from '../repositories/complaintRepository';
 import { UserRepository } from '../repositories/userRepository';
 import {
+  authenticateToken,
+  optionalAuthenticateToken,
+  authorizeComplaintAction,
+} from '../middleware/auth';
+import {
   createComplaintDriveFolder,
   uploadComplaintFiles,
   deleteTemporaryFiles,
@@ -37,10 +42,27 @@ const upload = multer({
 /**
  * GET /api/complaints
  * Filter complaints by status, branch, zone, ward, or search query directly from PostgreSQL.
+ * Scoped automatically by authenticated user role and territorial jurisdiction.
  */
-router.get('/', async (req: Request, res: Response): Promise<void> => {
+router.get('/', optionalAuthenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const { status, branch, zone, wardNumber, search, page, limit } = req.query;
+
+    let allowedWards: number[] | undefined;
+    let citizenId: string | undefined;
+    let assignedJeId: string | undefined;
+
+    if (req.user) {
+      if (req.user.role === 'citizen') {
+        citizenId = req.user.userId;
+      } else if (req.user.role === 'je') {
+        if (req.user.allowedWards && req.user.allowedWards.length > 0) {
+          allowedWards = req.user.allowedWards;
+        } else {
+          assignedJeId = req.user.userId;
+        }
+      }
+    }
 
     const result = await ComplaintRepository.listComplaints({
       status: status ? String(status) : undefined,
@@ -48,6 +70,9 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       zone: zone ? String(zone) : undefined,
       wardNumber: wardNumber ? parseInt(String(wardNumber), 10) : undefined,
       search: search ? String(search) : undefined,
+      citizenId,
+      assignedJeId,
+      allowedWards,
       page: page ? parseInt(String(page), 10) : 1,
       limit: limit ? parseInt(String(limit), 10) : 50,
     });
@@ -120,6 +145,7 @@ router.get('/:id/timeline', async (req: Request, res: Response): Promise<void> =
  */
 router.post(
   '/',
+  optionalAuthenticateToken,
   upload.fields([
     { name: 'evidence', maxCount: 5 },
     { name: 'evidenceImages', maxCount: 5 },
@@ -133,14 +159,14 @@ router.post(
     ];
 
     try {
-      const complainantName = (body.complainantName || body.citizenName || '').trim();
-      const contactNumber = (body.contactNumber || body.phoneNumber || '').trim();
+      const complainantName = (body.complainantName || body.citizenName || req.user?.name || '').trim();
+      const contactNumber = (body.contactNumber || body.phoneNumber || req.user?.phoneNumber || '').trim();
       const description = (body.description || '').trim();
       const categoryId = String(body.categoryId || '1');
       const wardNumber = body.wardNumber ? parseInt(body.wardNumber, 10) : undefined;
       const address = (body.address || '').trim();
       const landmark = (body.landmark || '').trim();
-      const mode = body.mode || 'Citizen Portal';
+      const mode = body.mode || (req.user?.role === 'citizen' ? 'Citizen App' : 'Citizen Portal');
 
       if (!complainantName || !contactNumber || !description) {
         void deleteTemporaryFiles(evidenceFiles);
@@ -190,7 +216,7 @@ router.post(
         latitude: body.latitude ? parseFloat(body.latitude) : undefined,
         longitude: body.longitude ? parseFloat(body.longitude) : undefined,
         dueAt,
-        citizenId: body.citizenId || undefined,
+        citizenId: req.user?.role === 'citizen' ? req.user.userId : (body.citizenId || undefined),
         assignedJeId: assignedOfficerUser?.id,
         sourceSystem: 'ICCC_WEB',
         initialMedia,
@@ -249,115 +275,136 @@ router.post(
 /**
  * POST /api/complaints/:id/acknowledge
  * Field officer acknowledges assigned complaint in PostgreSQL, locking response clock.
+ * Requires authenticated session and territorial authorization.
  */
-router.post('/:id/acknowledge', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id;
-    const complaint = await ComplaintRepository.getComplaintById(id);
+router.post(
+  '/:id/acknowledge',
+  authenticateToken,
+  authorizeComplaintAction('acknowledge'),
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = req.params.id;
+      const complaint = await ComplaintRepository.getComplaintById(id);
 
-    if (!complaint) {
-      res.status(404).json({ success: false, error: 'Complaint not found.' });
-      return;
+      if (!complaint) {
+        res.status(404).json({ success: false, error: 'Complaint not found.' });
+        return;
+      }
+
+      const officerId = req.user!.userId;
+      const updated = await ComplaintRepository.acknowledgeComplaint(complaint.id, officerId);
+
+      res.json({
+        success: true,
+        message: 'Assignment acknowledged successfully.',
+        data: updated,
+      });
+    } catch (error: any) {
+      console.error(`[ComplaintRoutes] Error acknowledging complaint ${req.params.id}:`, error);
+      res.status(500).json({ success: false, error: error.message || 'Failed to acknowledge assignment.' });
     }
-
-    const officerId = req.body.officerId || req.body.officerPhone || complaint.assignedJeId;
-    const updated = await ComplaintRepository.acknowledgeComplaint(complaint.id, officerId);
-
-    res.json({
-      success: true,
-      message: 'Assignment acknowledged successfully.',
-      data: updated,
-    });
-  } catch (error: any) {
-    console.error(`[ComplaintRoutes] Error acknowledging complaint ${req.params.id}:`, error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to acknowledge assignment.' });
   }
-});
+);
 
 /**
  * POST /api/complaints/:id/status
  * Update complaint status (e.g. IN_PROGRESS, ESCALATED) with mandatory remarks.
+ * Requires authenticated session and territorial authorization.
  */
-router.post('/:id/status', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id;
-    const complaint = await ComplaintRepository.getComplaintById(id);
+router.post(
+  '/:id/status',
+  authenticateToken,
+  authorizeComplaintAction('update'),
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = req.params.id;
+      const complaint = await ComplaintRepository.getComplaintById(id);
 
-    if (!complaint) {
-      res.status(404).json({ success: false, error: 'Complaint not found.' });
-      return;
+      if (!complaint) {
+        res.status(404).json({ success: false, error: 'Complaint not found.' });
+        return;
+      }
+
+      const { status, remarks } = req.body;
+      if (!status) {
+        res.status(400).json({ success: false, error: 'Target status is required.' });
+        return;
+      }
+
+      const updated = await ComplaintRepository.updateStatus(
+        complaint.id,
+        status as ComplaintStatus,
+        remarks || `Status transitioned to ${status}`,
+        req.user!.userId
+      );
+
+      res.json({
+        success: true,
+        message: `Status updated to ${status}.`,
+        data: updated,
+      });
+    } catch (error: any) {
+      console.error(`[ComplaintRoutes] Error updating status for ${req.params.id}:`, error);
+      res.status(500).json({ success: false, error: error.message || 'Failed to update complaint status.' });
     }
-
-    const { status, remarks, actorName, actorId } = req.body;
-    if (!status) {
-      res.status(400).json({ success: false, error: 'Target status is required.' });
-      return;
-    }
-
-    const updated = await ComplaintRepository.updateStatus(
-      complaint.id,
-      status as ComplaintStatus,
-      remarks || `Status transitioned to ${status}`,
-      actorId || actorName
-    );
-
-    res.json({
-      success: true,
-      message: `Status updated to ${status}.`,
-      data: updated,
-    });
-  } catch (error: any) {
-    console.error(`[ComplaintRoutes] Error updating status for ${req.params.id}:`, error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to update complaint status.' });
   }
-});
+);
 
 /**
  * POST /api/complaints/:id/assign
  * Supervisor or Control Room reassigns complaint to another officer with mandatory audit reason.
+ * Requires authenticated supervisor/operator session.
  */
-router.post('/:id/assign', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id;
-    const complaint = await ComplaintRepository.getComplaintById(id);
+router.post(
+  '/:id/assign',
+  authenticateToken,
+  authorizeComplaintAction('reassign'),
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = req.params.id;
+      const complaint = await ComplaintRepository.getComplaintById(id);
 
-    if (!complaint) {
-      res.status(404).json({ success: false, error: 'Complaint not found.' });
-      return;
+      if (!complaint) {
+        res.status(404).json({ success: false, error: 'Complaint not found.' });
+        return;
+      }
+
+      const { officerName, officerPhone, officerId, reason } = req.body;
+      const targetOfficerIdentifier = officerId || officerPhone || officerName;
+
+      if (!targetOfficerIdentifier) {
+        res.status(400).json({ success: false, error: 'Target officer identifier (id or phone) is required.' });
+        return;
+      }
+
+      const updated = await ComplaintRepository.reassignComplaint(
+        complaint.id,
+        targetOfficerIdentifier,
+        reason || 'Administrative reassignment',
+        req.user!.userId
+      );
+
+      res.json({
+        success: true,
+        message: `Complaint reassigned successfully.`,
+        data: updated,
+      });
+    } catch (error: any) {
+      console.error(`[ComplaintRoutes] Error reassigning complaint ${req.params.id}:`, error);
+      res.status(500).json({ success: false, error: error.message || 'Failed to reassign complaint.' });
     }
-
-    const { officerName, officerPhone, officerId, reason, assignedById } = req.body;
-    const targetOfficerIdentifier = officerId || officerPhone || officerName;
-
-    if (!targetOfficerIdentifier) {
-      res.status(400).json({ success: false, error: 'Target officer identifier (id or phone) is required.' });
-      return;
-    }
-
-    const updated = await ComplaintRepository.reassignComplaint(
-      complaint.id,
-      targetOfficerIdentifier,
-      reason || 'Administrative reassignment',
-      assignedById || 'SUPERVISOR'
-    );
-
-    res.json({
-      success: true,
-      message: `Complaint reassigned successfully.`,
-      data: updated,
-    });
-  } catch (error: any) {
-    console.error(`[ComplaintRoutes] Error reassigning complaint ${req.params.id}:`, error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to reassign complaint.' });
   }
-});
+);
 
 /**
  * POST /api/complaints/:id/resolution
  * Field officer submits resolution description along with completion photos.
+ * Requires authenticated session and territorial assignment check.
  */
 router.post(
   '/:id/resolution',
+  authenticateToken,
+  authorizeComplaintAction('resolve'),
   upload.fields([{ name: 'resolutionProof', maxCount: 5 }]),
   async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
@@ -375,7 +422,7 @@ router.post(
 
       const body = req.body || {};
       const resolutionNotes = (body.resolutionNotes || body.notes || '').trim();
-      const officerId = body.officerId || body.officerPhone || complaint.assignedJeId;
+      const officerId = req.user!.userId;
 
       if (!resolutionNotes) {
         void deleteTemporaryFiles(proofFiles);
@@ -433,38 +480,44 @@ router.post(
 /**
  * POST /api/complaints/:id/verify-close
  * Citizen or Control Room quality verification to permanently close grievance.
+ * Requires authenticated session and role authorization.
  */
-router.post('/:id/verify-close', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id;
-    const complaint = await ComplaintRepository.getComplaintById(id);
+router.post(
+  '/:id/verify-close',
+  authenticateToken,
+  authorizeComplaintAction('verify'),
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = req.params.id;
+      const complaint = await ComplaintRepository.getComplaintById(id);
 
-    if (!complaint) {
-      res.status(404).json({ success: false, error: 'Complaint not found.' });
-      return;
+      if (!complaint) {
+        res.status(404).json({ success: false, error: 'Complaint not found.' });
+        return;
+      }
+
+      const { rating, feedback, verdict } = req.body;
+      const verificationVerdict = (verdict === 'disputed' || verdict === 'rejected') ? 'disputed' : 'accepted';
+      const comments = feedback || (rating ? `Citizen Rating: ${rating}/5` : 'Closure confirmed');
+
+      const updated = await ComplaintRepository.verifyAndClose(
+        complaint.id,
+        req.user!.userId,
+        (req.user!.role === 'citizen' ? 'citizen' : 'officer'),
+        verificationVerdict,
+        comments
+      );
+
+      res.json({
+        success: true,
+        message: verificationVerdict === 'accepted' ? 'Grievance verified and permanently closed.' : 'Resolution disputed and reopened.',
+        data: updated,
+      });
+    } catch (error: any) {
+      console.error(`[ComplaintRoutes] Error verifying complaint ${req.params.id}:`, error);
+      res.status(500).json({ success: false, error: error.message || 'Failed to verify complaint.' });
     }
-
-    const { rating, feedback, closedBy, actorRole, verdict } = req.body;
-    const verificationVerdict = (verdict === 'disputed' || verdict === 'rejected') ? 'disputed' : 'accepted';
-    const comments = feedback || (rating ? `Citizen Rating: ${rating}/5` : 'Closure confirmed');
-
-    const updated = await ComplaintRepository.verifyAndClose(
-      complaint.id,
-      closedBy || 'VERIFIER',
-      (actorRole === 'officer' ? 'officer' : 'citizen'),
-      verificationVerdict,
-      comments
-    );
-
-    res.json({
-      success: true,
-      message: verificationVerdict === 'accepted' ? 'Grievance verified and permanently closed.' : 'Resolution disputed and reopened.',
-      data: updated,
-    });
-  } catch (error: any) {
-    console.error(`[ComplaintRoutes] Error verifying complaint ${req.params.id}:`, error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to verify complaint.' });
   }
-});
+);
 
 export default router;

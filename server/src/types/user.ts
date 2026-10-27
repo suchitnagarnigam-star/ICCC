@@ -34,5 +34,6 @@ export interface JWTPayload {
   wardNumber?: number;
   branch?: string;
   designation?: string;
+  allowedWards?: number[];
 }
 
