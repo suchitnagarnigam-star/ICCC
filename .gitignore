@@ -57,3 +57,5 @@ desktop.ini
 # Keep documentation and workflow PDFs
 !workflow.pdf
 
+
+graphify-out/

@@ -1,0 +1,6462 @@
+[
+  {
+    "ward": 1,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Himanshu Sharma",
+          "phone": "9217882000"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      }
+    }
+  },
+  {
+    "ward": 2,
+    "zone": "A",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Parwinder Singh",
+          "phone": "7009825859"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      }
+    }
+  },
+  {
+    "ward": 3,
+    "zone": "A",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Parwinder Singh",
+          "phone": "7009825859"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      }
+    }
+  },
+  {
+    "ward": 4,
+    "zone": "A",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Parwinder Singh",
+          "phone": "7009825859"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      }
+    }
+  },
+  {
+    "ward": 5,
+    "zone": "A",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Parwinder Singh",
+          "phone": "7009825859"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      }
+    }
+  },
+  {
+    "ward": 6,
+    "zone": "A",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Parwinder Singh",
+          "phone": "7009825859"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Amandeep Singh",
+          "phone": "9501718752"
+        },
+        "je": {
+          "name": "Sandeep Singh",
+          "phone": "8284800951"
+        }
+      }
+    }
+  },
+  {
+    "ward": 7,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Sh. Ramandeep Singh",
+          "phone": "9855523213"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 8,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Himanshu Sharma",
+          "phone": "9217882000"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      }
+    }
+  },
+  {
+    "ward": 9,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sandeep Sharma",
+          "phone": "9592999599"
+        },
+        "je": {
+          "name": "Rajneesh Kumar",
+          "phone": "9915271963"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      }
+    }
+  },
+  {
+    "ward": 10,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sandeep Sharma",
+          "phone": "9592999599"
+        },
+        "je": {
+          "name": "Rajneesh Kumar",
+          "phone": "9915271963"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      }
+    }
+  },
+  {
+    "ward": 11,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Gurjit Singh",
+          "phone": "9815014886"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 12,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Sh. Ramandeep Singh",
+          "phone": "9855523213"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 13,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Sh. Ramandeep Singh",
+          "phone": "9855523213"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 14,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Gurjit Singh",
+          "phone": "9815014886"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 15,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Sukhdeep Singh",
+          "phone": "9888977577"
+        },
+        "je": {
+          "name": "Sh. Ramandeep Singh",
+          "phone": "9855523213"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 16,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Gurjit Singh",
+          "phone": "9815014886"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 17,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Gurjit Singh",
+          "phone": "9815014886"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Prabhjot Singh",
+          "phone": "7973435016"
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 18,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Gurjit Singh",
+          "phone": "9815014886"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 19,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "prabhjot or avtar",
+          "phone": ""
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "prabhjot or avtar",
+          "phone": ""
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 20,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Gurjit Singh",
+          "phone": "9815014886"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 21,
+    "zone": "B",
+    "constituency": "Sahnewal",
+    "mla": "Sh. Hardeep Singh Mundian (Sahnewal)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Avtar",
+          "phone": "7986807720"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Avtar",
+          "phone": "7986807720"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 22,
+    "zone": "B",
+    "constituency": "Sahnewal",
+    "mla": "Sh. Hardeep Singh Mundian (Sahnewal)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 23,
+    "zone": "B",
+    "constituency": "Sahnewal",
+    "mla": "Sh. Hardeep Singh Mundian (Sahnewal)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 24,
+    "zone": "B",
+    "constituency": "Sahnewal",
+    "mla": "Sh. Hardeep Singh Mundian (Sahnewal)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Ashutosh Tiwari",
+          "phone": "9988352461"
+        }
+      }
+    }
+  },
+  {
+    "ward": 25,
+    "zone": "B",
+    "constituency": "Sahnewal",
+    "mla": "Sh. Hardeep Singh Mundian (Sahnewal)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Avtar",
+          "phone": "7986807720"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Avtar",
+          "phone": "7986807720"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 26,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Avtar",
+          "phone": "7986807720"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Avtar",
+          "phone": "7986807720"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 27,
+    "zone": "B",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 28,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Avtar",
+          "phone": "7986807720"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Avtar",
+          "phone": "7986807720"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 29,
+    "zone": "B",
+    "constituency": "East",
+    "mla": "Sh. Daljit Singh Grewal (Bhola) (East)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Parveen Singla",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Gurjit Singh",
+          "phone": "9815014886"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Maninderdeep Singh 97800-08495",
+          "phone": ""
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 30,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Rajinder",
+          "phone": "8195019050"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      }
+    }
+  },
+  {
+    "ward": 31,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Manpreet Singh & Jagroop Singh",
+          "phone": "8146099950"
+        },
+        "je": {
+          "name": "Iqbal Singh & Avneet Singh",
+          "phone": "9988812321"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 32,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh Baljinder Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal Jagroop Singh",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh Avneet Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 33,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal Jagroop Singh",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh Avneet Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 34,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Samarveer Grewal Jagroop Singh",
+          "phone": "9780039835"
+        },
+        "je": {
+          "name": "Davinder Pal Harinder Singh Avneet Singh",
+          "phone": "9780033766"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 35,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Harbir Singh",
+          "phone": "8699100033"
+        },
+        "je": {
+          "name": "Sanpreet Singh",
+          "phone": "9646832849"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 36,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Harbir Singh & Jagroop Singh",
+          "phone": "8699100033"
+        },
+        "je": {
+          "name": "Dilpreet Singh & Avneet Singh",
+          "phone": "9988549001"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 37,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Harbir Singh",
+          "phone": "8699100033"
+        },
+        "je": {
+          "name": "Dilpreet Singh",
+          "phone": "9988549001"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 38,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Harbir Singh",
+          "phone": "8699100033"
+        },
+        "je": {
+          "name": "Dilpreet Singh",
+          "phone": "9988549001"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 39,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Harbir Singh",
+          "phone": "8699100033"
+        },
+        "je": {
+          "name": "Dilpreet Singh",
+          "phone": "9988549001"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 40,
+    "zone": "C",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Sandeep",
+          "phone": "8837873503"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Amandeep Singh Grewal",
+          "phone": "9988830795"
+        },
+        "je": {
+          "name": "Sanpreet Singh",
+          "phone": "9646832849"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Sandeep",
+          "phone": "8837873503"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 41,
+    "zone": "C",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Sandeep",
+          "phone": "8837873503"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Amandeep Singh Grewal",
+          "phone": "9988830795"
+        },
+        "je": {
+          "name": "Sanpreet Singh",
+          "phone": "9646832849"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Sandeep",
+          "phone": "8837873503"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 42,
+    "zone": "C",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Sandeep",
+          "phone": "8837873503"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Amandeep Singh Grewal",
+          "phone": "9988830795"
+        },
+        "je": {
+          "name": "Sanpreet Singh",
+          "phone": "9646832849"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Sandeep",
+          "phone": "8837873503"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 43,
+    "zone": "C",
+    "constituency": "South",
+    "mla": "Smt. Rajinderpal Kaur South",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Jagroop Singh & Amandeep Singh Grewal",
+          "phone": "9780022546"
+        },
+        "je": {
+          "name": "Sanpreet Singh & Avneet Singh",
+          "phone": "9646832849"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Shashi Kant",
+          "phone": "8872121914"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 44,
+    "zone": "C",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300",
+          "phone": ""
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "je": {
+          "name": "Iqbal Singh",
+          "phone": "9988812321"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300",
+          "phone": ""
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 45,
+    "zone": "C",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300",
+          "phone": ""
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "je": {
+          "name": "Iqbal Singh",
+          "phone": "9988812321"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300",
+          "phone": ""
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 46,
+    "zone": "C",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300",
+          "phone": ""
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Amandeep Singh Grewal & Baljeet Singh",
+          "phone": "9988830795"
+        },
+        "je": {
+          "name": "Sanpreet Singh",
+          "phone": "9646832849"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "",
+          "phone": ""
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300",
+          "phone": ""
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 47,
+    "zone": "C",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300 & Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Pawanpreet Singh (C zone) & Rupinder Singh (D zone)",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Amandeep Singh Grewal & Baljeet Singh",
+          "phone": "9988830795"
+        },
+        "je": {
+          "name": "Ramandeep kaur & Harjot Pal Singh",
+          "phone": "9878584763"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan & Surinder Dogra",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300 & Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Pawanpreet Singh (C zone) & Rupinder Singh (D zone)",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 48,
+    "zone": "C",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Sandeep",
+          "phone": "8837873503"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Amandeep Singh Grewal & Baljeet Singh",
+          "phone": "9988830795"
+        },
+        "je": {
+          "name": "Dilpreet Singh Gokaran Singh",
+          "phone": "9988549001"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan & Surinder Dogra",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Sandeep",
+          "phone": "8837873503"
+        },
+        "je": {
+          "name": "Pawanpreet Singh",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 49,
+    "zone": "D",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Rupinder Singh",
+          "phone": ""
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Baljeet Singh",
+          "phone": "9988550855"
+        },
+        "je": {
+          "name": "Gokaran Singh",
+          "phone": "9988831600"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Rupinder Singh",
+          "phone": ""
+        }
+      }
+    }
+  },
+  {
+    "ward": 50,
+    "zone": "D",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Rupinder Singh",
+          "phone": ""
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Baljeet Singh",
+          "phone": "9988550855"
+        },
+        "je": {
+          "name": "Harjot Pal Singh",
+          "phone": "7009670765"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Rupinder Singh",
+          "phone": ""
+        }
+      }
+    }
+  },
+  {
+    "ward": 51,
+    "zone": "D",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Rupinder Singh",
+          "phone": ""
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Baljeet Singh",
+          "phone": "9988550855"
+        },
+        "je": {
+          "name": "Harjot Pal Singh",
+          "phone": "7009670765"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Rupinder Singh",
+          "phone": ""
+        }
+      }
+    }
+  },
+  {
+    "ward": 52,
+    "zone": "D",
+    "constituency": "AtamNagar",
+    "mla": "Sh. Kulwant Singh Sidhu (AtamNagar)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kulwinder Singh",
+          "phone": "9888897201"
+        },
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300 & Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Pawanpreet Singh (C zone) & Rupinder Singh (D zone)",
+          "phone": "9888663023"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh & Randeep Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Amandeep Singh Grewal & Baljeet Singh",
+          "phone": "9988830795"
+        },
+        "je": {
+          "name": "Ramandeep Kaur & Kuldeep Singh",
+          "phone": "9878584763"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan & Surinder Dogra",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Bhupinder Singh 97816-08300 & Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Pawanpreet Singh (C zone) & Rupinder Singh (D zone)",
+          "phone": "9888663023"
+        }
+      }
+    }
+  },
+  {
+    "ward": 53,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Rupinder Singh",
+          "phone": "7837100158"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Baljeet Singh",
+          "phone": "9988550855"
+        },
+        "je": {
+          "name": "Kuldeep Singh",
+          "phone": "9988400532"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Pankush Nanda",
+          "phone": "9780801786"
+        },
+        "je": {
+          "name": "Rupinder Singh",
+          "phone": "7837100158"
+        }
+      }
+    }
+  },
+  {
+    "ward": 54,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Jatinder Sodhi",
+          "phone": "9780511500"
+        },
+        "je": {
+          "name": "Harkesh Kumar",
+          "phone": "8427134132"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      }
+    }
+  },
+  {
+    "ward": 55,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Jatinder Sodhi",
+          "phone": "9780511500"
+        },
+        "je": {
+          "name": "Harkesh Kumar",
+          "phone": "8427134132"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      }
+    }
+  },
+  {
+    "ward": 56,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Jatinder Sodhi",
+          "phone": "9780511500"
+        },
+        "je": {
+          "name": "Naresh Kumar",
+          "phone": "9780024113"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      }
+    }
+  },
+  {
+    "ward": 57,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Jatinder Sodhi",
+          "phone": "9780511500"
+        },
+        "je": {
+          "name": "Naresh Kumar",
+          "phone": "9780024113"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      }
+    }
+  },
+  {
+    "ward": 58,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Jatinder Sodhi",
+          "phone": "9780511500"
+        },
+        "je": {
+          "name": "Naresh Kumar",
+          "phone": "9780024113"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      }
+    }
+  },
+  {
+    "ward": 59,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Jatinder Sodhi",
+          "phone": "9780511500"
+        },
+        "je": {
+          "name": "Naresh Kumar",
+          "phone": "9780024113"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Nisha",
+          "phone": "9872354972"
+        }
+      }
+    }
+  },
+  {
+    "ward": 60,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Jatinder Sodhi",
+          "phone": "9780511500"
+        },
+        "je": {
+          "name": "Harkesh Kumar",
+          "phone": "8427134132"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 61,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Karan",
+          "phone": "7814899197"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 62,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Arjun Sikka",
+          "phone": "9888933130"
+        },
+        "je": {
+          "name": "Karan",
+          "phone": "7814899197"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 63,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Arjun Sikka",
+          "phone": "9888933130"
+        },
+        "je": {
+          "name": "Karan",
+          "phone": "7814899197"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 64,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Arjun Sikka",
+          "phone": "9888933130"
+        },
+        "je": {
+          "name": "Karan",
+          "phone": "7814899197"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 65,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Arjun Sikka",
+          "phone": "9888933130"
+        },
+        "je": {
+          "name": "Karan",
+          "phone": "7814899197"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Vaneet Kumar",
+          "phone": "9780039813"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 66,
+    "zone": "D",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Gurdeep Singh",
+          "phone": "7888927362"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 67,
+    "zone": "D",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Gurdeep Singh",
+          "phone": "7888927362"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 68,
+    "zone": "D",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Gurdeep Singh",
+          "phone": "7888927362"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 69,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Arjun Sikka",
+          "phone": "9888933130"
+        },
+        "je": {
+          "name": "Harpreet Kaur",
+          "phone": "9781507993"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 70,
+    "zone": "D",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Gurdeep Singh",
+          "phone": "7888927362"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 71,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Arjun Sikka",
+          "phone": "9888933130"
+        },
+        "je": {
+          "name": "Harpreet Kaur",
+          "phone": "9781507993"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 72,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Jatinder Sodhi",
+          "phone": "9780511500"
+        },
+        "je": {
+          "name": "Harkesh Kumar",
+          "phone": "8427134132"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 73,
+    "zone": "D",
+    "constituency": "West",
+    "mla": "Sh. Sanjeev Arora (West)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Sham Lal Gupta",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Arvind Kumar",
+          "phone": "9780039452"
+        },
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Arjun Sikka",
+          "phone": "9888933130"
+        },
+        "je": {
+          "name": "Harpreet Kaur",
+          "phone": "9781507993"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Baljinder singh",
+          "phone": "9814720996"
+        },
+        "je": {
+          "name": "Ankush Sharma",
+          "phone": "7986605351"
+        }
+      }
+    }
+  },
+  {
+    "ward": 74,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Tejinder Singh",
+          "phone": "8054030020"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "sdo": {
+          "name": "Manpreet Singh",
+          "phone": "8146099950"
+        },
+        "je": {
+          "name": "Iqbal Singh",
+          "phone": "9988812321"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Gurinder Singh",
+          "phone": "9988797188"
+        },
+        "csi": {
+          "name": "Rajinder Kalyan",
+          "phone": "9780012331"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Tejinder Singh",
+          "phone": "8054030020"
+        }
+      }
+    }
+  },
+  {
+    "ward": 75,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Rajinder",
+          "phone": "8195019050"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      }
+    }
+  },
+  {
+    "ward": 76,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Rajinder",
+          "phone": "8195019050"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      }
+    }
+  },
+  {
+    "ward": 77,
+    "zone": "A",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Tejinder Singh",
+          "phone": "8054030020"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sandeep Sharma",
+          "phone": "9592999599"
+        },
+        "je": {
+          "name": "Sachin Isha Teji 788853738",
+          "phone": "8437229223"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Tejinder Singh",
+          "phone": "8054030020"
+        }
+      }
+    }
+  },
+  {
+    "ward": 78,
+    "zone": "A",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Tejinder Singh",
+          "phone": "8054030020"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sandeep Sharma",
+          "phone": "9592999599"
+        },
+        "je": {
+          "name": "Sachin Isha Teji 788853738",
+          "phone": "8437229223"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Tejinder Singh",
+          "phone": "8054030020"
+        }
+      }
+    }
+  },
+  {
+    "ward": 79,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Rajinder",
+          "phone": "8195019050"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      }
+    }
+  },
+  {
+    "ward": 80,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Rajinder",
+          "phone": "8195019050"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      }
+    }
+  },
+  {
+    "ward": 81,
+    "zone": "B",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Baljinder Singh",
+          "phone": "9988850855"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Rajinder",
+          "phone": "8195019050"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ravi Dogra",
+          "phone": "9780064002"
+        },
+        "csi": {
+          "name": "Nishu Ghai",
+          "phone": "9780112300"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      }
+    }
+  },
+  {
+    "ward": 82,
+    "zone": "A",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Tejinder Singh",
+          "phone": "8054030020"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Amritpal Singh",
+          "phone": "8146288822"
+        },
+        "je": {
+          "name": "Gurjeet Singh",
+          "phone": "9815014886"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Tejinder Singh",
+          "phone": "8054030020"
+        }
+      }
+    }
+  },
+  {
+    "ward": 83,
+    "zone": "A",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sandeep Sharma",
+          "phone": "9592999599"
+        },
+        "je": {
+          "name": "Sachin Isha Teji 788853738",
+          "phone": "8437229223"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      }
+    }
+  },
+  {
+    "ward": 84,
+    "zone": "A",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sandeep Sharma",
+          "phone": "9592999599"
+        },
+        "je": {
+          "name": "Rajneesh Kumar",
+          "phone": "9915271963"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      }
+    }
+  },
+  {
+    "ward": 85,
+    "zone": "A",
+    "constituency": "Central",
+    "mla": "Sh. Ashok Prashar (Pappi) (Central)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Sandeep Sharma",
+          "phone": "9592999599"
+        },
+        "je": {
+          "name": "Rajneesh Kumar",
+          "phone": "9915271963"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Ravi Sharma",
+          "phone": "8591109999"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Simarjeet Singh",
+          "phone": "7508243093"
+        },
+        "je": {
+          "name": "Vikas Sethi",
+          "phone": "9988900126"
+        }
+      }
+    }
+  },
+  {
+    "ward": 86,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Himanshu Sharma",
+          "phone": "9217882000"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      }
+    }
+  },
+  {
+    "ward": 87,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Himanshu Sharma",
+          "phone": "9217882000"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      }
+    }
+  },
+  {
+    "ward": 88,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Himanshu Sharma",
+          "phone": "9217882000"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      }
+    }
+  },
+  {
+    "ward": 89,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Balwinder Singh",
+          "phone": "9023620049"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      }
+    }
+  },
+  {
+    "ward": 90,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Sachin Isha Teji 788853738",
+          "phone": "8437229223"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Karan Pathak",
+          "phone": "9815220788"
+        }
+      }
+    }
+  },
+  {
+    "ward": 91,
+    "zone": "D",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Gurdeep Singh",
+          "phone": "7888927362"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207893"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 92,
+    "zone": "D",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207894"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Gurdeep Singh",
+          "phone": "7888927362"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207894"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 93,
+    "zone": "D",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Ranjit Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Sanjeev Kumar",
+          "phone": "9780039448"
+        },
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207895"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Randeep Singh",
+          "phone": "9814355554"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Gurdeep Singh",
+          "phone": "7888927362"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Vipal Malhotra",
+          "phone": "9780011515"
+        },
+        "moh": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Gurpreet Singh",
+          "phone": "8847207895"
+        },
+        "je": {
+          "name": "Gaurav Thappar",
+          "phone": "9988291286"
+        }
+      }
+    }
+  },
+  {
+    "ward": 94,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Balwinder Singh",
+          "phone": "9023620049"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      }
+    }
+  },
+  {
+    "ward": 95,
+    "zone": "A",
+    "constituency": "North",
+    "mla": "Sh. Madan Lal Bagga (North)",
+    "officers": {
+      "BR": {
+        "se": {
+          "name": "Sh. Harkiranpal Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Raman Kaushal",
+          "phone": "9888162620"
+        },
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      },
+      "OM": {
+        "se": {
+          "name": "Ekjot Singh",
+          "phone": ""
+        },
+        "xen": {
+          "name": "Kamal Ram",
+          "phone": "9780221000"
+        },
+        "sdo": {
+          "name": "Anshul Garcha",
+          "phone": "9815144612"
+        },
+        "je": {
+          "name": "Balwinder Singh",
+          "phone": "9023620049"
+        }
+      },
+      "Health": {
+        "drNodal": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "moh": {
+          "name": "Ashwani Sahota",
+          "phone": "9876900475"
+        },
+        "csi": {
+          "name": "Surinder Dogra",
+          "phone": "9780019313"
+        }
+      },
+      "Light": {
+        "sdo": {
+          "name": "Akshay Bansal",
+          "phone": "9041163066"
+        },
+        "je": {
+          "name": "Vikas Kumar",
+          "phone": "9646222900"
+        }
+      }
+    }
+  }
+]

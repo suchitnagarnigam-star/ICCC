@@ -1,4 +1,6 @@
 import { Router, Request, Response } from 'express';
+import { getWardDetails, getZoneForWard } from '../services/officerMappingService';
+import wardDataRaw from '../data/wardMasterData.json';
 
 const router = Router();
 
@@ -39,6 +41,31 @@ router.get('/zones', (req: Request, res: Response) => {
   res.json({
     success: true,
     data: MUNICIPAL_ZONES,
+  });
+});
+
+router.get('/wards', (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    data: wardDataRaw,
+    total: (wardDataRaw as any[]).length,
+  });
+});
+
+router.get('/wards/:wardNumber', (req: Request, res: Response): void => {
+  const wardNum = parseInt(req.params.wardNumber, 10);
+  if (isNaN(wardNum)) {
+    res.status(400).json({ success: false, error: 'Invalid ward number.' });
+    return;
+  }
+  const details = getWardDetails(wardNum);
+  if (!details) {
+    res.status(404).json({ success: false, error: 'Ward not found.' });
+    return;
+  }
+  res.json({
+    success: true,
+    data: details,
   });
 });
 
