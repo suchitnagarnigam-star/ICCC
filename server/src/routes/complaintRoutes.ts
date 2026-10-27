@@ -1,8 +1,9 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import {
+  Complaint,
   ComplaintStatus,
   DepartmentBranch,
 } from '../types/complaint';
@@ -11,6 +12,7 @@ import { getZoneForWard } from '../services/officerMappingService';
 import { ComplaintRepository, CreateComplaintDbInput } from '../repositories/complaintRepository';
 import { UserRepository } from '../repositories/userRepository';
 import { calculateWorkingHourDeadline } from '../services/slaService';
+import { getDbPool } from '../config/db';
 import {
   authenticateToken,
   optionalAuthenticateToken,
@@ -24,6 +26,59 @@ import {
 } from '../services/driveService';
 
 const router = Router();
+
+/**
+ * In-memory rate limiter for public tracking endpoint (max 15 queries/min per IP)
+ */
+const trackingRateLimit = new Map<string, { count: number; resetAt: number }>();
+function checkTrackRateLimit(req: Request, res: Response, next: NextFunction): void {
+  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const entry = trackingRateLimit.get(ip);
+  if (!entry || now > entry.resetAt) {
+    trackingRateLimit.set(ip, { count: 1, resetAt: now + 60000 });
+    return next();
+  }
+  if (entry.count >= 15) {
+    res.status(429).json({
+      success: false,
+      error: 'Too many tracking requests. Please try again after 1 minute.',
+    });
+    return;
+  }
+  entry.count++;
+  return next();
+}
+
+/**
+ * Checks whether an authenticated user is permitted to view complaint details
+ */
+function canUserAccessComplaint(complaint: Complaint, user: any): boolean {
+  if (['admin', 'operator', 'zc', 'jc'].includes(user.role)) {
+    return true;
+  }
+  if (user.role === 'citizen') {
+    const cleanUserPhone = (user.phoneNumber || '').replace(/\D/g, '').slice(-10);
+    const cleanCompPhone = (complaint.contactNumber || '').replace(/\D/g, '').slice(-10);
+    return complaint.citizenId === user.userId || (cleanUserPhone.length === 10 && cleanUserPhone === cleanCompPhone);
+  }
+  if (user.role === 'je') {
+    const isAssigned = complaint.assignedJeId === user.userId;
+    const inWardScope =
+      complaint.wardNumber && user.allowedWards && user.allowedWards.includes(complaint.wardNumber);
+    return Boolean(isAssigned || inWardScope);
+  }
+  if (['sdo', 'xen', 'se'].includes(user.role)) {
+    if (user.branch && complaint.branch && user.branch !== complaint.branch) {
+      return false;
+    }
+    if (user.zone && complaint.zone && user.zone !== complaint.zone) {
+      return false;
+    }
+    return true;
+  }
+  return false;
+}
 
 // Multer storage for temporary intake and resolution evidence uploads
 const storage = multer.diskStorage({
@@ -41,34 +96,139 @@ const upload = multer({
 });
 
 /**
+ * POST /api/complaints/track
+ * Public rate-limited grievance status tracking (No authentication required).
+ * Requires exact complaintNumber and verified contactNumber.
+ * Returns sanitized civic progress without disclosing citizen or officer PII.
+ */
+router.post('/track', checkTrackRateLimit, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { complaintNumber, contactNumber } = req.body || {};
+
+    if (!complaintNumber || !contactNumber) {
+      res.status(400).json({
+        success: false,
+        error: 'Both complaintNumber and contactNumber are required to track a grievance.',
+      });
+      return;
+    }
+
+    const cleanInputPhone = String(contactNumber).trim().replace(/\D/g, '').slice(-10);
+    if (cleanInputPhone.length !== 10) {
+      res.status(400).json({
+        success: false,
+        error: 'Please enter a valid 10-digit mobile number.',
+      });
+      return;
+    }
+
+    const pool = getDbPool();
+    const compRes = await pool.query<any>(
+      `SELECT c.*, cc.name as category_name 
+       FROM complaints c
+       LEFT JOIN complaint_categories cc ON c.category_id = cc.id
+       WHERE UPPER(c.complaint_number) = UPPER($1)
+       LIMIT 1`,
+      [String(complaintNumber).trim()]
+    );
+
+    if (compRes.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        error: 'No grievance found matching this complaint number.',
+      });
+      return;
+    }
+
+    const row = compRes.rows[0];
+    const cleanCompPhone = (row.contact_number || '').replace(/\D/g, '').slice(-10);
+
+    if (cleanInputPhone !== cleanCompPhone) {
+      res.status(404).json({
+        success: false,
+        error: 'Contact number verification failed for this complaint number.',
+      });
+      return;
+    }
+
+    // Load sanitized timeline
+    const historyRes = await pool.query<any>(
+      `SELECT previous_status, new_status, action_reason, created_at 
+       FROM complaint_status_history 
+       WHERE complaint_id = $1 
+       ORDER BY created_at ASC`,
+      [row.id]
+    );
+
+    const now = Date.now();
+    const dueMs = new Date(row.due_at).getTime();
+    const isBreached = row.current_status !== 'CLOSED' && row.current_status !== 'RESOLUTION_SUBMITTED' && now > dueMs;
+
+    const sanitizedTimeline = historyRes.rows.map((h) => ({
+      status: h.new_status,
+      timestamp: h.created_at,
+      action: h.action_reason,
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        complaintNumber: row.complaint_number,
+        categoryName: row.category_name || 'General Civic Grievance',
+        branch: row.branch,
+        zone: row.zone_code,
+        wardNumber: row.ward_number,
+        status: row.current_status,
+        mode: row.mode,
+        submittedAt: row.submitted_at,
+        dueAt: row.due_at,
+        resolvedAt: row.resolved_at,
+        closedAt: row.closed_at,
+        slaBreached: isBreached,
+        isPaused: row.is_paused,
+        timeline: sanitizedTimeline,
+      },
+    });
+  } catch (error: any) {
+    console.error('[ComplaintRoutes] Error tracking complaint:', error);
+    res.status(500).json({ success: false, error: 'Failed to retrieve grievance tracking information.' });
+  }
+});
+
+/**
  * GET /api/complaints
  * Filter complaints by status, branch, zone, ward, or search query directly from PostgreSQL.
  * Scoped automatically by authenticated user role and territorial jurisdiction.
  */
-router.get('/', optionalAuthenticateToken, async (req: Request, res: Response): Promise<void> => {
+router.get('/', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const { status, branch, zone, wardNumber, search, page, limit } = req.query;
 
     let allowedWards: number[] | undefined;
     let citizenId: string | undefined;
     let assignedJeId: string | undefined;
+    let queryBranch = branch ? String(branch) : undefined;
+    let queryZone = zone ? String(zone) : undefined;
 
-    if (req.user) {
-      if (req.user.role === 'citizen') {
-        citizenId = req.user.userId;
-      } else if (req.user.role === 'je') {
-        if (req.user.allowedWards && req.user.allowedWards.length > 0) {
-          allowedWards = req.user.allowedWards;
-        } else {
-          assignedJeId = req.user.userId;
-        }
+    const user = req.user!;
+
+    if (user.role === 'citizen') {
+      citizenId = user.userId;
+    } else if (user.role === 'je') {
+      if (user.allowedWards && user.allowedWards.length > 0) {
+        allowedWards = user.allowedWards;
+      } else {
+        assignedJeId = user.userId;
       }
+    } else if (['sdo', 'xen', 'se'].includes(user.role)) {
+      if (user.branch) queryBranch = user.branch;
+      if (user.zone) queryZone = user.zone;
     }
 
     const result = await ComplaintRepository.listComplaints({
       status: status ? String(status) : undefined,
-      branch: branch ? String(branch) : undefined,
-      zone: zone ? String(zone) : undefined,
+      branch: queryBranch,
+      zone: queryZone,
       wardNumber: wardNumber ? parseInt(String(wardNumber), 10) : undefined,
       search: search ? String(search) : undefined,
       citizenId,
@@ -94,14 +254,23 @@ router.get('/', optionalAuthenticateToken, async (req: Request, res: Response): 
 /**
  * GET /api/complaints/:id
  * Retrieve single complaint with attachments, assigned staff, and timeline from PostgreSQL.
+ * Requires authenticated session and territorial/ownership authorization check.
  */
-router.get('/:id', async (req: Request, res: Response): Promise<void> => {
+router.get('/:id', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.params.id;
     const complaint = await ComplaintRepository.getComplaintById(id);
 
     if (!complaint) {
       res.status(404).json({ success: false, error: 'Complaint record not found.' });
+      return;
+    }
+
+    if (!canUserAccessComplaint(complaint, req.user!)) {
+      res.status(403).json({
+        success: false,
+        error: 'Forbidden: You do not have permission to view this complaint.',
+      });
       return;
     }
 
@@ -118,14 +287,23 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
 /**
  * GET /api/complaints/:id/timeline
  * Retrieve chronological audit trail for a complaint.
+ * Requires authenticated session and territorial/ownership authorization check.
  */
-router.get('/:id/timeline', async (req: Request, res: Response): Promise<void> => {
+router.get('/:id/timeline', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.params.id;
     const complaint = await ComplaintRepository.getComplaintById(id);
 
     if (!complaint) {
       res.status(404).json({ success: false, error: 'Complaint not found.' });
+      return;
+    }
+
+    if (!canUserAccessComplaint(complaint, req.user!)) {
+      res.status(403).json({
+        success: false,
+        error: 'Forbidden: You do not have permission to view this complaint timeline.',
+      });
       return;
     }
 
@@ -136,6 +314,31 @@ router.get('/:id/timeline', async (req: Request, res: Response): Promise<void> =
   } catch (error: any) {
     console.error(`[ComplaintRoutes] Error fetching timeline for ${req.params.id}:`, error);
     res.status(500).json({ success: false, error: 'Failed to retrieve timeline.' });
+  }
+});
+
+/**
+ * POST /api/complaints/:id/claim
+ * Allows an authenticated citizen to claim an unclaimed grievance by verified phone match.
+ */
+router.post('/:id/claim', authenticateToken, async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (req.user!.role !== 'citizen') {
+      res.status(403).json({ success: false, error: 'Forbidden: Only citizen accounts can claim grievances.' });
+      return;
+    }
+
+    const id = req.params.id;
+    const updated = await ComplaintRepository.claimComplaint(id, req.user!.userId, req.user!.phoneNumber);
+
+    res.json({
+      success: true,
+      message: 'Grievance ownership successfully claimed and linked to your citizen profile.',
+      data: updated,
+    });
+  } catch (error: any) {
+    console.error(`[ComplaintRoutes] Error claiming complaint ${req.params.id}:`, error);
+    res.status(400).json({ success: false, error: error.message || 'Failed to claim grievance.' });
   }
 });
 
@@ -202,6 +405,24 @@ router.post(
         uploadState: 'pending' as const,
       }));
 
+      // Prevent citizenId spoofing: derive strictly from authenticated JWT identity
+      let boundCitizenId: string | undefined = undefined;
+      let isUnclaimed = false;
+
+      if (req.user?.role === 'citizen') {
+        boundCitizenId = req.user.userId;
+        isUnclaimed = false;
+      } else if (req.user?.role === 'operator' || req.user?.role === 'admin') {
+        const cleanPhone = contactNumber.replace(/\D/g, '').slice(-10);
+        const citizenUser = await UserRepository.findByPhoneNumber(cleanPhone);
+        boundCitizenId = citizenUser ? citizenUser.id : undefined;
+        isUnclaimed = false;
+      } else {
+        // Public / Anonymous submission: disallow client-supplied citizenId
+        boundCitizenId = undefined;
+        isUnclaimed = true;
+      }
+
       const createInput: CreateComplaintDbInput = {
         complainantName,
         contactNumber,
@@ -217,7 +438,8 @@ router.post(
         latitude: body.latitude ? parseFloat(body.latitude) : undefined,
         longitude: body.longitude ? parseFloat(body.longitude) : undefined,
         dueAt,
-        citizenId: req.user?.role === 'citizen' ? req.user.userId : (body.citizenId || undefined),
+        citizenId: boundCitizenId,
+        isUnclaimed,
         assignedJeId: assignedOfficerUser?.id,
         sourceSystem: 'ICCC_WEB',
         initialMedia,
