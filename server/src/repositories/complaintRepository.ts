@@ -103,13 +103,15 @@ export class ComplaintRepository {
   }
 
   /**
-   * Generates the next sequential public complaint number: MCL-2026-XXXX
+   * Generates atomic, collision-free public complaint number: MCL-YYYY-XXXX
+   * Uses PostgreSQL complaint_number_seq for concurrency safety.
    */
-  static async getNextComplaintNumber(): Promise<string> {
-    const pool = getDbPool();
-    const res = await pool.query<{ count: string }>('SELECT count(*) FROM complaints');
-    const seq = parseInt(res.rows[0].count, 10) + 1;
-    return `MCL-2026-${String(seq).padStart(4, '0')}`;
+  static async getNextComplaintNumber(client?: any): Promise<string> {
+    const runner = client || getDbPool();
+    const res: any = await runner.query("SELECT nextval('complaint_number_seq') as nextval");
+    const seq = parseInt(res.rows[0].nextval, 10);
+    const currentYear = new Date().getFullYear();
+    return `MCL-${currentYear}-${String(seq).padStart(4, '0')}`;
   }
 
   /**
@@ -122,7 +124,7 @@ export class ComplaintRepository {
     try {
       await client.query('BEGIN');
 
-      const complaintNumber = await this.getNextComplaintNumber();
+      const complaintNumber = await this.getNextComplaintNumber(client);
       const status: ComplaintStatus = input.assignedJeId ? 'ASSIGNED' : 'NEEDS_REVIEW';
       const now = new Date().toISOString();
 
