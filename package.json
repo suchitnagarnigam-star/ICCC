@@ -1,0 +1,23 @@
+{
+  "name": "mcl-iccc",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Municipal Corporation Ludhiana (MCL) - Integrated Command & Control Centre (ICCC) Complaint Management System",
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:frontend": "npm --prefix Frontend run dev",
+    "build:server": "npm --prefix server run build",
+    "build:frontend": "npm --prefix Frontend run build",
+    "build": "npm run build:server && npm run build:frontend"
+  },
+  "keywords": [
+    "mcl",
+    "ludhiana",
+    "iccc",
+    "civic-complaint-management",
+    "smart-city"
+  ],
+  "author": "Municipal Corporation Ludhiana",
+  "license": "UNLICENSED"
+}
+
