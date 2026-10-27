@@ -336,7 +336,8 @@ router.post(
         complaint.id,
         status as ComplaintStatus,
         remarks || `Status transitioned to ${status}`,
-        req.user!.userId
+        req.user!.userId,
+        req.user!.role
       );
 
       res.json({
@@ -346,7 +347,7 @@ router.post(
       });
     } catch (error: any) {
       console.error(`[ComplaintRoutes] Error updating status for ${req.params.id}:`, error);
-      res.status(500).json({ success: false, error: error.message || 'Failed to update complaint status.' });
+      res.status(400).json({ success: false, error: error.message || 'Failed to update complaint status.' });
     }
   }
 );

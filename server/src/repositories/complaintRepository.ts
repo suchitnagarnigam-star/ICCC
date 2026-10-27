@@ -6,6 +6,8 @@ import {
   ComplaintAttachment,
   ComplaintTimelineEvent,
 } from '../types/complaint';
+import { UserRole } from '../types/user';
+import { validateStatusTransition } from '../services/stateMachine';
 import { randomUUID } from 'node:crypto';
 
 export interface CreateComplaintDbInput {
@@ -646,7 +648,8 @@ export class ComplaintRepository {
     complaintId: string,
     newStatus: ComplaintStatus,
     reason: string,
-    actorUserId: string
+    actorUserId: string,
+    actorRole?: UserRole
   ): Promise<Complaint> {
     const pool = getDbPool();
     const client = await pool.connect();
@@ -660,7 +663,14 @@ export class ComplaintRepository {
       );
       if (compCheck.rows.length === 0) throw new Error('Complaint not found.');
 
-      const prevStatus = compCheck.rows[0].current_status;
+      const prevStatus = compCheck.rows[0].current_status as ComplaintStatus;
+
+      // Validate status transition through centralized FSM
+      const validation = validateStatusTransition(prevStatus, newStatus, actorRole || 'operator', false);
+      if (!validation.allowed) {
+        throw new Error(validation.error || 'Invalid status transition.');
+      }
+
       const resolvedActor = await this.resolveUserUuid(client, actorUserId);
 
       await client.query(
@@ -708,6 +718,12 @@ export class ComplaintRepository {
         [complaintId]
       );
       if (compCheck.rows.length === 0) throw new Error('Complaint not found.');
+
+      const prevStatus = compCheck.rows[0].current_status as ComplaintStatus;
+      const validation = validateStatusTransition(prevStatus, 'RESOLUTION_SUBMITTED', 'je', true);
+      if (!validation.allowed) {
+        throw new Error(validation.error || 'Cannot submit resolution for this complaint.');
+      }
 
       const resolvedOfficer = await this.resolveUserUuid(client, officerUserId) || compCheck.rows[0].assigned_je_id;
 
@@ -770,8 +786,18 @@ export class ComplaintRepository {
       );
       if (compCheck.rows.length === 0) throw new Error('Complaint not found.');
 
-      const prevStatus = compCheck.rows[0].current_status;
+      const prevStatus = compCheck.rows[0].current_status as ComplaintStatus;
       const targetStatus: ComplaintStatus = result === 'accepted' ? 'CLOSED' : 'VERIFICATION_REJECTED';
+      const validation = validateStatusTransition(
+        prevStatus,
+        targetStatus,
+        verifierRole === 'citizen' ? 'citizen' : 'operator',
+        true
+      );
+      if (!validation.allowed) {
+        throw new Error(validation.error || 'Cannot verify or close this complaint.');
+      }
+
       const resolvedVerifier = await this.resolveUserUuid(client, verifierUserId);
 
       // Insert verification record
