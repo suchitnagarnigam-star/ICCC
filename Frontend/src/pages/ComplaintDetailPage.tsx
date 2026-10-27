@@ -50,11 +50,13 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
   const [actionLoading, setActionLoading] = useState(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
+  const [proofFiles, setProofFiles] = useState<File[]>([]);
   const [reassignName, setReassignName] = useState('');
   const [reassignPhone, setReassignPhone] = useState('');
   const [reassignReason, setReassignReason] = useState('');
   const [verifyRating, setVerifyRating] = useState('5');
   const [verifyFeedback, setVerifyFeedback] = useState('');
+  const [pauseReason, setPauseReason] = useState('');
   const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
@@ -127,16 +129,26 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
   const handleSubmitResolution = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!complaint || !resolutionNotes.trim()) return;
+    if (proofFiles.length === 0) {
+      alert('Mandatory Requirement: Please attach at least one photographic evidence file (JPEG/PNG/WebP).');
+      return;
+    }
     setActionLoading(true);
     setActionSuccess(null);
     try {
+      const formData = new FormData();
+      formData.append('resolutionNotes', resolutionNotes);
+      proofFiles.forEach((f) => {
+        formData.append('resolutionProof', f);
+      });
       const res = await apiFetch(`/complaints/${complaint.id}/resolution`, {
         method: 'POST',
-        body: JSON.stringify({ resolutionNotes }),
+        body: formData,
       });
       if (res.success) {
-        setActionSuccess('Resolution report submitted successfully.');
+        setActionSuccess('Resolution report with photographic proof submitted successfully.');
         setResolutionNotes('');
+        setProofFiles([]);
         await loadComplaint();
       }
     } catch (err: any) {
@@ -173,24 +185,64 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
     }
   };
 
-  const handleVerifyClose = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerifyClose = async (verdict: 'accepted' | 'disputed') => {
     if (!complaint) return;
     setActionLoading(true);
+    setActionSuccess(null);
     try {
       const res = await apiFetch(`/complaints/${complaint.id}/verify-close`, {
         method: 'POST',
         body: JSON.stringify({
+          verdict,
           rating: parseInt(verifyRating, 10),
-          feedback: verifyFeedback,
+          feedback: verifyFeedback || (verdict === 'accepted' ? 'Grievance satisfactorily resolved.' : 'Disputed by citizen.'),
         }),
       });
       if (res.success) {
-        setActionSuccess('Grievance marked as closed and verified.');
+        setActionSuccess(verdict === 'accepted' ? 'Grievance verified and permanently closed.' : 'Resolution disputed and reopened for review.');
         await loadComplaint();
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to verify.');
+      alert(err.message || 'Failed to submit verification verdict.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePauseSla = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!complaint || !pauseReason.trim()) return;
+    setActionLoading(true);
+    try {
+      const res = await apiFetch(`/complaints/${complaint.id}/pause`, {
+        method: 'POST',
+        body: JSON.stringify({ reason: pauseReason }),
+      });
+      if (res.success) {
+        setActionSuccess('SLA clock successfully paused.');
+        setPauseReason('');
+        await loadComplaint();
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to pause SLA.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleResumeSla = async () => {
+    if (!complaint) return;
+    setActionLoading(true);
+    try {
+      const res = await apiFetch(`/complaints/${complaint.id}/resume`, {
+        method: 'POST',
+      });
+      if (res.success) {
+        setActionSuccess('SLA clock resumed.');
+        await loadComplaint();
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to resume SLA.');
     } finally {
       setActionLoading(false);
     }
@@ -325,12 +377,14 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.78rem',
                 fontWeight: 700,
-                backgroundColor: isBreached ? '#fee2e2' : diffHours <= 12 ? '#fef3c7' : '#e0f2fe',
-                color: isBreached ? '#b91c1c' : diffHours <= 12 ? '#b45309' : '#0369a1',
-                border: `1px solid ${isBreached ? '#fca5a5' : diffHours <= 12 ? '#fde68a' : '#bae6fd'}`,
+                backgroundColor: complaint.isPaused ? '#fef3c7' : isBreached ? '#fee2e2' : diffHours <= 12 ? '#fef3c7' : '#e0f2fe',
+                color: complaint.isPaused ? '#b45309' : isBreached ? '#b91c1c' : diffHours <= 12 ? '#b45309' : '#0369a1',
+                border: `1px solid ${complaint.isPaused ? '#fde68a' : isBreached ? '#fca5a5' : diffHours <= 12 ? '#fde68a' : '#bae6fd'}`,
               }}
             >
-              ⏱️ {complaint.status === 'CLOSED'
+              ⏱️ {complaint.isPaused
+                ? 'SLA Clock Paused'
+                : complaint.status === 'CLOSED'
                 ? 'SLA Met (Closed)'
                 : isBreached
                 ? `SLA Breached by ${Math.abs(diffHours)}h`
@@ -791,8 +845,29 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
                   required
                   style={{ marginBottom: '0.75rem' }}
                 />
+
+                {/* Mandatory Resolution Proof Photos */}
+                <div style={{ marginBottom: '0.75rem', padding: '0.75rem', backgroundColor: '#F8FAFC', borderRadius: '6px', border: '1px dashed var(--color-border)' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.35rem', color: 'var(--color-primary)' }}>
+                    📷 Completion Evidence Photos (Mandatory)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    onChange={(e) => setProofFiles(Array.from(e.target.files || []))}
+                    style={{ fontSize: '0.8rem', width: '100%' }}
+                    required
+                  />
+                  {proofFiles.length > 0 && (
+                    <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--color-success)', fontWeight: 600 }}>
+                      ✓ {proofFiles.length} photo(s) selected: {proofFiles.map((f) => f.name).join(', ')}
+                    </div>
+                  )}
+                </div>
+
                 <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={actionLoading}>
-                  {actionLoading ? 'Submitting...' : 'Submit Resolution'}
+                  {actionLoading ? 'Uploading & Submitting...' : 'Submit Resolution with Proof'}
                 </button>
               </form>
             </div>
@@ -804,36 +879,96 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
               Supervisor &amp; Control Room Actions
             </h3>
 
+            {/* SLA Pause / Resume Control */}
+            <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: complaint.isPaused ? '#FEF3C7' : '#F8FAFC', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: 'var(--color-primary)' }}>
+                ⏱️ SLA Clock Management
+              </h4>
+              {complaint.isPaused ? (
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: '#B45309', marginBottom: '0.5rem', fontWeight: 600 }}>
+                    ⏸️ SLA Clock is currently PAUSED.
+                    {complaint.pauseReason && ` Reason: "${complaint.pauseReason}"`}
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ width: '100%', backgroundColor: 'var(--color-accent)' }}
+                    onClick={handleResumeSla}
+                    disabled={actionLoading}
+                  >
+                    ▶️ Resume SLA Clock
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handlePauseSla}>
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Mandatory reason for pausing SLA (e.g. Awaiting PWD road permission)..."
+                      value={pauseReason}
+                      onChange={(e) => setPauseReason(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn-secondary"
+                    style={{ width: '100%' }}
+                    disabled={actionLoading || !pauseReason.trim()}
+                  >
+                    ⏸️ Pause SLA Clock
+                  </button>
+                </form>
+              )}
+            </div>
+
             {/* Verification and Closure */}
             {complaint.status === 'RESOLUTION_SUBMITTED' && (
               <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
                 <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: 'var(--color-success)' }}>
                   Verify Resolution &amp; Close Grievance
                 </h4>
-                <form onSubmit={handleVerifyClose}>
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>Citizen Satisfaction (1-5)</label>
-                    <select className="form-select" value={verifyRating} onChange={(e) => setVerifyRating(e.target.value)}>
-                      <option value="5">5 - Highly Satisfied</option>
-                      <option value="4">4 - Satisfied</option>
-                      <option value="3">3 - Neutral</option>
-                      <option value="2">2 - Unsatisfied</option>
-                      <option value="1">1 - Highly Unsatisfied</option>
-                    </select>
-                  </div>
-                  <div style={{ marginBottom: '0.75rem' }}>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Citizen verification feedback or QC remarks..."
-                      value={verifyFeedback}
-                      onChange={(e) => setVerifyFeedback(e.target.value)}
-                    />
-                  </div>
-                  <button type="submit" className="btn-primary" style={{ width: '100%', backgroundColor: 'var(--color-success)' }} disabled={actionLoading}>
-                    Verify &amp; Permanently Close
+                <div style={{ marginBottom: '0.5rem' }}>
+                  <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>Citizen Satisfaction (1-5)</label>
+                  <select className="form-select" value={verifyRating} onChange={(e) => setVerifyRating(e.target.value)}>
+                    <option value="5">5 - Highly Satisfied</option>
+                    <option value="4">4 - Satisfied</option>
+                    <option value="3">3 - Neutral</option>
+                    <option value="2">2 - Unsatisfied</option>
+                    <option value="1">1 - Highly Unsatisfied</option>
+                  </select>
+                </div>
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Citizen verification feedback or QC remarks..."
+                    value={verifyFeedback}
+                    onChange={(e) => setVerifyFeedback(e.target.value)}
+                  />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ backgroundColor: 'var(--color-success)', width: '100%' }}
+                    onClick={() => handleVerifyClose('accepted')}
+                    disabled={actionLoading}
+                  >
+                    ✓ Accept &amp; Close
                   </button>
-                </form>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', width: '100%' }}
+                    onClick={() => handleVerifyClose('disputed')}
+                    disabled={actionLoading}
+                  >
+                    ✕ Dispute Work
+                  </button>
+                </div>
               </div>
             )}
 

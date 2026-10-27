@@ -154,8 +154,13 @@ export const RegisterComplaintPage: React.FC<RegisterComplaintPageProps> = ({
         formData.append('evidence', item.file);
       });
 
+      const token = localStorage.getItem('mcl_iccc_token');
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const res = await fetch(`${API_BASE_URL}/complaints`, {
         method: 'POST',
+        headers,
         body: formData,
       });
 
