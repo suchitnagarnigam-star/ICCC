@@ -86,34 +86,39 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentTab }) => {
           </button>
         </form>
 
-        <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--color-border)' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-sub)', marginBottom: '0.5rem' }}>
-            Development Quick-Fill:
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <button
-              className="btn-secondary"
-              style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
-              onClick={() => handleQuickFill('9888897201')}
-            >
-              👷 Field JE (Kulwinder Singh - 9888897201 / PIN: 1234)
-            </button>
-            <button
-              className="btn-secondary"
-              style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
-              onClick={() => handleQuickFill('9876543210')}
-            >
-              🏢 Desk Operator (MUKESH - 9876543210 / PIN: 1234)
-            </button>
-            <button
-              className="btn-secondary"
-              style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
-              onClick={() => handleQuickFill('9999999999')}
-            >
-              🛡️ Administrator (ICCC Admin - 9999999999 / PIN: 1234)
-            </button>
+        {import.meta.env.DEV && (
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--color-border)' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-sub)', marginBottom: '0.5rem' }}>
+              🛠️ Local Development Quick-Fill:
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
+                onClick={() => handleQuickFill('9888897201')}
+              >
+                👷 Field JE (Kulwinder Singh - 9888897201)
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
+                onClick={() => handleQuickFill('9876543210')}
+              >
+                🏢 Desk Operator (MUKESH - 9876543210)
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
+                onClick={() => handleQuickFill('9999999999')}
+              >
+                🛡️ Administrator (ICCC Admin - 9999999999)
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
