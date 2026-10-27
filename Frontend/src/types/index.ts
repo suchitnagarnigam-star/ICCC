@@ -76,6 +76,10 @@ export interface Complaint {
   resolvedAt?: string;
   closedAt?: string;
   slaBreached: boolean;
+  isPaused?: boolean;
+  pausedAt?: string;
+  totalPausedMinutes?: number;
+  pauseReason?: string;
   attachments?: ComplaintAttachment[];
   resolutionProof?: ComplaintAttachment[];
   timeline?: ComplaintTimelineEvent[];
@@ -91,4 +95,36 @@ export interface User {
   zone?: string;
   wardNumber?: number;
   branch?: string;
+  isPhoneVerified?: boolean;
+}
+
+export interface OfficerContact {
+  name: string;
+  phone: string;
+  designation?: string;
+}
+
+export interface WardOfficers {
+  ward: number;
+  zone: string;
+  constituency?: string;
+  mla?: string;
+  officers: {
+    BR?: { se?: OfficerContact; xen?: OfficerContact; sdo?: OfficerContact; je?: OfficerContact };
+    OM?: { se?: OfficerContact; xen?: OfficerContact; sdo?: OfficerContact; je?: OfficerContact };
+    Health?: { drNodal?: OfficerContact; moh?: OfficerContact; csi?: OfficerContact };
+    Light?: { sdo?: OfficerContact; je?: OfficerContact };
+  };
+}
+
+export interface NotificationItem {
+  id: string;
+  userId: string;
+  complaintId?: string;
+  complaintNumber?: string;
+  channel: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
 }
