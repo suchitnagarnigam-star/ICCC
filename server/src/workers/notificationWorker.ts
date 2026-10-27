@@ -122,3 +122,4 @@ export function stopNotificationOutboxWorker(): void {
     workerInterval = null;
   }
 }
+

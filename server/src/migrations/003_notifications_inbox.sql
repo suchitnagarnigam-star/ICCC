@@ -13,3 +13,4 @@ CREATE TABLE IF NOT EXISTS in_app_notifications (
 
 CREATE INDEX IF NOT EXISTS idx_in_app_notif_user ON in_app_notifications(user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_in_app_notif_complaint ON in_app_notifications(complaint_id);
+

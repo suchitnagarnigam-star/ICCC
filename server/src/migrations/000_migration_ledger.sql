@@ -8,3 +8,4 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
     checksum VARCHAR(64) NOT NULL,
     applied_at TIMESTAMPTZ DEFAULT NOW()
 );
+
