@@ -22,6 +22,28 @@ export interface ComplaintCategory {
   jointLabel: string;
 }
 
+export interface ComplaintAttachment {
+  fileId: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  category: 'source' | 'res' | 'general';
+  fileUrl: string;
+}
+
+export interface ComplaintTimelineEvent {
+  id: string;
+  complaintId: string;
+  timestamp: string;
+  actorName: string;
+  actorRole: string;
+  action: string;
+  previousStatus?: ComplaintStatus;
+  newStatus?: ComplaintStatus;
+  notes?: string;
+  metadata?: Record<string, any>;
+}
+
 export interface Complaint {
   id: string;
   complaintNumber: string;
@@ -34,18 +56,30 @@ export interface Complaint {
   status: ComplaintStatus;
   mode: string;
   zone?: string;
+  subZone?: string;
   wardNumber?: number;
   address?: string;
   landmark?: string;
   latitude?: number;
   longitude?: number;
+  assignedJeId?: string;
   assignedJeName?: string;
   assignedJePhone?: string;
+  sdoName?: string;
+  xenName?: string;
+  zcName?: string;
   submittedAt: string;
   dueAt: string;
+  assignmentAcknowledgedAt?: string;
+  acknowledgedByOfficerId?: string;
+  resolutionNotes?: string;
   resolvedAt?: string;
   closedAt?: string;
   slaBreached: boolean;
+  attachments?: ComplaintAttachment[];
+  resolutionProof?: ComplaintAttachment[];
+  timeline?: ComplaintTimelineEvent[];
+  driveFolderUrl?: string;
 }
 
 export interface User {
@@ -58,4 +92,3 @@ export interface User {
   wardNumber?: number;
   branch?: string;
 }
-
