@@ -149,4 +149,12 @@ router.get('/wards/:wardNumber', (req: Request, res: Response): void => {
   });
 });
 
+router.get('/officers', (_req: Request, res: Response): void => {
+  res.json({
+    success: true,
+    data: wardDataRaw,
+    total: (wardDataRaw as any[]).length,
+  });
+});
+
 export default router;
