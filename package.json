@@ -6,6 +6,7 @@
   "scripts": {
     "dev:server": "npm --prefix server run dev",
     "dev:frontend": "npm --prefix Frontend run dev",
+    "dev:full": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['--prefix', 'server', 'run', 'dev'], { stdio: 'inherit', shell: true }); spawn('npm', ['--prefix', 'Frontend', 'run', 'dev'], { stdio: 'inherit', shell: true });\"",
     "build:server": "npm --prefix server run build",
     "build:frontend": "npm --prefix Frontend run build",
     "build": "npm run build:server && npm run build:frontend"
