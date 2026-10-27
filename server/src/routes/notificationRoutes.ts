@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authenticateToken } from '../middleware/auth';
+import { authenticateToken, requireRoles } from '../middleware/auth';
 import { getDbPool } from '../config/db';
 import { processNotificationOutboxBatch } from '../workers/notificationWorker';
 
@@ -162,15 +162,21 @@ router.post('/unsubscribe', authenticateToken, async (req: Request, res: Respons
 /**
  * POST /api/notifications/process-outbox
  * Trigger immediate transactional outbox worker batch.
+ * Restricted to administrators and command center operators.
  */
-router.post('/process-outbox', authenticateToken, async (_req: Request, res: Response): Promise<void> => {
-  try {
-    const result = await processNotificationOutboxBatch();
-    res.json({ success: true, message: 'Outbox processed.', ...result });
-  } catch (error: any) {
-    console.error('[NotificationRoutes] Outbox trigger error:', error);
-    res.status(500).json({ success: false, error: 'Failed to process outbox.' });
+router.post(
+  '/process-outbox',
+  authenticateToken,
+  requireRoles(['admin', 'operator']),
+  async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const result = await processNotificationOutboxBatch();
+      res.json({ success: true, message: 'Outbox processed.', ...result });
+    } catch (error: any) {
+      console.error('[NotificationRoutes] Outbox trigger error:', error);
+      res.status(500).json({ success: false, error: 'Failed to process outbox.' });
+    }
   }
-});
+);
 
 export default router;

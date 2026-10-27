@@ -1,5 +1,6 @@
 import app from './app';
 import { ENV } from './config/env';
+import { startNotificationOutboxWorker, stopNotificationOutboxWorker } from './workers/notificationWorker';
 
 const server = app.listen(ENV.PORT, () => {
   console.log(`====================================================`);
@@ -8,13 +9,20 @@ const server = app.listen(ENV.PORT, () => {
   console.log(`🌐 Environment: ${ENV.NODE_ENV}`);
   console.log(`⏳ 48-Hour SLA Engine Baseline Initialized`);
   console.log(`====================================================`);
+
+  // Start background outbox delivery worker
+  startNotificationOutboxWorker(10000);
 });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
+// Graceful shutdown handling
+function gracefulShutdown(signal: string) {
+  console.log(`${signal} received. Initiating graceful shutdown...`);
+  stopNotificationOutboxWorker();
   server.close(() => {
-    console.log('Process terminated.');
+    console.log('HTTP server closed. Process terminated cleanly.');
+    process.exit(0);
   });
-});
+}
 
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
