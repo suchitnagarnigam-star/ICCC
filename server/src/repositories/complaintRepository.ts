@@ -361,6 +361,11 @@ export class ComplaintRepository {
       resolvedAt: row.resolved_at,
       closedAt: row.closed_at,
       slaBreached: isBreached,
+      isPaused: row.is_paused,
+      pausedAt: row.paused_at,
+      pauseReason: row.pause_reason,
+      totalPausedMinutes: row.total_paused_minutes,
+      slaPolicyVersion: row.sla_policy_version,
       attachments,
       resolutionProof,
       timeline,
@@ -487,6 +492,11 @@ export class ComplaintRepository {
         resolvedAt: r.resolved_at,
         closedAt: r.closed_at,
         slaBreached: isBreached,
+        isPaused: r.is_paused,
+        pausedAt: r.paused_at,
+        pauseReason: r.pause_reason,
+        totalPausedMinutes: r.total_paused_minutes,
+        slaPolicyVersion: r.sla_policy_version,
         createdAt: r.created_at,
         updatedAt: r.updated_at,
       };
@@ -791,6 +801,121 @@ export class ComplaintRepository {
 
       const updated = await this.getComplaintById(complaintId);
       if (!updated) throw new Error('Failed to retrieve verified complaint.');
+      return updated;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * Pause Complaint SLA Clock with Audit Reason
+   */
+  static async pauseComplaint(
+    complaintId: string,
+    reason: string,
+    actorUserId?: string
+  ): Promise<Complaint> {
+    const pool = getDbPool();
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      const compCheck = await client.query<any>(
+        'SELECT id, current_status, is_paused FROM complaints WHERE id = $1 FOR UPDATE',
+        [complaintId]
+      );
+      if (compCheck.rows.length === 0) throw new Error('Complaint not found.');
+      if (compCheck.rows[0].is_paused) throw new Error('Complaint SLA clock is already paused.');
+
+      const resolvedActor = await this.resolveUserUuid(client, actorUserId);
+
+      await client.query(
+        `UPDATE complaints 
+         SET is_paused = TRUE, paused_at = NOW(), pause_reason = $1, updated_at = NOW() 
+         WHERE id = $2`,
+        [reason, complaintId]
+      );
+
+      await client.query(
+        `INSERT INTO complaint_status_history (
+          complaint_id, previous_status, new_status, actor_user_id, action_reason, created_at
+        ) VALUES ($1, $2, 'PAUSED', $3, $4, NOW())`,
+        [complaintId, compCheck.rows[0].current_status, resolvedActor, `SLA clock paused. Reason: ${reason}`]
+      );
+
+      await client.query('COMMIT');
+
+      const updated = await this.getComplaintById(complaintId);
+      if (!updated) throw new Error('Failed to retrieve paused complaint.');
+      return updated;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * Resume Complaint SLA Clock & Adjust Due Date
+   */
+  static async resumeComplaint(
+    complaintId: string,
+    actorUserId?: string
+  ): Promise<Complaint> {
+    const pool = getDbPool();
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      const compCheck = await client.query<any>(
+        'SELECT id, current_status, is_paused, paused_at, total_paused_minutes, due_at FROM complaints WHERE id = $1 FOR UPDATE',
+        [complaintId]
+      );
+      if (compCheck.rows.length === 0) throw new Error('Complaint not found.');
+      if (!compCheck.rows[0].is_paused) throw new Error('Complaint SLA clock is not currently paused.');
+
+      const pausedAt = new Date(compCheck.rows[0].paused_at);
+      const elapsedMinutes = Math.max(1, Math.round((Date.now() - pausedAt.getTime()) / 60000));
+      const newTotalPaused = (compCheck.rows[0].total_paused_minutes || 0) + elapsedMinutes;
+
+      // Extend due_at by the elapsed pause minutes
+      const oldDue = new Date(compCheck.rows[0].due_at);
+      const newDue = new Date(oldDue.getTime() + elapsedMinutes * 60000).toISOString();
+      const resolvedActor = await this.resolveUserUuid(client, actorUserId);
+
+      await client.query(
+        `UPDATE complaints 
+         SET is_paused = FALSE, 
+             paused_at = NULL, 
+             total_paused_minutes = $1, 
+             due_at = $2, 
+             updated_at = NOW() 
+         WHERE id = $3`,
+        [newTotalPaused, newDue, complaintId]
+      );
+
+      await client.query(
+        `INSERT INTO complaint_status_history (
+          complaint_id, previous_status, new_status, actor_user_id, action_reason, created_at
+        ) VALUES ($1, 'PAUSED', $2, $3, $4, NOW())`,
+        [
+          complaintId,
+          compCheck.rows[0].current_status,
+          resolvedActor,
+          `SLA clock resumed after ${elapsedMinutes} minute(s) pause. Deadline extended to ${newDue}.`,
+        ]
+      );
+
+      await client.query('COMMIT');
+
+      const updated = await this.getComplaintById(complaintId);
+      if (!updated) throw new Error('Failed to retrieve resumed complaint.');
       return updated;
     } catch (err) {
       await client.query('ROLLBACK');

@@ -95,6 +95,11 @@ export interface Complaint {
   resolvedAt?: string;
   closedAt?: string;
   slaBreached: boolean;
+  isPaused?: boolean;
+  pausedAt?: string;
+  pauseReason?: string;
+  totalPausedMinutes?: number;
+  slaPolicyVersion?: string;
   assignmentAcknowledgedAt?: string;
   acknowledgedByOfficerId?: string;
   resolutionNotes?: string;

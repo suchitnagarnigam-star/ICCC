@@ -10,6 +10,7 @@ import { INITIAL_COMPLAINT_CATEGORIES } from './referenceRoutes';
 import { getZoneForWard } from '../services/officerMappingService';
 import { ComplaintRepository, CreateComplaintDbInput } from '../repositories/complaintRepository';
 import { UserRepository } from '../repositories/userRepository';
+import { calculateWorkingHourDeadline } from '../services/slaService';
 import {
   authenticateToken,
   optionalAuthenticateToken,
@@ -188,8 +189,8 @@ router.post(
       // Auto-assign Field Officer from live Database Roster (staff_area_assignments)
       let assignedOfficerUser = wardNumber ? await UserRepository.findOfficerForWardAndBranch(wardNumber, branch) : null;
 
-      // 48-Hour SLA (working-calendar engine in Phase 4)
-      const dueAt = new Date(Date.now() + 48 * 3600000).toISOString();
+      // 48-Working-Hour SLA Engine (Mon-Fri 09:00-17:00 IST, holiday & weekend exclusion)
+      const dueAt = calculateWorkingHourDeadline(new Date(), 48).toISOString();
 
       // Prepare Initial Media records
       const initialMedia = evidenceFiles.map((f, idx) => ({
@@ -516,6 +517,63 @@ router.post(
     } catch (error: any) {
       console.error(`[ComplaintRoutes] Error verifying complaint ${req.params.id}:`, error);
       res.status(500).json({ success: false, error: error.message || 'Failed to verify complaint.' });
+    }
+  }
+);
+
+/**
+ * POST /api/complaints/:id/pause
+ * Field Officer or Supervisor freezes SLA clock with mandatory reason.
+ */
+router.post(
+  '/:id/pause',
+  authenticateToken,
+  authorizeComplaintAction('update'),
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = req.params.id;
+      const { reason } = req.body;
+
+      if (!reason || !String(reason).trim()) {
+        res.status(400).json({ success: false, error: 'Pause reason is required.' });
+        return;
+      }
+
+      const updated = await ComplaintRepository.pauseComplaint(id, String(reason).trim(), req.user!.userId);
+
+      res.json({
+        success: true,
+        message: 'SLA clock paused successfully.',
+        data: updated,
+      });
+    } catch (error: any) {
+      console.error(`[ComplaintRoutes] Error pausing complaint ${req.params.id}:`, error);
+      res.status(500).json({ success: false, error: error.message || 'Failed to pause SLA clock.' });
+    }
+  }
+);
+
+/**
+ * POST /api/complaints/:id/resume
+ * Field Officer or Supervisor resumes SLA clock, extending deadline by elapsed pause duration.
+ */
+router.post(
+  '/:id/resume',
+  authenticateToken,
+  authorizeComplaintAction('update'),
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = req.params.id;
+      const updated = await ComplaintRepository.resumeComplaint(id, req.user!.userId);
+
+      res.json({
+        success: true,
+        message: 'SLA clock resumed successfully.',
+        data: updated,
+      });
+    } catch (error: any) {
+      console.error(`[ComplaintRoutes] Error resuming complaint ${req.params.id}:`, error);
+      res.status(500).json({ success: false, error: error.message || 'Failed to resume SLA clock.' });
     }
   }
 );
