@@ -727,6 +727,10 @@ export class ComplaintRepository {
         throw new Error(validation.error || 'Cannot submit resolution for this complaint.');
       }
 
+      if (!proofStorageKeys || proofStorageKeys.length === 0) {
+        throw new Error('Resolution submission strictly requires at least one photographic proof file.');
+      }
+
       const resolvedOfficer = await this.resolveUserUuid(client, officerUserId) || compCheck.rows[0].assigned_je_id;
 
       await client.query(

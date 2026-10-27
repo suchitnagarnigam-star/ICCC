@@ -654,6 +654,28 @@ router.post(
         return;
       }
 
+      // Mandatory Proof Enforcement: at least 1 photographic evidence file is strictly required
+      if (!proofFiles || proofFiles.length === 0) {
+        res.status(400).json({
+          success: false,
+          error: 'Resolution submission strictly requires at least one photographic evidence file.',
+        });
+        return;
+      }
+
+      // Validate MIME types of all uploaded resolution proof files
+      const VALID_PROOF_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+      for (const f of proofFiles) {
+        if (!VALID_PROOF_MIMES.has((f.mimetype || '').toLowerCase())) {
+          void deleteTemporaryFiles(proofFiles);
+          res.status(400).json({
+            success: false,
+            error: `Invalid file type (${f.mimetype}). Resolution proof must be a JPEG, PNG, or WebP photo.`,
+          });
+          return;
+        }
+      }
+
       const proofStorageKeys = proofFiles.map(
         (f, idx) => `res-${Date.now()}-${idx}-${path.basename(f.filename)}`
       );
@@ -720,9 +742,19 @@ router.post(
         return;
       }
 
-      const { rating, feedback, verdict } = req.body;
-      const verificationVerdict = (verdict === 'disputed' || verdict === 'rejected') ? 'disputed' : 'accepted';
-      const comments = feedback || (rating ? `Citizen Rating: ${rating}/5` : 'Closure confirmed');
+      const { rating, feedback, verdict } = req.body || {};
+
+      // Explicit verdict validation: strictly prohibit default fallback to acceptance
+      if (verdict !== 'accepted' && verdict !== 'disputed') {
+        res.status(400).json({
+          success: false,
+          error: "Invalid or missing verdict. You must explicitly provide verdict: 'accepted' or 'disputed'.",
+        });
+        return;
+      }
+
+      const verificationVerdict: 'accepted' | 'disputed' = verdict;
+      const comments = feedback || (rating ? `Citizen Rating: ${rating}/5` : (verificationVerdict === 'accepted' ? 'Closure confirmed' : 'Resolution disputed'));
 
       const updated = await ComplaintRepository.verifyAndClose(
         complaint.id,
@@ -739,7 +771,7 @@ router.post(
       });
     } catch (error: any) {
       console.error(`[ComplaintRoutes] Error verifying complaint ${req.params.id}:`, error);
-      res.status(500).json({ success: false, error: error.message || 'Failed to verify complaint.' });
+      res.status(400).json({ success: false, error: error.message || 'Failed to verify complaint.' });
     }
   }
 );
