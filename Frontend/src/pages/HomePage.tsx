@@ -21,163 +21,178 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentTab, onQuickTrack 
   };
 
   return (
-    <div style={{ paddingBottom: '3rem' }}>
-      {/* Hero Banner with Civic Header & Quick Tracker */}
-      <div
-        className="civic-card"
-        style={{
-          background: 'linear-gradient(135deg, #0F294A 0%, #1E3A8A 100%)',
-          color: '#FFFFFF',
-          padding: '2.5rem 2rem',
-          borderRadius: '10px',
-          marginBottom: '2rem',
-          boxShadow: 'var(--shadow-md)',
-        }}
-      >
-        <div style={{ maxWidth: '800px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 10px', borderRadius: '4px', backgroundColor: 'rgba(217, 119, 6, 0.25)', border: '1px solid #D97706', marginBottom: '1rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#FEF3C7', letterSpacing: '0.05em' }}>
-              MCL INTEGRATED COMMAND &amp; CONTROL CENTER
-            </span>
+    <div className="space-y-6 pb-12">
+      {/* 1. Civic Hero Banner */}
+      <div className="bg-[#0B1C30] text-white rounded p-6 sm:p-8 shadow-stitch-md border border-[#213145] relative overflow-hidden">
+        <div className="max-w-3xl relative z-10 space-y-4">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-blue-900/60 border border-blue-500/40 text-[10px] font-bold text-blue-200 uppercase tracking-wider font-mono">
+            <span>🏛️ MUNICIPAL CORPORATION LUDHIANA</span>
+            <span>•</span>
+            <span>ICCC COMMAND CENTER</span>
           </div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 900, lineHeight: 1.2, margin: '0 0 0.75rem 0' }}>
-            Smart Civic Grievance Redressal &amp; Public Works Monitoring
+
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight leading-tight">
+            Integrated Civic Redressal &amp; Public Works Telemetry
           </h1>
-          <p style={{ fontSize: '0.95rem', color: '#E2E8F0', lineHeight: 1.6, marginBottom: '2rem' }}>
-            Official municipal platform connecting citizens across 95 wards with field Junior Engineers, departmental supervisors (B&amp;R, O&amp;M, Health, Light), and city commissioners under a 48-working-hour resolution target.
+
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+            Official municipal portal connecting citizens across Ludhiana's 95 wards with field Junior Engineers, departmental supervisors (B&amp;R, O&amp;M, Health, Light), and city commissioners under a 48-working-hour statutory resolution protocol.
           </p>
 
           {/* Quick Track Input Bar */}
           <form
             onSubmit={handleHeroTrack}
-            style={{
-              backgroundColor: '#FFFFFF',
-              padding: '0.75rem',
-              borderRadius: '8px',
-              display: 'flex',
-              gap: '0.5rem',
-              flexWrap: 'wrap',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            }}
+            className="bg-white p-2 sm:p-2.5 rounded shadow-stitch-lg flex flex-col sm:flex-row gap-2 max-w-2xl"
           >
-            <input
-              type="text"
-              placeholder="Complaint # (e.g. MCL-2026-0985)"
-              value={quickNumber}
-              onChange={(e) => setQuickNumber(e.target.value.toUpperCase())}
-              style={{
-                flex: '1 1 200px',
-                padding: '0.65rem 0.85rem',
-                border: '1px solid var(--color-border)',
-                borderRadius: '6px',
-                fontSize: '0.9rem',
-                color: 'var(--color-text-main)',
-              }}
-            />
-            <input
-              type="tel"
-              placeholder="10-Digit Mobile Number"
-              maxLength={10}
-              value={quickPhone}
-              onChange={(e) => setQuickPhone(e.target.value.replace(/\D/g, ''))}
-              style={{
-                flex: '1 1 180px',
-                padding: '0.65rem 0.85rem',
-                border: '1px solid var(--color-border)',
-                borderRadius: '6px',
-                fontSize: '0.9rem',
-                color: 'var(--color-text-main)',
-              }}
-            />
+            <div className="relative flex-1">
+              <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+                tag
+              </span>
+              <input
+                type="text"
+                placeholder="Complaint # (e.g. MCL-2026-0001)"
+                value={quickNumber}
+                onChange={(e) => setQuickNumber(e.target.value.toUpperCase())}
+                className="w-full text-xs font-mono font-bold pl-8 pr-3 py-2 bg-surface-low border border-border-divider rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            <div className="relative sm:w-48">
+              <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+                call
+              </span>
+              <input
+                type="tel"
+                placeholder="10-Digit Mobile"
+                maxLength={10}
+                value={quickPhone}
+                onChange={(e) => setQuickPhone(e.target.value.replace(/\D/g, ''))}
+                className="w-full text-xs font-mono pl-8 pr-3 py-2 bg-surface-low border border-border-divider rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
             <button
               type="submit"
-              className="btn-primary"
-              style={{ padding: '0.65rem 1.25rem', fontWeight: 800, whiteSpace: 'nowrap' }}
+              className="px-5 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded shadow-stitch-sm transition flex items-center justify-center gap-1.5 shrink-0"
             >
-              🔍 Track Status
+              <span className="material-symbols-outlined text-[16px]">search</span>
+              <span>Track Grievance</span>
             </button>
           </form>
         </div>
       </div>
 
-      {/* Main Grid: Core Services */}
-      <div className="civic-grid">
-        <div className="civic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      {/* 2. 4 Primary Service Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* File Grievance */}
+        <div
+          onClick={() => setCurrentTab('register')}
+          className="bg-white border border-border-divider hover:border-primary rounded p-5 shadow-stitch-sm transition cursor-pointer flex flex-col justify-between group"
+        >
           <div>
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📢</div>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
-              Register Civic Grievance
-            </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
-              File grievances with photographic proof across Water Supply, Sewerage, Potholes, Street Lights, or Sanitation. Automatically assigned to your ward's Junior Engineer.
+            <div className="w-10 h-10 rounded bg-blue-50 group-hover:bg-primary group-hover:text-white text-primary flex items-center justify-center mb-3 transition">
+              <span className="material-symbols-outlined text-[24px]">add_a_photo</span>
+            </div>
+            <h2 className="text-sm font-bold text-slate-900 mb-1">File Public Grievance</h2>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Submit civic defects with on-site photographic evidence, GPS landmark, and automatic ward dispatch.
             </p>
           </div>
-          <button className="btn-primary" onClick={() => setCurrentTab('register')} style={{ width: '100%', justifyContent: 'center' }}>
-            File a New Grievance →
-          </button>
+          <div className="mt-4 pt-3 border-t border-border-divider text-xs font-semibold text-primary flex items-center gap-1">
+            <span>Register Now</span>
+            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </div>
         </div>
 
-        <div className="civic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        {/* Track Status */}
+        <div
+          onClick={() => setCurrentTab('track')}
+          className="bg-white border border-border-divider hover:border-primary rounded p-5 shadow-stitch-sm transition cursor-pointer flex flex-col justify-between group"
+        >
           <div>
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔍</div>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
-              Complaints &amp; SLA Tracking
-            </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
-              Real-time public tracking and full operational registry. Citizens verify resolution before closure; supervisors monitor 48-hour SLA countdowns.
+            <div className="w-10 h-10 rounded bg-indigo-50 group-hover:bg-primary group-hover:text-white text-indigo-700 flex items-center justify-center mb-3 transition">
+              <span className="material-symbols-outlined text-[24px]">fact_check</span>
+            </div>
+            <h2 className="text-sm font-bold text-slate-900 mb-1">Track &amp; Verify Status</h2>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Inspect before-and-after resolution proof photos, assigned officer details, and submit completion ratings.
             </p>
           </div>
-          <button className="btn-secondary" onClick={() => setCurrentTab('track')} style={{ width: '100%', justifyContent: 'center' }}>
-            Open Tracking Portal →
-          </button>
+          <div className="mt-4 pt-3 border-t border-border-divider text-xs font-semibold text-primary flex items-center gap-1">
+            <span>Open Register</span>
+            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </div>
         </div>
 
-        <div className="civic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        {/* Ward Officers Directory */}
+        <div
+          onClick={() => setCurrentTab('officers')}
+          className="bg-white border border-border-divider hover:border-primary rounded p-5 shadow-stitch-sm transition cursor-pointer flex flex-col justify-between group"
+        >
           <div>
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>👥</div>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
-              Officers &amp; Ward Directory
-            </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
-              Territorial roster for all 95 wards. Look up your Junior Engineer, SDO, and Executive Engineer with verified direct contact numbers.
+            <div className="w-10 h-10 rounded bg-emerald-50 group-hover:bg-primary group-hover:text-white text-emerald-700 flex items-center justify-center mb-3 transition">
+              <span className="material-symbols-outlined text-[24px]">badge</span>
+            </div>
+            <h2 className="text-sm font-bold text-slate-900 mb-1">Ward Officers Directory</h2>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Official roster of all 95 Ludhiana wards. Direct phone numbers for designated JEs, SDOs, and XENs.
             </p>
           </div>
-          <button className="btn-secondary" onClick={() => setCurrentTab('officers')} style={{ width: '100%', justifyContent: 'center' }}>
-            Browse Ward Officers →
-          </button>
+          <div className="mt-4 pt-3 border-t border-border-divider text-xs font-semibold text-primary flex items-center gap-1">
+            <span>Browse Directory</span>
+            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </div>
         </div>
 
-        <div className="civic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        {/* Staff Sign In / Command Desk */}
+        <div
+          onClick={() => setCurrentTab(isAuthenticated ? 'dashboard' : 'login')}
+          className="bg-white border border-border-divider hover:border-primary rounded p-5 shadow-stitch-sm transition cursor-pointer flex flex-col justify-between group"
+        >
           <div>
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🏛️</div>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary)', marginBottom: '0.5rem' }}>
-              Executive Command Center
+            <div className="w-10 h-10 rounded bg-slate-100 group-hover:bg-primary group-hover:text-white text-slate-700 flex items-center justify-center mb-3 transition">
+              <span className="material-symbols-outlined text-[24px]">admin_panel_settings</span>
+            </div>
+            <h2 className="text-sm font-bold text-slate-900 mb-1">
+              {isAuthenticated ? 'Operational Command' : 'Official Portal Login'}
             </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
-              High-density control room dashboard for supervisors (SDO, XEN, SE) and desk operators. Monitor breach risks, workload distribution, and dispatch crews.
+            <p className="text-xs text-slate-600 leading-relaxed">
+              {isAuthenticated
+                ? 'Access operational telemetry, urgent SLA queue, and field officer reassignments.'
+                : 'Authentication gateway for Municipal Corporation staff, field engineers, and registered citizens.'}
             </p>
           </div>
-          <button
-            className="btn-secondary"
-            onClick={() => setCurrentTab(isAuthenticated ? 'dashboard' : 'login')}
-            style={{ width: '100%', justifyContent: 'center' }}
-          >
-            {isAuthenticated ? 'Open Dashboard →' : 'Staff Sign In →'}
-          </button>
+          <div className="mt-4 pt-3 border-t border-border-divider text-xs font-semibold text-primary flex items-center gap-1">
+            <span>{isAuthenticated ? 'Open Dashboard' : 'Staff Sign In'}</span>
+            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </div>
         </div>
       </div>
 
-      {/* 48-Hour SLA Banner */}
-      <div className="civic-card" style={{ marginTop: '2rem', backgroundColor: '#EFF6FF', borderColor: '#BFDBFE', padding: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-          <div style={{ fontSize: '1.75rem' }}>⏱️</div>
+      {/* 3. Statutory 48-Hour SLA Guarantee Strip */}
+      <div className="bg-white border border-border-divider rounded p-5 shadow-stitch-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            <span className="material-symbols-outlined text-[24px]">verified</span>
+          </div>
           <div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#1E3A8A', margin: '0 0 0.35rem 0' }}>
-              Strict 48-Working-Hour Resolution Protocol (Punjab Municipal Standards)
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              Statutory 48-Working-Hour Redressal Standard
             </h3>
-            <p style={{ fontSize: '0.85rem', color: '#1E40AF', margin: 0, lineHeight: 1.5 }}>
-              All complaints are governed by an official 48-working-hour resolution target calculated during active municipal hours (Monday–Friday, 09:00–17:00 IST), excluding official Gazetted holidays. Breaches trigger automatic supervisory escalation to Sub-Divisional Officers and Executive Engineers.
+            <p className="text-xs text-slate-600 mt-0.5">
+              Operating under Punjab Municipal Corporation Citizen Charter. All grievances are timestamped and assigned within 2 working hours.
             </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 text-xs font-mono text-slate-600">
+          <div>
+            <span className="text-[10px] text-slate-400 block uppercase">Working Hours</span>
+            <strong className="text-slate-900">09:00 – 17:00 IST</strong>
+          </div>
+          <div className="border-l border-border-divider pl-4">
+            <span className="text-[10px] text-slate-400 block uppercase">Helpline</span>
+            <strong className="text-slate-900">0161-2746400</strong>
           </div>
         </div>
       </div>

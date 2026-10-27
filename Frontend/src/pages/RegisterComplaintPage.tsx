@@ -39,8 +39,6 @@ export const RegisterComplaintPage: React.FC<RegisterComplaintPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(5);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Auto-redirect timer reference
   const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -76,7 +74,7 @@ export const RegisterComplaintPage: React.FC<RegisterComplaintPageProps> = ({
     else if (num >= 73 && num <= 95) setZone('D');
   }, [wardNumber]);
 
-  // Countdown timer on successful registration
+  // Auto-redirect timer on success
   useEffect(() => {
     if (submittedComplaint && onViewComplaint) {
       setCountdown(5);
@@ -98,48 +96,48 @@ export const RegisterComplaintPage: React.FC<RegisterComplaintPageProps> = ({
 
   const selectedCat = categories.find((c) => c.id === categoryId);
 
-  const handleFiles = (incomingFiles: FileList | null) => {
-    if (!incomingFiles) return;
-    const valid: UploadedFilePreview[] = [];
-
-    Array.from(incomingFiles).forEach((file) => {
-      if (!['image/jpeg', 'image/png', 'image/webp', 'application/pdf'].includes(file.type)) {
-        alert(`File format ${file.type} is not supported. Please upload JPEG, PNG, or PDF.`);
-        return;
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    const newFiles: UploadedFilePreview[] = [];
+    Array.from(files).forEach((file) => {
+      if (file.type.startsWith('image/')) {
+        newFiles.push({
+          file,
+          name: file.name,
+          size: file.size,
+          previewUrl: URL.createObjectURL(file),
+        });
       }
-      if (file.size > 15 * 1024 * 1024) {
-        alert(`File ${file.name} exceeds 15MB size limit.`);
-        return;
-      }
-
-      valid.push({
-        file,
-        name: file.name,
-        size: file.size,
-        previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
-      });
     });
-
-    setEvidenceFiles((prev) => [...prev, ...valid].slice(0, 5));
+    setEvidenceFiles((prev) => [...prev, ...newFiles].slice(0, 3));
   };
 
-  const removeFile = (idx: number) => {
+  const handleRemoveFile = (index: number) => {
     setEvidenceFiles((prev) => {
       const copy = [...prev];
-      if (copy[idx]?.previewUrl) URL.revokeObjectURL(copy[idx].previewUrl);
-      copy.splice(idx, 1);
+      URL.revokeObjectURL(copy[index].previewUrl);
+      copy.splice(index, 1);
       return copy;
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    if (!phone || phone.length !== 10) {
+      setError('Please provide a valid 10-digit mobile number.');
+      return;
+    }
+    if (!categoryId) {
+      setError('Please select a valid grievance category.');
+      return;
+    }
+
     setIsSubmitting(true);
+    setError(null);
 
     try {
       const formData = new FormData();
-      formData.append('complainantName', name);
+      formData.append('complainantName', name || 'Concerned Citizen');
       formData.append('contactNumber', phone);
       formData.append('categoryId', categoryId);
       formData.append('description', description);
@@ -147,101 +145,119 @@ export const RegisterComplaintPage: React.FC<RegisterComplaintPageProps> = ({
       if (zone) formData.append('zone', zone);
       if (address) formData.append('address', address);
       if (landmark) formData.append('landmark', landmark);
-      formData.append('mode', 'Citizen Portal');
+      formData.append('mode', 'WEB');
 
-      // Append multi-part evidence attachments
-      evidenceFiles.forEach((item) => {
-        formData.append('evidence', item.file);
+      evidenceFiles.forEach((ef) => {
+        formData.append('evidence', ef.file);
       });
 
       const token = localStorage.getItem('mcl_iccc_token');
-      const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(`${API_BASE_URL}/complaints`, {
+      const response = await fetch(`${API_BASE_URL}/complaints`, {
         method: 'POST',
-        headers,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       });
 
-      const json = await res.json();
-      if (json.success && json.data) {
-        setSubmittedComplaint(json.data);
+      const json = await response.json();
+      if (json.success && json.complaint) {
+        setSubmittedComplaint(json.complaint);
       } else {
-        throw new Error(json.error || 'Failed to submit grievance.');
+        setError(json.error || 'Failed to submit grievance. Please verify inputs.');
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to submit complaint. Please check your inputs.');
+      setError(err.message || 'Error communicating with server.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Success Confirmation Screen
   if (submittedComplaint) {
     return (
-      <div className="civic-card" style={{ maxWidth: '680px', margin: '2rem auto', textAlign: 'center', padding: '2rem' }}>
-        <div style={{ fontSize: '3.5rem', marginBottom: '0.75rem' }}>✅</div>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-success)', marginBottom: '0.5rem' }}>
-          Grievance Successfully Registered
-        </h2>
-        <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-          Your complaint has been logged in the Municipal Corporation Ludhiana ICCC system with a 48-hour SLA target.
-        </p>
+      <div className="max-w-xl mx-auto my-6 bg-white border border-border-divider rounded p-6 sm:p-8 shadow-stitch-sm space-y-5 text-center">
+        <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-700 mx-auto flex items-center justify-center">
+          <span className="material-symbols-outlined text-[36px]">verified</span>
+        </div>
 
-        <div style={{ background: 'var(--color-bg)', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', textAlign: 'left', border: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Tracking Number:</span>
-            <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-primary)', fontSize: '1.15rem' }}>
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded font-mono">
+            GRIEVANCE RECORDED
+          </span>
+          <h2 className="text-xl font-bold text-slate-900 mt-2">
+            Complaint Registered Successfully
+          </h2>
+          <p className="text-xs text-slate-600 mt-1">
+            Assigned to Municipal Corporation Ludhiana field engineering division.
+          </p>
+        </div>
+
+        <div className="p-4 bg-surface-low rounded border border-border-divider text-left space-y-2 text-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-border-divider">
+            <span className="text-slate-500 font-semibold">Tracking Number:</span>
+            <span className="font-mono text-base font-bold text-primary tnum">
               {submittedComplaint.complaintNumber}
-            </strong>
+            </span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Branch &amp; Category:</span>
-            <strong>{submittedComplaint.categoryName} ({submittedComplaint.branch})</strong>
+
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500">Status:</span>
+            <StatusBadge status={submittedComplaint.status} />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Initial Status:</span>
-            <StatusBadge status={submittedComplaint.status} size="sm" />
+
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500">Department:</span>
+            <span className="font-semibold text-slate-800">{submittedComplaint.branch}</span>
           </div>
-          {submittedComplaint.assignedJeName && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Territorial Field JE:</span>
-              <strong style={{ color: 'var(--color-primary)' }}>{submittedComplaint.assignedJeName}</strong>
-            </div>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Target Resolution:</span>
-            <strong style={{ color: 'var(--color-accent)' }}>48 Working Hours ({new Date(submittedComplaint.dueAt).toLocaleDateString()})</strong>
+
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500">Territory:</span>
+            <span className="font-medium text-slate-800">
+              Ward {submittedComplaint.wardNumber || '—'} (Zone {submittedComplaint.zone || '—'})
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500">Statutory SLA Target:</span>
+            <span className="font-mono font-bold text-slate-800 tnum">
+              {new Date(submittedComplaint.dueAt).toLocaleString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
           </div>
         </div>
 
-        {onViewComplaint && (
-          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '1.5rem' }}>
-            Automatically redirecting to complaint dossier in <strong>{countdown}s</strong>...
-          </p>
-        )}
-
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+        <div className="pt-2 flex flex-col sm:flex-row gap-2">
           {onViewComplaint && (
             <button
-              className="btn-primary"
-              onClick={() => onViewComplaint(submittedComplaint.id)}
-              style={{ padding: '0.65rem 1.5rem' }}
+              onClick={() => {
+                if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
+                onViewComplaint(submittedComplaint.id);
+              }}
+              className="flex-1 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded shadow-stitch-sm transition flex items-center justify-center gap-1.5"
             >
-              View Full Dossier Now →
+              <span>View Dossier Now ({countdown}s)</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
             </button>
           )}
+
           <button
-            className="btn-secondary"
             onClick={() => {
               setSubmittedComplaint(null);
               setName('');
               setPhone('');
               setDescription('');
+              setWardNumber('');
+              setAddress('');
+              setLandmark('');
               setEvidenceFiles([]);
             }}
+            className="px-4 py-2.5 bg-surface-low hover:bg-surface-container text-slate-700 text-xs font-semibold rounded border border-border-divider transition"
           >
-            Register Another Grievance
+            File Another Grievance
           </button>
         </div>
       </div>
@@ -249,156 +265,179 @@ export const RegisterComplaintPage: React.FC<RegisterComplaintPageProps> = ({
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div className="civic-header">
-        <h1 className="civic-title">Register Civic Grievance</h1>
-        <p className="civic-desc">
-          Lodge complaints regarding municipal infrastructure (water, roads, street lights, sanitation). Direct SLA tracking to field engineers.
-        </p>
+    <div className="max-w-3xl mx-auto space-y-5 pb-12">
+      {/* Header */}
+      <div className="bg-white border border-border-divider rounded p-4 sm:p-5 shadow-stitch-sm flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono">
+              PUBLIC INTAKE
+            </span>
+            <span className="text-xs text-slate-500 font-medium">Citizen Service Portal</span>
+          </div>
+          <h1 className="text-base sm:text-xl font-bold text-slate-900 tracking-tight">
+            Register Public Civic Grievance
+          </h1>
+          <p className="text-xs text-slate-600 mt-0.5">
+            Submit road defects, water contamination, sewer overflows, garbage dumps, or broken street lights for on-ground municipal rectification.
+          </p>
+        </div>
+        <div className="hidden sm:block text-right">
+          <span className="text-[10px] text-slate-400 block uppercase font-mono">Statutory Target</span>
+          <span className="text-xs font-bold text-emerald-700">48 Working Hours</span>
+        </div>
       </div>
 
       {error && (
-        <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', border: '1px solid #f87171', fontSize: '0.9rem' }}>
-          ❌ {error}
+        <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded flex items-center gap-2">
+          <span className="material-symbols-outlined text-[18px]">error</span>
+          <span>{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="civic-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        {/* Section 1: Grievance Classification */}
+      {/* Main Form */}
+      <form onSubmit={handleSubmit} className="bg-white border border-border-divider rounded p-5 sm:p-6 shadow-stitch-sm space-y-5">
+        {/* Step 1: Complainant Information */}
         <div>
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-primary)' }}>
-            1. Grievance Category &amp; Responsible Branch
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5 pb-2 border-b border-border-divider mb-3">
+            <span className="material-symbols-outlined text-[16px] text-primary">person</span>
+            1. Citizen Identity &amp; Contact
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div>
-              <label className="form-label">Select Issue Category *</label>
-              <select className="form-select" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.jointLabel || `${c.name} - ${c.branch}`}
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Your Full Name (Optional)
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Harpreet Singh"
+                className="w-full text-xs bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                10-Digit Mobile Number *
+              </label>
+              <input
+                type="tel"
+                maxLength={10}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                placeholder="e.g. 9814012345"
+                className="w-full text-xs font-mono font-bold bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+                required
+              />
+              <span className="text-[10px] text-slate-400 mt-0.5 block">
+                Required for SMS status updates &amp; field officer dispatch verification.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Step 2: Grievance Category & Location */}
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5 pb-2 border-b border-border-divider mb-3">
+            <span className="material-symbols-outlined text-[16px] text-primary">category</span>
+            2. Grievance Category &amp; Territory
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="sm:col-span-2">
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Defect / Issue Category *
+              </label>
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="w-full text-xs bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+                required
+              >
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    [{cat.branch}] {cat.name} ({cat.jointLabel})
                   </option>
                 ))}
               </select>
               {selectedCat && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-                  Managed by: <strong style={{ color: 'var(--color-primary)' }}>{selectedCat.branch} Branch</strong> (Target SLA: 48 Hours)
+                <div className="mt-1 text-[11px] text-blue-700 font-medium">
+                  Dispatches to: <strong>{selectedCat.branch} Branch</strong> ({selectedCat.jointLabel})
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Section 2: Complainant Details */}
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.25rem' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-primary)' }}>
-            2. Citizen / Complainant Details
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label className="form-label">Full Name *</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. Amarjeet Singh"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="form-label">Contact Phone Number *</label>
-              <input
-                type="tel"
-                className="form-input"
-                placeholder="10-digit mobile number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Section 3: Geographic Territory */}
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.25rem' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-primary)' }}>
-            3. Location &amp; Territorial Jurisdiction
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-            <div>
-              <label className="form-label">MCL Ward Number (1 to 95) *</label>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Ludhiana Ward Number (1–95)
+              </label>
               <input
                 type="number"
-                min="1"
-                max="95"
-                className="form-input"
-                placeholder="e.g. 64"
+                min={1}
+                max={95}
                 value={wardNumber}
                 onChange={(e) => setWardNumber(e.target.value)}
-                required
+                placeholder="e.g. 14"
+                className="w-full text-xs font-mono font-bold bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
               />
+              {zone && (
+                <span className="text-[10px] text-slate-500 mt-0.5 block font-medium">
+                  Automatically inferred: <strong>Zone {zone}</strong>
+                </span>
+              )}
             </div>
-            <div>
-              <label className="form-label">Municipal Zone</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Auto-derived from ward (A, B, C, D)"
-                value={zone ? `Zone ${zone}` : ''}
-                readOnly
-                style={{ backgroundColor: 'var(--color-bg)', cursor: 'not-allowed' }}
-              />
-            </div>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label className="form-label">Street Address / Mohalla *</label>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Prominent Landmark *
+              </label>
               <input
                 type="text"
-                className="form-input"
-                placeholder="House / Street / Colony name"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="form-label">Prominent Landmark</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Near hospital, temple, school, etc."
                 value={landmark}
                 onChange={(e) => setLandmark(e.target.value)}
+                placeholder="e.g. Near Gurdwara Sahib / Cheema Chowk"
+                className="w-full text-xs bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+                required
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Specific Street Address / Location Details
+              </label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="e.g. Street #4, Model Town Extension, Ludhiana"
+                className="w-full text-xs bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Grievance Description *
+              </label>
+              <textarea
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe the issue clearly (e.g. sewer overflow since 2 days causing health hazard, deep pothole in front of gate)..."
+                className="w-full text-xs bg-surface-low border border-border-divider rounded p-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+                required
               />
             </div>
           </div>
         </div>
 
-        {/* Section 4: Grievance Description */}
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.25rem' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-primary)' }}>
-            4. Grievance Details &amp; Observations
-          </h3>
-          <div>
-            <label className="form-label">Detailed Description *</label>
-            <textarea
-              className="form-textarea"
-              placeholder="Provide specific details about the issue (e.g. location of burst, size of pothole, duration of overflow)..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              required
-            />
-          </div>
-        </div>
-
-        {/* Section 5: Photo Evidence Drag & Drop Upload */}
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.25rem' }}>
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-primary)' }}>
-            5. Photographic Evidence (Optional, max 5 files)
-          </h3>
+        {/* Step 3: Photographic Evidence (Camera Supported) */}
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5 pb-2 border-b border-border-divider mb-3">
+            <span className="material-symbols-outlined text-[16px] text-primary">photo_camera</span>
+            3. Photographic Evidence (Upload or Snap)
+          </h2>
 
           <div
             onDragOver={(e) => {
@@ -412,88 +451,71 @@ export const RegisterComplaintPage: React.FC<RegisterComplaintPageProps> = ({
               handleFiles(e.dataTransfer.files);
             }}
             onClick={() => fileInputRef.current?.click()}
-            style={{
-              border: `2px dashed ${isDragOver ? 'var(--color-primary)' : 'var(--color-border)'}`,
-              borderRadius: '8px',
-              padding: '1.75rem',
-              textAlign: 'center',
-              backgroundColor: isDragOver ? '#f0f9ff' : 'var(--color-bg)',
-              cursor: 'pointer',
-              transition: 'border-color 0.15s ease',
-            }}
+            className={`border-2 border-dashed rounded p-5 text-center cursor-pointer transition ${
+              isDragOver
+                ? 'border-primary bg-blue-50/50'
+                : 'border-border-divider hover:border-primary hover:bg-slate-50'
+            }`}
           >
             <input
-              type="file"
               ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
               multiple
-              accept="image/jpeg,image/png,image/webp,application/pdf"
-              style={{ display: 'none' }}
               onChange={(e) => handleFiles(e.target.files)}
+              className="hidden"
             />
-            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📁</div>
-            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-primary)' }}>
-              Click to select photos or drag and drop files here
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-              Supports JPG, PNG, WEBP, PDF up to 15MB each
-            </div>
+            <span className="material-symbols-outlined text-primary text-[32px] block mb-1">
+              camera_alt
+            </span>
+            <span className="text-xs font-bold text-slate-800 block">
+              Tap to Take Photo with Camera or Browse Files
+            </span>
+            <span className="text-[10px] text-slate-500 block mt-0.5">
+              Supports JPG, PNG up to 10MB • Max 3 Photos
+            </span>
           </div>
 
-          {/* Uploaded Files Previews */}
+          {/* Evidence Previews */}
           {evidenceFiles.length > 0 && (
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+            <div className="grid grid-cols-3 gap-2 mt-3">
               {evidenceFiles.map((f, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '6px 10px',
-                    borderRadius: '6px',
-                    border: '1px solid var(--color-border)',
-                    backgroundColor: '#ffffff',
-                    fontSize: '0.8rem',
-                  }}
-                >
-                  {f.previewUrl ? (
-                    <img src={f.previewUrl} alt="preview" style={{ width: '28px', height: '28px', objectFit: 'cover', borderRadius: '4px' }} />
-                  ) : (
-                    <span>📄</span>
-                  )}
-                  <div>
-                    <div style={{ fontWeight: 600, maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {f.name}
-                    </div>
-                    <div style={{ color: 'var(--color-text-muted)', fontSize: '0.7rem' }}>{formatBytes(f.size)}</div>
-                  </div>
+                <div key={idx} className="relative rounded border border-border-divider overflow-hidden bg-slate-100 group">
+                  <img src={f.previewUrl} alt={f.name} className="w-full h-24 object-cover" />
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeFile(idx);
+                      handleRemoveFile(idx);
                     }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--color-danger)',
-                      cursor: 'pointer',
-                      fontWeight: 700,
-                      marginLeft: '4px',
-                    }}
+                    className="absolute top-1 right-1 w-5 h-5 bg-red-600 text-white rounded-full text-xs flex items-center justify-center shadow"
+                    title="Remove Photo"
                   >
-                    ✕
+                    ×
                   </button>
+                  <div className="p-1 bg-black/60 text-white text-[9px] truncate font-mono">
+                    {f.name} ({formatBytes(f.size)})
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.25rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-          <button type="submit" className="btn-primary" style={{ padding: '0.75rem 2rem', fontSize: '0.95rem' }} disabled={isSubmitting}>
-            {isSubmitting ? 'Registering Grievance...' : 'Submit Civic Grievance'}
+        {/* Submit Button */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full py-3 bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-bold rounded shadow-stitch-sm transition flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-[18px]">send</span>
+            <span>{isSubmitting ? 'Submitting to Municipal Control Room...' : 'Submit Grievance to MCL'}</span>
           </button>
+          <span className="text-[10px] text-slate-400 text-center block mt-2">
+            By submitting, you certify that the defect report and photographs represent genuine civic issues within Ludhiana jurisdiction.
+          </span>
         </div>
       </form>
     </div>

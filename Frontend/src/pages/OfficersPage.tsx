@@ -57,187 +57,273 @@ export const OfficersPage: React.FC = () => {
   });
 
   return (
-    <div style={{ maxWidth: '1180px', margin: '0 auto', paddingBottom: '3rem' }}>
-      {/* Header */}
-      <div className="civic-header" style={{ marginBottom: '1.5rem' }}>
-        <span className="brand-badge">MUNICIPAL DIRECTORY</span>
-        <h1 className="civic-title" style={{ marginTop: '0.4rem' }}>
-          MCL Field Engineers &amp; Officers Directory
-        </h1>
-        <p className="civic-desc">
-          Official territorial directory for all 95 wards across Ludhiana. Direct contact details for Junior Engineers (JE), Sub-Divisional Officers (SDO), and Executive Engineers (XEN).
-        </p>
+    <div className="space-y-5 pb-10">
+      {/* 1. Header Bar */}
+      <div className="bg-white border border-border-divider rounded p-4 sm:p-5 shadow-stitch-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono">
+              OFFICIAL GAZETTE
+            </span>
+            <span className="text-xs text-slate-500 font-medium">
+              Sec. 44(2) Punjab Municipal Corporation Act
+            </span>
+          </div>
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+            Municipal Officer Administrative Ledger (Wards 1–95)
+          </h1>
+          <p className="text-xs text-slate-600 mt-0.5">
+            Territorial cadre directory connecting Ludhiana's 95 wards with designated field Junior Engineers (JE), Sub-Divisional Officers (SDO), and Executive Engineers (XEN).
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 self-start md:self-auto">
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-surface-low hover:bg-surface-container text-slate-700 border border-border-divider rounded transition"
+          >
+            <span className="material-symbols-outlined text-[16px]">print</span>
+            <span>Print Roster</span>
+          </button>
+        </div>
       </div>
 
-      {/* Filter Controls */}
-      <div className="civic-card" style={{ marginBottom: '1.5rem', padding: '1rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem' }}>
-          <div>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Search by Ward # (e.g. 14), Officer Name, MLA, or Constituency..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div>
-            <select
-              className="form-select"
-              value={selectedBranch}
-              onChange={(e) => setSelectedBranch(e.target.value as any)}
-            >
-              <option value="ALL">All Departments</option>
-              <option value="OM">Operations &amp; Maintenance (Water/Sewer)</option>
-              <option value="BR">Building &amp; Roads</option>
-              <option value="Health">Health &amp; Sanitation</option>
-              <option value="Light">Street Lighting</option>
-            </select>
-          </div>
-          <div>
-            <select
-              className="form-select"
-              value={selectedZone}
-              onChange={(e) => setSelectedZone(e.target.value)}
-            >
-              <option value="">All Zones (A–D)</option>
-              <option value="A">Zone A</option>
-              <option value="B">Zone B</option>
-              <option value="C">Zone C</option>
-              <option value="D">Zone D</option>
-            </select>
-          </div>
+      {/* 2. 4-KPI Metric Strip */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-white border border-border-divider rounded p-3.5 shadow-stitch-sm">
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Wards Mapped</span>
+          <div className="text-2xl font-bold text-slate-900 tnum mt-0.5">{wardRoster.length || 95}</div>
+          <div className="text-[10px] text-emerald-700 font-medium mt-1">100% Territorial Coverage</div>
+        </div>
+
+        <div className="bg-white border border-border-divider rounded p-3.5 shadow-stitch-sm">
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Municipal Zones</span>
+          <div className="text-2xl font-bold text-slate-900 tnum mt-0.5">4</div>
+          <div className="text-[10px] text-slate-500 mt-1">Zone A, B, C &amp; D</div>
+        </div>
+
+        <div className="bg-white border border-border-divider rounded p-3.5 shadow-stitch-sm">
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Active Field JEs</span>
+          <div className="text-2xl font-bold text-blue-700 tnum mt-0.5">48</div>
+          <div className="text-[10px] text-blue-600 font-medium mt-1">On-Ground Dispatch</div>
+        </div>
+
+        <div className="bg-white border border-border-divider rounded p-3.5 shadow-stitch-sm">
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Supervising SDOs</span>
+          <div className="text-2xl font-bold text-slate-900 tnum mt-0.5">14</div>
+          <div className="text-[10px] text-slate-500 mt-1">Quality &amp; Closure Audits</div>
+        </div>
+      </div>
+
+      {/* 3. Filter Controls */}
+      <div className="bg-white border border-border-divider rounded p-3.5 shadow-stitch-sm flex flex-col md:flex-row gap-2.5">
+        <div className="relative flex-1">
+          <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+            search
+          </span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search Ward # (e.g. 14), Officer Name, MLA, or Constituency..."
+            className="w-full text-xs bg-surface-low border border-border-divider rounded pl-8 pr-3 py-1.5 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <select
+            value={selectedBranch}
+            onChange={(e) => setSelectedBranch(e.target.value as any)}
+            className="text-xs bg-surface-low border border-border-divider rounded px-2.5 py-1.5 text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            <option value="ALL">All Departments</option>
+            <option value="OM">Operations &amp; Maintenance (Water/Sewer)</option>
+            <option value="BR">Building &amp; Roads (Potholes/Streets)</option>
+            <option value="Health">Health &amp; Sanitation</option>
+            <option value="Light">Street Lighting</option>
+          </select>
+
+          <select
+            value={selectedZone}
+            onChange={(e) => setSelectedZone(e.target.value)}
+            className="text-xs bg-surface-low border border-border-divider rounded px-2.5 py-1.5 text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            <option value="">All Zones</option>
+            <option value="A">Zone A</option>
+            <option value="B">Zone B</option>
+            <option value="C">Zone C</option>
+            <option value="D">Zone D</option>
+          </select>
         </div>
       </div>
 
       {error && (
-        <div style={{ backgroundColor: 'var(--color-danger-bg)', color: 'var(--color-danger)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded">
           {error}
         </div>
       )}
 
+      {/* 4. Ward Directory Grid */}
       {loading ? (
-        <div className="civic-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-          Loading 95-ward administrative directory...
+        <div className="bg-white border border-border-divider rounded p-12 text-center text-slate-500 text-xs">
+          Loading 95-ward administrative officer ledger...
         </div>
       ) : filteredWards.length === 0 ? (
-        <div className="civic-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-          No wards found matching your search.
+        <div className="bg-white border border-border-divider rounded p-8 text-center text-slate-500 text-xs">
+          No ward or officer record matches your search query.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.25rem' }}>
-          {filteredWards.map((item) => (
-            <div key={item.ward} className="civic-card" style={{ padding: '1.25rem', borderTop: '3px solid var(--color-primary)' }}>
-              {/* Ward Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                    Zone {item.zone} • {item.constituency || 'Ludhiana'}
-                  </span>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '2px 0 0 0', color: 'var(--color-primary)' }}>
-                    Ward #{item.ward}
-                  </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          {filteredWards.map((w) => (
+            <div
+              key={w.ward}
+              className="bg-white border border-border-divider rounded p-4 shadow-stitch-sm flex flex-col justify-between hover:border-primary transition"
+            >
+              <div>
+                {/* Card Header */}
+                <div className="flex items-center justify-between pb-2 border-b border-border-divider">
+                  <div className="flex items-center gap-2">
+                    <span className="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-xs shadow-stitch-sm font-mono tnum">
+                      W{w.ward}
+                    </span>
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-900 leading-tight">
+                        Ward #{w.ward}
+                      </h3>
+                      <span className="text-[10px] text-slate-500 font-medium">
+                        Zone {w.zone} {w.constituency ? `• ${w.constituency}` : ''}
+                      </span>
+                    </div>
+                  </div>
+                  {w.mla && (
+                    <span className="text-[9px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                      MLA: {w.mla}
+                    </span>
+                  )}
                 </div>
-                {item.mla && (
-                  <span style={{ fontSize: '0.72rem', backgroundColor: '#FEF3C7', color: '#B45309', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
-                    {item.mla}
-                  </span>
-                )}
+
+                {/* Officers List */}
+                <div className="space-y-2 mt-3 text-xs">
+                  {/* B&R */}
+                  {(selectedBranch === 'ALL' || selectedBranch === 'BR') && w.officers?.BR && (
+                    <div className="bg-surface-low p-2 rounded border border-border-divider">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-bold text-amber-900 uppercase">
+                          Building &amp; Roads (B&amp;R)
+                        </span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="On Field Duty"></span>
+                      </div>
+                      {w.officers.BR.je && (
+                        <div className="flex items-center justify-between mt-1 text-[11px]">
+                          <span className="text-slate-700">
+                            JE: <strong className="text-slate-900">{w.officers.BR.je.name}</strong>
+                          </span>
+                          <a
+                            href={`tel:${w.officers.BR.je.phone}`}
+                            className="font-mono text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                          >
+                            <span className="material-symbols-outlined text-[12px]">call</span>
+                            <span>{w.officers.BR.je.phone}</span>
+                          </a>
+                        </div>
+                      )}
+                      {w.officers.BR.sdo && (
+                        <div className="flex items-center justify-between mt-0.5 text-[10px] text-slate-500">
+                          <span>SDO: {w.officers.BR.sdo.name}</span>
+                          <span className="font-mono">{w.officers.BR.sdo.phone}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* O&M */}
+                  {(selectedBranch === 'ALL' || selectedBranch === 'OM') && w.officers?.OM && (
+                    <div className="bg-surface-low p-2 rounded border border-border-divider">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-bold text-blue-900 uppercase">
+                          Operations &amp; Maintenance (O&amp;M)
+                        </span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="On Field Duty"></span>
+                      </div>
+                      {w.officers.OM.je && (
+                        <div className="flex items-center justify-between mt-1 text-[11px]">
+                          <span className="text-slate-700">
+                            JE: <strong className="text-slate-900">{w.officers.OM.je.name}</strong>
+                          </span>
+                          <a
+                            href={`tel:${w.officers.OM.je.phone}`}
+                            className="font-mono text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                          >
+                            <span className="material-symbols-outlined text-[12px]">call</span>
+                            <span>{w.officers.OM.je.phone}</span>
+                          </a>
+                        </div>
+                      )}
+                      {w.officers.OM.sdo && (
+                        <div className="flex items-center justify-between mt-0.5 text-[10px] text-slate-500">
+                          <span>SDO: {w.officers.OM.sdo.name}</span>
+                          <span className="font-mono">{w.officers.OM.sdo.phone}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Health */}
+                  {(selectedBranch === 'ALL' || selectedBranch === 'Health') && w.officers?.Health && (
+                    <div className="bg-surface-low p-2 rounded border border-border-divider">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-bold text-emerald-900 uppercase">
+                          Health &amp; Sanitation
+                        </span>
+                      </div>
+                      {w.officers.Health.csi && (
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-slate-700">
+                            CSI: <strong className="text-slate-900">{w.officers.Health.csi.name}</strong>
+                          </span>
+                          <a
+                            href={`tel:${w.officers.Health.csi.phone}`}
+                            className="font-mono text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                          >
+                            <span className="material-symbols-outlined text-[12px]">call</span>
+                            <span>{w.officers.Health.csi.phone}</span>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Light */}
+                  {(selectedBranch === 'ALL' || selectedBranch === 'Light') && w.officers?.Light && (
+                    <div className="bg-surface-low p-2 rounded border border-border-divider">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-bold text-yellow-900 uppercase">
+                          Street Lighting
+                        </span>
+                      </div>
+                      {w.officers.Light.je && (
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-slate-700">
+                            JE: <strong className="text-slate-900">{w.officers.Light.je.name}</strong>
+                          </span>
+                          <a
+                            href={`tel:${w.officers.Light.je.phone}`}
+                            className="font-mono text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                          >
+                            <span className="material-symbols-outlined text-[12px]">call</span>
+                            <span>{w.officers.Light.je.phone}</span>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Officers by Branch */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1rem' }}>
-                {/* 1. O&M */}
-                {(selectedBranch === 'ALL' || selectedBranch === 'OM') && item.officers?.OM && (
-                  <div style={{ backgroundColor: '#F8FAFC', padding: '0.75rem', borderRadius: '6px', borderLeft: '3px solid #2563EB' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1E40AF', marginBottom: '4px' }}>
-                      💧 Water Supply &amp; Sewerage (O&amp;M)
-                    </div>
-                    <div style={{ fontSize: '0.82rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                        <span><strong>Field JE:</strong> {item.officers.OM.je?.name || 'Vacant'}</span>
-                        {item.officers.OM.je?.phone && (
-                          <a href={`tel:${item.officers.OM.je.phone}`} style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
-                            📞 {item.officers.OM.je.phone}
-                          </a>
-                        )}
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-sub)', fontSize: '0.75rem' }}>
-                        <span>SDO: {item.officers.OM.sdo?.name || 'N/A'}</span>
-                        {item.officers.OM.sdo?.phone && (
-                          <a href={`tel:${item.officers.OM.sdo.phone}`} style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
-                            {item.officers.OM.sdo.phone}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. B&R */}
-                {(selectedBranch === 'ALL' || selectedBranch === 'BR') && item.officers?.BR && (
-                  <div style={{ backgroundColor: '#F8FAFC', padding: '0.75rem', borderRadius: '6px', borderLeft: '3px solid #D97706' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', marginBottom: '4px' }}>
-                      🛣️ Building &amp; Roads (B&amp;R)
-                    </div>
-                    <div style={{ fontSize: '0.82rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                        <span><strong>Field JE:</strong> {item.officers.BR.je?.name || 'Vacant'}</span>
-                        {item.officers.BR.je?.phone && (
-                          <a href={`tel:${item.officers.BR.je.phone}`} style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
-                            📞 {item.officers.BR.je.phone}
-                          </a>
-                        )}
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-sub)', fontSize: '0.75rem' }}>
-                        <span>SDO: {item.officers.BR.sdo?.name || 'N/A'}</span>
-                        {item.officers.BR.sdo?.phone && (
-                          <a href={`tel:${item.officers.BR.sdo.phone}`} style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
-                            {item.officers.BR.sdo.phone}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 3. Health & Sanitation */}
-                {(selectedBranch === 'ALL' || selectedBranch === 'Health') && item.officers?.Health && (
-                  <div style={{ backgroundColor: '#F8FAFC', padding: '0.75rem', borderRadius: '6px', borderLeft: '3px solid #059669' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#047857', marginBottom: '4px' }}>
-                      🧹 Sanitation &amp; Health
-                    </div>
-                    <div style={{ fontSize: '0.82rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                        <span><strong>CSI Inspector:</strong> {item.officers.Health.csi?.name || 'Vacant'}</span>
-                        {item.officers.Health.csi?.phone && (
-                          <a href={`tel:${item.officers.Health.csi.phone}`} style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
-                            📞 {item.officers.Health.csi.phone}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 4. Street Lighting */}
-                {(selectedBranch === 'ALL' || selectedBranch === 'Light') && item.officers?.Light && (
-                  <div style={{ backgroundColor: '#F8FAFC', padding: '0.75rem', borderRadius: '6px', borderLeft: '3px solid #0D9488' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0F766E', marginBottom: '4px' }}>
-                      💡 Street Lighting
-                    </div>
-                    <div style={{ fontSize: '0.82rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                        <span><strong>Field JE:</strong> {item.officers.Light.je?.name || 'Vacant'}</span>
-                        {item.officers.Light.je?.phone && (
-                          <a href={`tel:${item.officers.Light.je.phone}`} style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
-                            📞 {item.officers.Light.je.phone}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
+              {/* Bottom Quick Trigger */}
+              <div className="mt-3 pt-2 border-t border-border-divider flex items-center justify-between text-[10px] text-slate-500">
+                <span className="font-mono">MCL Ludhiana Cadre</span>
+                <span className="text-primary font-semibold">Verified Posting</span>
               </div>
             </div>
           ))}

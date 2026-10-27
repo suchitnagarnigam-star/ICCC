@@ -26,7 +26,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentTab }) => {
       await login(phoneNumber.trim(), pin.trim(), 'staff');
       setCurrentTab('dashboard');
     } catch (err: any) {
-      setError(err.message || 'Staff login failed. Check official phone number and PIN.');
+      setError(err.message || 'Staff authentication failed. Check official mobile number and PIN.');
     } finally {
       setLoading(false);
     }
@@ -55,12 +55,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentTab }) => {
 
     try {
       await registerCitizen(name.trim(), phoneNumber.trim(), pin.trim());
-      setSuccess('Account created successfully! You are now logged in.');
+      setSuccess('Account created successfully! Redirecting...');
       setTimeout(() => {
         setCurrentTab('track');
-      }, 1000);
+      }, 800);
     } catch (err: any) {
-      setError(err.message || 'Registration failed. Check details.');
+      setError(err.message || 'Citizen registration failed.');
     } finally {
       setLoading(false);
     }
@@ -72,285 +72,279 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentTab }) => {
   };
 
   return (
-    <div style={{ maxWidth: '480px', margin: '2.5rem auto' }}>
-      <div className="civic-card">
-        {/* Portal Type Switcher */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1.5rem', backgroundColor: '#F1F5F9', padding: '4px', borderRadius: '8px' }}>
-          <button
-            type="button"
-            onClick={() => {
-              setAuthMode('staff');
-              setError(null);
-            }}
-            style={{
-              padding: '0.45rem',
-              borderRadius: '6px',
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              backgroundColor: authMode === 'staff' ? '#FFFFFF' : 'transparent',
-              color: authMode === 'staff' ? 'var(--color-primary)' : 'var(--color-text-muted)',
-              boxShadow: authMode === 'staff' ? 'var(--shadow-sm)' : 'none',
-            }}
-          >
-            🏛️ Staff &amp; Officers
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setAuthMode('citizen-login');
-              setError(null);
-            }}
-            style={{
-              padding: '0.45rem',
-              borderRadius: '6px',
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              backgroundColor: authMode !== 'staff' ? '#FFFFFF' : 'transparent',
-              color: authMode !== 'staff' ? 'var(--color-primary)' : 'var(--color-text-muted)',
-              boxShadow: authMode !== 'staff' ? 'var(--shadow-sm)' : 'none',
-            }}
-          >
-            👤 Citizen Portal
-          </button>
+    <div className="max-w-md mx-auto my-6 sm:my-10 bg-white border border-border-divider rounded p-6 shadow-stitch-sm space-y-5">
+      {/* Header */}
+      <div className="text-center space-y-1">
+        <div className="w-12 h-12 rounded bg-primary-container text-white flex items-center justify-center font-bold text-lg mx-auto shadow-stitch-sm mb-2">
+          🏛️
         </div>
-
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-          <span className="brand-badge" style={{ fontSize: '0.82rem' }}>
-            {authMode === 'staff' ? 'MCL MUNICIPAL ROSTER' : 'MCL CITIZEN SERVICES'}
-          </span>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-primary)', marginTop: '0.4rem' }}>
-            {authMode === 'staff'
-              ? 'Staff & Officer Sign In'
-              : authMode === 'citizen-login'
-              ? 'Citizen Sign In'
-              : 'Create Citizen Account'}
-          </h2>
-          <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-            {authMode === 'staff'
-              ? 'Access territorial grievances, SLA management, and work consoles.'
-              : authMode === 'citizen-login'
-              ? 'Sign in to monitor all your filed and claimed complaints.'
-              : 'Register to file complaints and receive official resolution updates.'}
-          </p>
-        </div>
-
-        {error && (
-          <div style={{ backgroundColor: 'var(--color-danger-bg)', color: 'var(--color-danger)', padding: '0.65rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div style={{ backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)', padding: '0.65rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
-            {success}
-          </div>
-        )}
-
-        {/* 1. Staff Login Form */}
-        {authMode === 'staff' && (
-          <form onSubmit={handleStaffLogin}>
-            <div className="form-group">
-              <label className="form-label">Official Registered Phone Number</label>
-              <input
-                type="tel"
-                className="form-input"
-                placeholder="e.g. 9888897201"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Security PIN</label>
-              <input
-                type="password"
-                className="form-input"
-                placeholder="4-digit PIN"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem', padding: '0.65rem' }}
-              disabled={loading}
-            >
-              {loading ? 'Authenticating Staff...' : 'Sign In as Officer'}
-            </button>
-          </form>
-        )}
-
-        {/* 2. Citizen Login Form */}
-        {authMode === 'citizen-login' && (
-          <form onSubmit={handleCitizenLogin}>
-            <div className="form-group">
-              <label className="form-label">Mobile Number</label>
-              <input
-                type="tel"
-                className="form-input"
-                placeholder="10-digit mobile number"
-                maxLength={10}
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">PIN</label>
-              <input
-                type="password"
-                className="form-input"
-                placeholder="4-digit PIN"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem', padding: '0.65rem' }}
-              disabled={loading}
-            >
-              {loading ? 'Signing In...' : 'Sign In as Citizen'}
-            </button>
-
-            <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
-              Don't have an account yet?{' '}
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode('citizen-register');
-                  setError(null);
-                }}
-                style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'underline' }}
-              >
-                Register here
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* 3. Citizen Registration Form */}
-        {authMode === 'citizen-register' && (
-          <form onSubmit={handleCitizenRegister}>
-            <div className="form-group">
-              <label className="form-label">Full Name</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Your full name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Mobile Number</label>
-              <input
-                type="tel"
-                className="form-input"
-                placeholder="10-digit mobile number"
-                maxLength={10}
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Create a 4-Digit Security PIN</label>
-              <input
-                type="password"
-                className="form-input"
-                placeholder="Choose a 4-digit PIN"
-                maxLength={6}
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                required
-              />
-            </div>
-
-            <div style={{ padding: '0.6rem 0.8rem', backgroundColor: '#EFF6FF', borderRadius: '6px', fontSize: '0.75rem', color: '#1E40AF', marginBottom: '1rem' }}>
-              ℹ️ Direct Account Activation: SMS gateway verification is simulated for instant onboarding.
-            </div>
-
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', padding: '0.65rem' }}
-              disabled={loading}
-            >
-              {loading ? 'Creating Account...' : 'Complete Citizen Registration'}
-            </button>
-
-            <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
-              Already registered?{' '}
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode('citizen-login');
-                  setError(null);
-                }}
-                style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'underline' }}
-              >
-                Sign in here
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* Local Dev Quick-Fill */}
-        {import.meta.env.DEV && authMode === 'staff' && (
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--color-border)' }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-sub)', marginBottom: '0.5rem' }}>
-              🛠️ Local Development Quick-Fill:
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
-                onClick={() => handleQuickFill('9888897201')}
-              >
-                👔 XEN Raman Kaushal (B&amp;R Supervisor - 9888897201)
-              </button>
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
-                onClick={() => handleQuickFill('9815144612')}
-              >
-                💧 SDO Anshul Garcha (O&amp;M Supervisor - 9815144612)
-              </button>
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
-                onClick={() => handleQuickFill('9646222900')}
-              >
-                👷 JE Vikas Kumar (Ward 1 Field Officer - 9646222900)
-              </button>
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', textAlign: 'left' }}
-                onClick={() => handleQuickFill('9876543210')}
-              >
-                🖥️ Operator Mukesh (ICCC Control Desk - 9876543210)
-              </button>
-            </div>
-          </div>
-        )}
+        <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded font-mono">
+          SECURE MUNICIPAL ACCESS
+        </span>
+        <h1 className="text-lg font-bold text-slate-900 tracking-tight pt-1">
+          MCL ICCC Portal Sign In
+        </h1>
+        <p className="text-xs text-slate-500">
+          Integrated Command &amp; Control Centre • Ludhiana
+        </p>
       </div>
+
+      {/* Role Switcher */}
+      <div className="flex bg-surface-low p-1 rounded border border-border-divider text-xs">
+        <button
+          type="button"
+          onClick={() => {
+            setAuthMode('staff');
+            setError(null);
+          }}
+          className={`flex-1 py-1.5 font-bold rounded transition text-center ${
+            authMode === 'staff'
+              ? 'bg-white text-primary shadow-stitch-sm'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Staff &amp; Officers
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setAuthMode('citizen-login');
+            setError(null);
+          }}
+          className={`flex-1 py-1.5 font-bold rounded transition text-center ${
+            authMode !== 'staff'
+              ? 'bg-white text-primary shadow-stitch-sm'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Citizen Portal
+        </button>
+      </div>
+
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[16px]">error</span>
+          <span>{error}</span>
+        </div>
+      )}
+
+      {success && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[16px]">check_circle</span>
+          <span>{success}</span>
+        </div>
+      )}
+
+      {/* Form: Staff Login */}
+      {authMode === 'staff' && (
+        <form onSubmit={handleStaffLogin} className="space-y-3.5">
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              Official Mobile Number *
+            </label>
+            <input
+              type="tel"
+              maxLength={10}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+              placeholder="e.g. 9815144612"
+              className="w-full text-xs font-mono font-bold bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              4-Digit Official Security PIN *
+            </label>
+            <input
+              type="password"
+              maxLength={6}
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              placeholder="••••"
+              className="w-full text-xs font-mono font-bold bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded shadow-stitch-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-[16px]">login</span>
+            <span>{loading ? 'Authenticating...' : 'Sign In as MCL Staff'}</span>
+          </button>
+
+          {/* Quick Demo Credentials */}
+          <div className="pt-2 border-t border-border-divider">
+            <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1.5">
+              Quick Test Credentials (PIN: 1234)
+            </span>
+            <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+              <button
+                type="button"
+                onClick={() => handleQuickFill('9815144612')}
+                className="p-1.5 bg-slate-50 hover:bg-blue-50 text-slate-700 rounded border border-slate-200 text-left font-mono"
+              >
+                SDO B&amp;R (Zone B)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('9815800001')}
+                className="p-1.5 bg-slate-50 hover:bg-blue-50 text-slate-700 rounded border border-slate-200 text-left font-mono"
+              >
+                JE Field Officer
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('9815200001')}
+                className="p-1.5 bg-slate-50 hover:bg-blue-50 text-slate-700 rounded border border-slate-200 text-left font-mono"
+              >
+                XEN Executive Eng.
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('9814100001')}
+                className="p-1.5 bg-slate-50 hover:bg-blue-50 text-slate-700 rounded border border-slate-200 text-left font-mono"
+              >
+                Command Operator
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
+
+      {/* Form: Citizen Login */}
+      {authMode === 'citizen-login' && (
+        <form onSubmit={handleCitizenLogin} className="space-y-3.5">
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              Registered 10-Digit Mobile Number *
+            </label>
+            <input
+              type="tel"
+              maxLength={10}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+              placeholder="e.g. 9876543210"
+              className="w-full text-xs font-mono font-bold bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              4-Digit PIN *
+            </label>
+            <input
+              type="password"
+              maxLength={6}
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              placeholder="••••"
+              className="w-full text-xs font-mono font-bold bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded shadow-stitch-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-[16px]">login</span>
+            <span>{loading ? 'Signing in...' : 'Sign In as Citizen'}</span>
+          </button>
+
+          <div className="text-center pt-2 text-xs text-slate-600">
+            First time registering a grievance?{' '}
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('citizen-register');
+                setError(null);
+              }}
+              className="text-primary font-bold hover:underline"
+            >
+              Create Account
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Form: Citizen Register */}
+      {authMode === 'citizen-register' && (
+        <form onSubmit={handleCitizenRegister} className="space-y-3.5">
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              Your Full Name *
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Harpreet Singh"
+              className="w-full text-xs bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              10-Digit Mobile Number *
+            </label>
+            <input
+              type="tel"
+              maxLength={10}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+              placeholder="e.g. 9876543210"
+              className="w-full text-xs font-mono font-bold bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              Set 4-Digit Access PIN *
+            </label>
+            <input
+              type="password"
+              maxLength={6}
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              placeholder="e.g. 1234"
+              className="w-full text-xs font-mono font-bold bg-surface-low border border-border-divider rounded px-3 py-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded shadow-stitch-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-[16px]">person_add</span>
+            <span>{loading ? 'Creating Account...' : 'Register &amp; Activate'}</span>
+          </button>
+
+          <div className="text-center pt-2 text-xs text-slate-600">
+            Already registered?{' '}
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('citizen-login');
+                setError(null);
+              }}
+              className="text-primary font-bold hover:underline"
+            >
+              Sign In
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };

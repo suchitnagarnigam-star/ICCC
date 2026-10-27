@@ -1,267 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Punjab Civic Palette */
-  --color-primary: #0F294A;
-  --color-primary-hover: #1E3A8A;
-  --color-primary-light: #EFF6FF;
+  /* Stitch MCL Civic Palette */
+  --color-canvas: #f8f9ff;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-inverse-surface: #213145;
+  --color-inverse-dark: #0b1c30;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #434655;
   
-  --color-accent: #D97706;
-  --color-accent-hover: #B45309;
-  --color-accent-light: #FEF3C7;
+  --color-primary: #0037b0;
+  --color-primary-container: #1d4ed8;
+  --color-primary-hover: #1e40af;
+  
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
 
-  --color-teal: #0D9488;
-  --color-teal-light: #F0FDFA;
-
-  --color-bg: #F8FAFC;
-  --color-card: #FFFFFF;
-  --color-border: #E2E8F0;
-  --color-border-hover: #CBD5E1;
-
-  --color-text-main: #0F172A;
-  --color-text-muted: #64748B;
-  --color-text-sub: #475569;
-
-  --color-success: #059669;
-  --color-success-bg: #ECFDF5;
-  --color-danger: #DC2626;
-  --color-danger-bg: #FEF2F2;
-
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --color-sla-compliant: #059669;
+  --color-sla-warning: #d97706;
+  --color-sla-breach: #dc2626;
+  --color-sla-review: #3526bd;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-canvas);
+    color: var(--color-on-surface);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--color-bg);
-  color: var(--color-text-main);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
+/* Tabular Numerals & Monospace Codes */
+.tnum {
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
+.data-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1;
 }
 
-input, select, textarea {
-  font-family: inherit;
-  font-size: 0.95rem;
-}
-
-/* Layout */
-.app-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.main-content {
-  flex: 1;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-}
-
-/* Civic Navbar */
-.navbar {
-  background-color: var(--color-primary);
-  color: #FFFFFF;
-  padding: 0.85rem 1.5rem;
-  border-bottom: 2px solid var(--color-accent);
-}
-
-.navbar-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.brand-section {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.brand-badge {
-  background-color: var(--color-accent);
-  color: #FFFFFF;
-  font-size: 0.75rem;
-  font-weight: 800;
-  padding: 0.2rem 0.5rem;
-  border-radius: var(--radius-sm);
-  letter-spacing: 0.05em;
-}
-
-.brand-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.brand-subtitle {
-  font-size: 0.75rem;
-  color: #94A3B8;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.nav-link {
-  color: #E2E8F0;
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.35rem 0.65rem;
-  border-radius: var(--radius-sm);
-  transition: all 0.15s ease;
-}
-
-.nav-link:hover, .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #FFFFFF;
-}
-
-.btn-primary {
-  background-color: var(--color-accent);
-  color: #FFFFFF;
-  font-weight: 700;
-  font-size: 0.875rem;
-  padding: 0.55rem 1.1rem;
-  border-radius: var(--radius-sm);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  transition: background-color 0.15s;
-}
-
-.btn-primary:hover {
-  background-color: var(--color-accent-hover);
-}
-
-.btn-secondary {
-  background-color: #FFFFFF;
-  color: var(--color-primary);
-  border: 1px solid var(--color-border);
-  font-weight: 600;
-  font-size: 0.875rem;
-  padding: 0.55rem 1.1rem;
-  border-radius: var(--radius-sm);
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-bg);
-  border-color: var(--color-border-hover);
-}
-
-/* Civic Cards */
-.civic-card {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.civic-header {
-  margin-bottom: 1.5rem;
-}
-
-.civic-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-primary);
-  letter-spacing: -0.02em;
-}
-
-.civic-desc {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  margin-top: 0.3rem;
-}
-
-/* Civic Grid */
-.civic-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
-}
-
-/* Form inputs */
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--color-text-main);
-  margin-bottom: 0.4rem;
-}
-
-.form-input, .form-select, .form-textarea {
-  width: 100%;
-  padding: 0.65rem 0.85rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background-color: #FFFFFF;
-  color: var(--color-text-main);
-  transition: border-color 0.15s;
-}
-
-.form-input:focus, .form-select:focus, .form-textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(15, 41, 74, 0.1);
-}
-
-/* Status Badges */
-.status-badge {
+/* Material Symbols Optical Settings */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  line-height: 1;
   display: inline-block;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  border-radius: 9999px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  user-select: none;
 }
 
-.status-SUBMITTED { background-color: #EFF6FF; color: #1D4ED8; }
-.status-NEEDS_REVIEW { background-color: #FEF3C7; color: #B45309; }
-.status-ASSIGNED { background-color: #F0FDFA; color: #0F766E; }
-.status-ACKNOWLEDGED { background-color: #F0FDFA; color: #0F766E; }
-.status-IN_PROGRESS { background-color: #CCFBF1; color: #115E59; }
-.status-RESOLUTION_SUBMITTED { background-color: #FFFBEB; color: #B45309; }
-.status-CLOSED { background-color: #ECFDF5; color: #047857; }
-.status-REJECTED { background-color: #F1F5F9; color: #475569; }
-
-/* Civic Footer */
-.footer {
-  background-color: #FFFFFF;
-  border-top: 1px solid var(--color-border);
-  padding: 1.5rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
+/* Custom Clean Scrollbars for High-Density Tables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Mobile Safe Areas */
+.mobile-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.mobile-safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* High-Density Row Standard */
+.density-row {
+  height: 42px;
+}
+.density-row-compact {
+  height: 36px;
+}

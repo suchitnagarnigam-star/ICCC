@@ -68,20 +68,26 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({
 
   if (!isAuthenticated) {
     return (
-      <div className="civic-card" style={{ maxWidth: '520px', margin: '3rem auto', textAlign: 'center', padding: '2.5rem' }}>
-        <span className="brand-badge">AUTHENTICATION REQUIRED</span>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginTop: '0.5rem', color: 'var(--color-primary)' }}>
-          Notifications &amp; Escalation Inbox
-        </h2>
-        <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '1.5rem' }}>
-          Please sign in with your staff or citizen account to view dispatch notices, SLA warnings, and grievance updates.
-        </p>
+      <div className="max-w-md mx-auto my-12 bg-white border border-border-divider rounded p-8 text-center shadow-stitch-sm space-y-4">
+        <div className="w-12 h-12 rounded-full bg-blue-50 text-primary mx-auto flex items-center justify-center">
+          <span className="material-symbols-outlined text-[28px]">lock</span>
+        </div>
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono">
+            AUTHENTICATION REQUIRED
+          </span>
+          <h2 className="text-base font-bold text-slate-900 mt-2">
+            Statutory Notifications &amp; Escalation Inbox
+          </h2>
+          <p className="text-xs text-slate-600 mt-1">
+            Please sign in with your staff or citizen account to view dispatch notices, SLA warnings, and grievance updates.
+          </p>
+        </div>
         <button
-          className="btn-primary"
           onClick={onNavigateToLogin || (() => {})}
-          style={{ padding: '0.65rem 1.5rem', fontWeight: 700 }}
+          className="w-full py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded shadow-stitch-sm transition"
         >
-          Sign In to Access Alerts →
+          Sign In to Access Alerts &rarr;
         </button>
       </div>
     );
@@ -90,118 +96,126 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({
   const unreadList = notifications.filter((n) => !n.isRead);
 
   return (
-    <div style={{ maxWidth: '860px', margin: '0 auto', paddingBottom: '3rem' }}>
+    <div className="max-w-3xl mx-auto space-y-4 pb-10">
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="bg-white border border-border-divider rounded p-4 shadow-stitch-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span className="brand-badge">INBOX</span>
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono">
+              ESC-WATCH
+            </span>
             {unreadList.length > 0 && (
-              <span style={{ fontSize: '0.75rem', backgroundColor: '#FEE2E2', color: '#DC2626', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+              <span className="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-mono">
                 {unreadList.length} Unread
               </span>
             )}
           </div>
-          <h1 className="civic-title" style={{ marginTop: '0.35rem' }}>
-            Notifications &amp; SLA Alerts
+          <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Statutory Notifications &amp; Escalation Inbox
           </h1>
-          <p className="civic-desc">
-            Official operational alerts, assignment notifications, and 48-hour SLA breach escalations.
+          <p className="text-xs text-slate-600 mt-0.5">
+            Real-time feed of SLA expirations, resolution verifications, and territorial reassignments.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button
-            onClick={handleRequestPush}
-            className="btn-secondary"
-            style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
-          >
-            🔔 {pushStatus === 'granted' ? 'Web Push Active' : 'Enable Web Push'}
-          </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          {pushStatus !== 'granted' && (
+            <button
+              onClick={handleRequestPush}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-surface-low hover:bg-surface-container text-primary border border-border-divider rounded transition"
+            >
+              <span className="material-symbols-outlined text-[16px]">notifications_active</span>
+              <span className="hidden sm:inline">Enable Push</span>
+            </button>
+          )}
           <button
             onClick={loadNotifications}
-            className="btn-secondary"
-            disabled={loading}
-            style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
+            className="p-1.5 text-slate-600 hover:text-slate-900 bg-surface-low hover:bg-surface-container border border-border-divider rounded transition"
+            title="Refresh Feed"
           >
-            {loading ? 'Refreshing...' : '🔄 Refresh'}
+            <span className="material-symbols-outlined text-[18px]">refresh</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div style={{ backgroundColor: 'var(--color-danger-bg)', color: 'var(--color-danger)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded">
           {error}
         </div>
       )}
 
+      {/* Notifications List */}
       {loading ? (
-        <div className="civic-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-          Loading your notification inbox...
+        <div className="bg-white border border-border-divider rounded p-12 text-center text-slate-500 text-xs">
+          Loading statutory notifications feed...
         </div>
       ) : notifications.length === 0 ? (
-        <div className="civic-card" style={{ padding: '3rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📭</div>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-primary)' }}>No Notifications</h3>
-          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
-            You are all caught up! There are no pending alerts or escalation messages for your account.
-          </p>
+        <div className="bg-white border border-border-divider rounded p-8 text-center text-slate-500 text-xs">
+          No notifications or active SLA alerts for your account.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {notifications.map((item) => (
-            <div
-              key={item.id}
-              className="civic-card"
-              style={{
-                padding: '1rem 1.25rem',
-                borderLeft: `4px solid ${item.isRead ? 'var(--color-border)' : 'var(--color-primary)'}`,
-                backgroundColor: item.isRead ? '#FFFFFF' : '#F8FAFC',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: 800, fontSize: '0.9rem', color: item.isRead ? 'var(--color-text-main)' : 'var(--color-primary)' }}>
-                      {item.title}
-                    </span>
-                    {!item.isRead && (
-                      <span style={{ fontSize: '0.68rem', backgroundColor: '#DBEAFE', color: '#1E40AF', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                        NEW
-                      </span>
-                    )}
+        <div className="space-y-2.5">
+          {notifications.map((item) => {
+            const isBreach = item.title && (item.title.includes('Breach') || item.title.includes('SLA'));
+            return (
+              <div
+                key={item.id}
+                className={`bg-white border rounded p-3.5 shadow-stitch-sm transition flex flex-col gap-2 ${
+                  !item.isRead ? 'border-primary/40 bg-blue-50/20' : 'border-border-divider'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        !item.isRead ? 'bg-primary' : 'bg-slate-300'
+                      }`}
+                    />
+                    <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      {isBreach && <span className="text-red-600">⚠️</span>}
+                      <span>{item.title}</span>
+                    </h3>
                   </div>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--color-text-sub)', margin: '0 0 0.5rem 0' }}>
-                    {item.message}
-                  </p>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
-                    {new Date(item.createdAt).toLocaleString()} • Channel: {item.channel.toUpperCase()}
-                  </div>
+
+                  <span className="text-[10px] text-slate-400 font-mono tnum">
+                    {new Date(item.createdAt).toLocaleString('en-IN', {
+                      day: '2-digit',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'flex-end' }}>
-                  {item.complaintId && onSelectComplaint && (
-                    <button
-                      className="btn-primary"
-                      style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}
-                      onClick={() => onSelectComplaint(item.complaintId!)}
-                    >
-                      View Case Dossier →
-                    </button>
-                  )}
+                <p className="text-xs text-slate-700 leading-relaxed pl-4">
+                  {item.message}
+                </p>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 pl-4 text-xs">
+                  <div className="flex items-center gap-2">
+                    {item.complaintId && onSelectComplaint && (
+                      <button
+                        onClick={() => onSelectComplaint(item.complaintId!)}
+                        className="text-primary hover:underline font-semibold flex items-center gap-0.5 text-xs"
+                      >
+                        <span>Inspect Case Dossier</span>
+                        <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                      </button>
+                    )}
+                  </div>
+
                   {!item.isRead && (
                     <button
-                      className="btn-secondary"
-                      style={{ padding: '0.25rem 0.55rem', fontSize: '0.72rem' }}
                       onClick={() => handleMarkAsRead(item.id)}
+                      className="text-[11px] text-slate-500 hover:text-slate-800 font-medium"
                     >
-                      Mark as Read
+                      Mark as read
                     </button>
                   )}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

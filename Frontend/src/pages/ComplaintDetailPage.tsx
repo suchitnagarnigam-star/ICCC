@@ -7,6 +7,7 @@ import ImageViewerModal from '../components/ImageViewerModal';
 interface ComplaintDetailPageProps {
   complaintId: string;
   onBack: () => void;
+  onRefresh?: () => void;
 }
 
 const TIMELINE_STAGES = [
@@ -37,11 +38,12 @@ function formatBytes(bytes: number): string {
 export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
   complaintId,
   onBack,
+  onRefresh,
 }) => {
   const [complaint, setComplaint] = useState<Complaint | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'evidence' | 'actions'>('overview');
+  const [mobileTab, setMobileTab] = useState<'dossier' | 'evidence' | 'timeline'>('dossier');
 
   // Modal lightbox state
   const [lightboxImage, setLightboxImage] = useState<{ url: string; title: string; fileName: string } | null>(null);
@@ -49,6 +51,7 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
   // Action Console state
   const [actionLoading, setActionLoading] = useState(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
   const [proofFiles, setProofFiles] = useState<File[]>([]);
   const [reassignName, setReassignName] = useState('');
@@ -91,6 +94,7 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
     if (!complaint) return;
     setActionLoading(true);
     setActionSuccess(null);
+    setActionError(null);
     try {
       const res = await apiFetch(`/complaints/${complaint.id}/acknowledge`, {
         method: 'POST',
@@ -99,9 +103,12 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
       if (res.success) {
         setActionSuccess('Assignment successfully acknowledged.');
         await loadComplaint();
+        onRefresh?.();
+      } else {
+        setActionError(res.error || 'Failed to acknowledge.');
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to acknowledge.');
+      setActionError(err.message || 'Failed to acknowledge.');
     } finally {
       setActionLoading(false);
     }
@@ -110,6 +117,8 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
   const handleStatusChange = async (targetStatus: string, remarks: string) => {
     if (!complaint) return;
     setActionLoading(true);
+    setActionSuccess(null);
+    setActionError(null);
     try {
       const res = await apiFetch(`/complaints/${complaint.id}/status`, {
         method: 'POST',
@@ -118,100 +127,99 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
       if (res.success) {
         setActionSuccess(`Status updated to ${targetStatus}`);
         await loadComplaint();
+        onRefresh?.();
+      } else {
+        setActionError(res.error || 'Failed to update status.');
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to update status.');
+      setActionError(err.message || 'Error updating status.');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleSubmitResolution = async (e: React.FormEvent) => {
+  const handleResolve = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!complaint || !resolutionNotes.trim()) return;
+    if (!complaint) return;
     if (proofFiles.length === 0) {
-      alert('Mandatory Requirement: Please attach at least one photographic evidence file (JPEG/PNG/WebP).');
+      setActionError('At least one on-site photographic evidence file is mandatory to submit resolution.');
       return;
     }
+
     setActionLoading(true);
     setActionSuccess(null);
+    setActionError(null);
+
     try {
       const formData = new FormData();
       formData.append('resolutionNotes', resolutionNotes);
-      proofFiles.forEach((f) => {
-        formData.append('resolutionProof', f);
+      proofFiles.forEach((file) => {
+        formData.append('resolutionProof', file);
       });
-      const res = await apiFetch(`/complaints/${complaint.id}/resolution`, {
+
+      const token = localStorage.getItem('mcl_iccc_token');
+      const response = await fetch(`/api/complaints/${complaint.id}/resolve`, {
         method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       });
+
+      const res = await response.json();
       if (res.success) {
-        setActionSuccess('Resolution report with photographic proof submitted successfully.');
+        setActionSuccess('Resolution evidence submitted successfully. Case is now under verification.');
         setResolutionNotes('');
         setProofFiles([]);
         await loadComplaint();
+        onRefresh?.();
+      } else {
+        setActionError(res.error || 'Failed to submit resolution.');
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to submit resolution.');
+      setActionError(err.message || 'Network error submitting resolution.');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleReassign = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!complaint || !reassignName.trim()) return;
-    setActionLoading(true);
-    try {
-      const res = await apiFetch(`/complaints/${complaint.id}/assign`, {
-        method: 'POST',
-        body: JSON.stringify({
-          officerName: reassignName,
-          officerPhone: reassignPhone,
-          reason: reassignReason,
-        }),
-      });
-      if (res.success) {
-        setActionSuccess(`Successfully reassigned to ${reassignName}.`);
-        setReassignName('');
-        setReassignPhone('');
-        setReassignReason('');
-        await loadComplaint();
-      }
-    } catch (err: any) {
-      alert(err.message || 'Failed to reassign.');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleVerifyClose = async (verdict: 'accepted' | 'disputed') => {
+  const handleVerifyClosure = async (verdict: 'accepted' | 'disputed') => {
     if (!complaint) return;
     setActionLoading(true);
     setActionSuccess(null);
+    setActionError(null);
+
     try {
-      const res = await apiFetch(`/complaints/${complaint.id}/verify-close`, {
+      const res = await apiFetch(`/complaints/${complaint.id}/verify-closure`, {
         method: 'POST',
         body: JSON.stringify({
           verdict,
           rating: parseInt(verifyRating, 10),
-          feedback: verifyFeedback || (verdict === 'accepted' ? 'Grievance satisfactorily resolved.' : 'Disputed by citizen.'),
+          feedback: verifyFeedback,
         }),
       });
+
       if (res.success) {
-        setActionSuccess(verdict === 'accepted' ? 'Grievance verified and permanently closed.' : 'Resolution disputed and reopened for review.');
+        setActionSuccess(
+          verdict === 'accepted'
+            ? 'Resolution accepted and complaint marked CLOSED & MET.'
+            : 'Resolution disputed. Complaint reopened for field rectification.'
+        );
         await loadComplaint();
+        onRefresh?.();
+      } else {
+        setActionError(res.error || 'Failed to verify resolution.');
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to submit verification verdict.');
+      setActionError(err.message || 'Error verifying resolution.');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handlePauseSla = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!complaint || !pauseReason.trim()) return;
+  const handlePause = async () => {
+    if (!complaint || !pauseReason.trim()) {
+      setActionError('A valid statutory pause reason is required.');
+      return;
+    }
     setActionLoading(true);
     try {
       const res = await apiFetch(`/complaints/${complaint.id}/pause`, {
@@ -219,18 +227,21 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
         body: JSON.stringify({ reason: pauseReason }),
       });
       if (res.success) {
-        setActionSuccess('SLA clock successfully paused.');
+        setActionSuccess('SLA timer paused.');
         setPauseReason('');
         await loadComplaint();
+        onRefresh?.();
+      } else {
+        setActionError(res.error || 'Failed to pause SLA.');
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to pause SLA.');
+      setActionError(err.message || 'Error pausing SLA.');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleResumeSla = async () => {
+  const handleResume = async () => {
     if (!complaint) return;
     setActionLoading(true);
     try {
@@ -238,11 +249,44 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
         method: 'POST',
       });
       if (res.success) {
-        setActionSuccess('SLA clock resumed.');
+        setActionSuccess('SLA timer resumed.');
         await loadComplaint();
+        onRefresh?.();
+      } else {
+        setActionError(res.error || 'Failed to resume SLA.');
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to resume SLA.');
+      setActionError(err.message || 'Error resuming SLA.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReassign = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!complaint || !reassignName || !reassignPhone) return;
+    setActionLoading(true);
+    try {
+      const res = await apiFetch(`/complaints/${complaint.id}/assign`, {
+        method: 'POST',
+        body: JSON.stringify({
+          assignedJeName: reassignName,
+          assignedJePhone: reassignPhone,
+          notes: reassignReason || 'Reassigned by administrative control desk',
+        }),
+      });
+      if (res.success) {
+        setActionSuccess(`Reassigned to ${reassignName}`);
+        setReassignName('');
+        setReassignPhone('');
+        setReassignReason('');
+        await loadComplaint();
+        onRefresh?.();
+      } else {
+        setActionError(res.error || 'Failed to reassign.');
+      }
+    } catch (err: any) {
+      setActionError(err.message || 'Error reassigning officer.');
     } finally {
       setActionLoading(false);
     }
@@ -250,32 +294,688 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
 
   if (loading) {
     return (
-      <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-        Loading grievance record details...
+      <div className="bg-white border border-border-divider rounded p-12 text-center text-slate-500 text-sm">
+        <span className="material-symbols-outlined text-[32px] animate-spin text-primary block mb-2">
+          progress_activity
+        </span>
+        Loading statutory complaint dossier...
       </div>
     );
   }
 
   if (error || !complaint) {
     return (
-      <div className="civic-card" style={{ maxWidth: '600px', margin: '2rem auto', textAlign: 'center' }}>
-        <h3 style={{ color: 'var(--color-danger)' }}>Record Not Found</h3>
-        <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem' }}>{error || 'Unable to retrieve complaint.'}</p>
-        <button className="btn-secondary" onClick={onBack}>← Back to Complaints Register</button>
+      <div className="bg-white border border-border-divider rounded p-8 text-center space-y-4">
+        <span className="material-symbols-outlined text-[40px] text-red-600">error</span>
+        <h2 className="text-base font-bold text-slate-900">Unable to load case record</h2>
+        <p className="text-xs text-slate-600">{error || 'Complaint record not found.'}</p>
+        <button
+          onClick={onBack}
+          className="px-4 py-2 bg-primary text-white text-xs font-semibold rounded shadow-stitch-sm"
+        >
+          &larr; Return to Register
+        </button>
       </div>
     );
   }
 
-  // Calculate SLA countdown
-  const nowMs = Date.now();
-  const dueMs = new Date(complaint.dueAt).getTime();
-  const diffHours = Math.round((dueMs - nowMs) / 3600000);
-  const isBreached = diffHours < 0 && complaint.status !== 'CLOSED' && complaint.status !== 'RESOLUTION_SUBMITTED';
-
   const currentStage = getStageIndex(complaint.status);
+  const sourceAttachments = complaint.attachments || [];
+  const resolutionAttachments = complaint.resolutionProof || [];
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', paddingBottom: '3rem' }}>
+    <div className="space-y-4 pb-12">
+      {/* 1. Statutory Top Action Bar */}
+      <div className="bg-white border border-border-divider rounded p-4 shadow-stitch-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onBack}
+            className="p-1.5 rounded hover:bg-slate-100 text-slate-600 transition"
+            title="Return to Register"
+          >
+            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+          </button>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-mono text-base font-bold text-primary tnum">
+                {complaint.complaintNumber}
+              </h1>
+              <button
+                onClick={handleCopyId}
+                className="text-[10px] text-slate-500 hover:text-slate-800 font-mono bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200"
+              >
+                {copiedId ? 'Copied!' : 'Copy'}
+              </button>
+              <StatusBadge status={complaint.status} />
+              {complaint.isPaused && (
+                <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono">
+                  SLA PAUSED
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-600 mt-0.5">
+              {complaint.categoryName || complaint.categoryId} • Ward {complaint.wardNumber || '—'} (Zone {complaint.zone || '—'})
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 self-start md:self-auto">
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-surface-low hover:bg-surface-container text-slate-800 border border-border-divider rounded transition"
+          >
+            <span className="material-symbols-outlined text-[16px]">print</span>
+            <span>Print Dossier</span>
+          </button>
+          <button
+            onClick={loadComplaint}
+            className="p-1.5 text-slate-600 hover:text-slate-900 bg-surface-low hover:bg-surface-container border border-border-divider rounded transition"
+            title="Sync Latest Dossier"
+          >
+            <span className="material-symbols-outlined text-[18px]">refresh</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Notifications */}
+      {actionSuccess && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded flex items-center justify-between">
+          <span>✓ {actionSuccess}</span>
+          <button onClick={() => setActionSuccess(null)} className="text-slate-400 hover:text-slate-700">
+            ×
+          </button>
+        </div>
+      )}
+      {actionError && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-800 text-xs rounded flex items-center justify-between">
+          <span>⚠️ {actionError}</span>
+          <button onClick={() => setActionError(null)} className="text-slate-400 hover:text-slate-700">
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* 2. 5-Stage Visual Statutory Progress Stepper */}
+      <div className="bg-white border border-border-divider rounded p-4 shadow-stitch-sm">
+        <div className="grid grid-cols-5 gap-1 relative">
+          {TIMELINE_STAGES.map((stage, idx) => {
+            const isCompleted = idx < currentStage || (idx === currentStage && complaint.status === 'CLOSED');
+            const isCurrent = idx === currentStage && complaint.status !== 'CLOSED';
+            return (
+              <div key={stage.key} className="flex flex-col items-center text-center relative z-10">
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition ${
+                    isCompleted
+                      ? 'bg-emerald-600 text-white'
+                      : isCurrent
+                      ? 'bg-primary text-white ring-4 ring-blue-100'
+                      : 'bg-slate-200 text-slate-500'
+                  }`}
+                >
+                  {isCompleted ? '✓' : idx + 1}
+                </div>
+                <span
+                  className={`text-[10px] mt-1.5 font-semibold tracking-tight ${
+                    isCurrent ? 'text-primary font-bold' : isCompleted ? 'text-emerald-800' : 'text-slate-400'
+                  }`}
+                >
+                  {stage.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Mobile Tab Switcher (< 768px) */}
+      <div className="md:hidden flex bg-surface-low p-1 rounded border border-border-divider">
+        <button
+          onClick={() => setMobileTab('dossier')}
+          className={`flex-1 py-1.5 text-xs font-semibold rounded text-center transition ${
+            mobileTab === 'dossier' ? 'bg-white text-primary shadow-stitch-sm' : 'text-slate-600'
+          }`}
+        >
+          Dossier &amp; Actions
+        </button>
+        <button
+          onClick={() => setMobileTab('evidence')}
+          className={`flex-1 py-1.5 text-xs font-semibold rounded text-center transition ${
+            mobileTab === 'evidence' ? 'bg-white text-primary shadow-stitch-sm' : 'text-slate-600'
+          }`}
+        >
+          Evidence ({sourceAttachments.length + resolutionAttachments.length})
+        </button>
+        <button
+          onClick={() => setMobileTab('timeline')}
+          className={`flex-1 py-1.5 text-xs font-semibold rounded text-center transition ${
+            mobileTab === 'timeline' ? 'bg-white text-primary shadow-stitch-sm' : 'text-slate-600'
+          }`}
+        >
+          Audit Log
+        </button>
+      </div>
+
+      {/* 3. Main Content Grid (60/40 Split on Desktop, Tabbed on Mobile) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* Left Column (Desktop 7 cols / Mobile 'dossier' tab): Details & Action Console */}
+        <div
+          className={`lg:col-span-7 space-y-4 ${
+            mobileTab !== 'dossier' ? 'hidden lg:block' : ''
+          }`}
+        >
+          {/* Statutory Hierarchy Chain */}
+          <div className="bg-white border border-border-divider rounded p-4 shadow-stitch-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-primary">account_tree</span>
+              Municipal Administrative Chain of Responsibility
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {/* JE */}
+              <div className="p-3 rounded bg-blue-50/60 border border-blue-200 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-blue-700 uppercase">Field Officer (JE)</span>
+                  <div className="font-bold text-xs text-slate-900 mt-0.5 truncate">
+                    {complaint.assignedJeName || 'Unassigned'}
+                  </div>
+                </div>
+                {complaint.assignedJePhone && (
+                  <a
+                    href={`tel:${complaint.assignedJePhone}`}
+                    className="mt-2 text-[11px] font-semibold text-primary flex items-center gap-1 hover:underline"
+                  >
+                    <span className="material-symbols-outlined text-[13px]">call</span>
+                    <span>{complaint.assignedJePhone}</span>
+                  </a>
+                )}
+              </div>
+
+              {/* SDO */}
+              <div className="p-3 rounded bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase">Sub-Divisional Officer (SDO)</span>
+                  <div className="font-bold text-xs text-slate-900 mt-0.5 truncate">
+                    {complaint.sdoName || 'Zone SDO'}
+                  </div>
+                </div>
+                <span className="mt-2 text-[10px] text-slate-400 font-mono">Branch Supervisor</span>
+              </div>
+
+              {/* XEN */}
+              <div className="p-3 rounded bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase">Executive Engineer (XEN)</span>
+                  <div className="font-bold text-xs text-slate-900 mt-0.5 truncate">
+                    {complaint.xenName || 'Executive Engineer'}
+                  </div>
+                </div>
+                <span className="mt-2 text-[10px] text-slate-400 font-mono">Territorial Apex</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Citizen & Location Metadata */}
+          <div className="bg-white border border-border-divider rounded p-4 shadow-stitch-sm space-y-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-primary">location_on</span>
+              Complainant &amp; Location Coordinates
+            </h2>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">Complainant Name</span>
+                <span className="font-bold text-slate-900">{complaint.complainantName}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">Contact Phone</span>
+                <span className="font-mono text-slate-900">{complaint.contactNumber}</span>
+              </div>
+              <div className="col-span-2">
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">Grievance Description</span>
+                <p className="text-slate-800 bg-slate-50 p-2.5 rounded border border-slate-200 mt-0.5 leading-relaxed">
+                  {complaint.description}
+                </p>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">Landmark / Street</span>
+                <span className="text-slate-800">{complaint.landmark || '—'}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">Address</span>
+                <span className="text-slate-800">{complaint.address || 'Ludhiana'}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">Submitted On</span>
+                <span className="font-mono text-slate-700 tnum">
+                  {new Date(complaint.submittedAt).toLocaleString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">SLA Deadline</span>
+                <span className="font-mono text-slate-700 tnum">
+                  {new Date(complaint.dueAt).toLocaleString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Console: Field JE / Citizen / Supervisor */}
+          <div className="bg-white border border-border-divider rounded p-4 shadow-stitch-sm space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5 pb-2 border-b border-border-divider">
+              <span className="material-symbols-outlined text-[16px] text-primary">tune</span>
+              Operational Action Console
+            </h2>
+
+            {/* 1. Field JE Resolution Submission */}
+            <div className="p-3.5 rounded bg-surface-low border border-border-divider space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                  <span>📸 Field Resolution Report &amp; Evidence</span>
+                  <span className="text-[10px] text-red-600 font-semibold">(Mandatory Photo)</span>
+                </h3>
+                {complaint.status === 'ASSIGNED' && (
+                  <button
+                    onClick={handleAcknowledge}
+                    disabled={actionLoading}
+                    className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold shadow-stitch-sm transition"
+                  >
+                    Acknowledge Assignment
+                  </button>
+                )}
+                {complaint.status === 'ACKNOWLEDGED' && (
+                  <button
+                    onClick={() => handleStatusChange('IN_PROGRESS', 'Officer commenced work on site')}
+                    disabled={actionLoading}
+                    className="px-2.5 py-1 bg-primary hover:bg-primary-hover text-white rounded text-xs font-semibold shadow-stitch-sm transition"
+                  >
+                    Mark In Progress
+                  </button>
+                )}
+              </div>
+
+              <form onSubmit={handleResolve} className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Completion Notes / Rectification Summary *
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={resolutionNotes}
+                    onChange={(e) => setResolutionNotes(e.target.value)}
+                    placeholder="Describe on-ground work executed (e.g. 5m paver block replaced, leak sealed with clamp)..."
+                    className="w-full text-xs bg-white border border-border-divider rounded p-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                    Upload Photographic Proof of Rectification *
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="flex-1 cursor-pointer bg-white border border-dashed border-primary hover:bg-blue-50/50 rounded p-3 text-center transition">
+                      <span className="material-symbols-outlined text-primary text-[24px] block mb-1">
+                        photo_camera
+                      </span>
+                      <span className="text-xs font-semibold text-primary block">
+                        Tap to Snap Photo or Choose File
+                      </span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                        Accepts JPG, PNG up to 10MB • Camera Enabled
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={(e) => {
+                          if (e.target.files) {
+                            setProofFiles(Array.from(e.target.files));
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  {proofFiles.length > 0 && (
+                    <div className="mt-2 text-xs text-emerald-700 font-semibold flex items-center gap-1">
+                      <span>✓ Selected file: {proofFiles[0].name} ({formatBytes(proofFiles[0].size)})</span>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={actionLoading || proofFiles.length === 0}
+                  className="w-full py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded shadow-stitch-sm transition disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-[16px]">verified</span>
+                  <span>Submit Resolution for Citizen/SDO Verification</span>
+                </button>
+              </form>
+            </div>
+
+            {/* 2. Verification & Closure (Citizen & Supervisor) */}
+            {complaint.status === 'RESOLUTION_SUBMITTED' && (
+              <div className="p-3.5 rounded bg-emerald-50/70 border border-emerald-200 space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-700 text-[20px]">fact_check</span>
+                  <div>
+                    <h3 className="text-xs font-bold text-emerald-950">Statutory Verification &amp; Closure</h3>
+                    <p className="text-[11px] text-emerald-800">
+                      Field officer has submitted resolution evidence. Confirm whether work is satisfactory.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold text-slate-700">Citizen Rating:</span>
+                    <div className="flex items-center gap-1">
+                      {['1', '2', '3', '4', '5'].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setVerifyRating(star)}
+                          className={`text-base ${
+                            parseInt(star, 10) <= parseInt(verifyRating, 10)
+                              ? 'text-amber-500'
+                              : 'text-slate-300'
+                          }`}
+                        >
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <input
+                    type="text"
+                    value={verifyFeedback}
+                    onChange={(e) => setVerifyFeedback(e.target.value)}
+                    placeholder="Optional remarks or quality comments..."
+                    className="w-full text-xs bg-white border border-emerald-300 rounded p-2 text-slate-900"
+                  />
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      onClick={() => handleVerifyClosure('accepted')}
+                      disabled={actionLoading}
+                      className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded shadow-stitch-sm transition flex items-center justify-center gap-1"
+                    >
+                      <span>✓ Accept &amp; Mark Closed</span>
+                    </button>
+                    <button
+                      onClick={() => handleVerifyClosure('disputed')}
+                      disabled={actionLoading}
+                      className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded shadow-stitch-sm transition flex items-center justify-center gap-1"
+                    >
+                      <span>✕ Dispute &amp; Reopen</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 3. Supervisor SLA Pause / Resume & Reassignment */}
+            <div className="p-3 rounded bg-slate-50 border border-slate-200 space-y-3 text-xs">
+              <span className="font-bold text-slate-800 block">Supervisor SLA &amp; Dispatch Controls</span>
+
+              {/* Pause / Resume */}
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                {complaint.isPaused ? (
+                  <button
+                    onClick={handleResume}
+                    disabled={actionLoading}
+                    className="w-full sm:w-auto px-4 py-1.5 bg-emerald-700 text-white rounded font-semibold text-xs transition"
+                  >
+                    Resume SLA Clock
+                  </button>
+                ) : (
+                  <div className="flex w-full items-center gap-2">
+                    <input
+                      type="text"
+                      value={pauseReason}
+                      onChange={(e) => setPauseReason(e.target.value)}
+                      placeholder="Statutory pause reason (e.g. Heavy rainfall, NGT stay)..."
+                      className="flex-1 bg-white border border-border-divider rounded px-2.5 py-1.5 text-xs text-slate-900"
+                    />
+                    <button
+                      onClick={handlePause}
+                      disabled={actionLoading || !pauseReason.trim()}
+                      className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded font-semibold text-xs transition shrink-0 disabled:opacity-50"
+                    >
+                      Pause SLA
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Reassignment Form */}
+              <form onSubmit={handleReassign} className="pt-2 border-t border-slate-200 space-y-2">
+                <span className="font-semibold text-slate-700 block text-[11px]">Reassign Field Officer:</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={reassignName}
+                    onChange={(e) => setReassignName(e.target.value)}
+                    placeholder="New Officer Name"
+                    className="bg-white border border-border-divider rounded px-2 py-1 text-xs"
+                    required
+                  />
+                  <input
+                    type="tel"
+                    value={reassignPhone}
+                    onChange={(e) => setReassignPhone(e.target.value)}
+                    placeholder="10-digit Phone"
+                    className="bg-white border border-border-divider rounded px-2 py-1 text-xs"
+                    required
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={reassignReason}
+                    onChange={(e) => setReassignReason(e.target.value)}
+                    placeholder="Reassignment reason..."
+                    className="flex-1 bg-white border border-border-divider rounded px-2 py-1 text-xs"
+                  />
+                  <button
+                    type="submit"
+                    disabled={actionLoading || !reassignName}
+                    className="px-3 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded font-semibold text-xs disabled:opacity-50"
+                  >
+                    Reassign
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column (Desktop 5 cols / Mobile 'evidence' tab): Side-by-side Evidence Photos & Audit Trail */}
+        <div
+          className={`lg:col-span-5 space-y-4 ${
+            mobileTab === 'dossier' ? 'hidden lg:block' : ''
+          }`}
+        >
+          {/* Photographic Evidence Card */}
+          <div className="bg-white border border-border-divider rounded p-4 shadow-stitch-sm space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center justify-between pb-2 border-b border-border-divider">
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-primary">photo_library</span>
+                Photographic Verification Bench
+              </span>
+              <span className="text-[10px] text-slate-500 font-mono">
+                {sourceAttachments.length + resolutionAttachments.length} Files
+              </span>
+            </h2>
+
+            {/* Before Photo (Intake) */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-bold text-slate-700 uppercase">
+                  1. Citizen Intake Evidence (Before)
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  {sourceAttachments.length} attached
+                </span>
+              </div>
+
+              {sourceAttachments.length === 0 ? (
+                <div className="p-4 bg-slate-50 border border-dashed border-slate-200 rounded text-center text-xs text-slate-400">
+                  No intake photograph uploaded.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2">
+                  {sourceAttachments.map((att, idx) => (
+                    <div
+                      key={att.fileId || idx}
+                      onClick={() =>
+                        setLightboxImage({
+                          url: att.fileUrl,
+                          title: `Citizen Intake Evidence - ${complaint.complaintNumber}`,
+                          fileName: att.fileName,
+                        })
+                      }
+                      className="group relative rounded border border-border-divider overflow-hidden bg-slate-100 cursor-pointer shadow-stitch-sm"
+                    >
+                      <img
+                        src={att.fileUrl}
+                        alt="Intake Evidence"
+                        className="w-full h-44 object-cover group-hover:scale-102 transition duration-200"
+                        onError={(e) => {
+                          // Fallback placeholder on media fetch error
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent text-white text-[10px] flex items-center justify-between">
+                        <span className="truncate max-w-[200px] font-mono">{att.fileName}</span>
+                        <span>{formatBytes(att.size)}</span>
+                      </div>
+                      <div className="absolute top-2 right-2 p-1 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition">
+                        <span className="material-symbols-outlined text-[16px]">zoom_in</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* After Photo (Resolution) */}
+            <div className="pt-2 border-t border-border-divider">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-bold text-emerald-800 uppercase flex items-center gap-1">
+                  <span>2. Field Resolution Evidence (After)</span>
+                  {resolutionAttachments.length > 0 && <span>✓</span>}
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  {resolutionAttachments.length} attached
+                </span>
+              </div>
+
+              {resolutionAttachments.length === 0 ? (
+                <div className="p-4 bg-amber-50/50 border border-dashed border-amber-200 rounded text-center text-xs text-amber-800">
+                  Awaiting on-site resolution photograph from field officer.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2">
+                  {resolutionAttachments.map((att, idx) => (
+                    <div
+                      key={att.fileId || idx}
+                      onClick={() =>
+                        setLightboxImage({
+                          url: att.fileUrl,
+                          title: `Field Rectification Proof - ${complaint.complaintNumber}`,
+                          fileName: att.fileName,
+                        })
+                      }
+                      className="group relative rounded border-2 border-emerald-400 overflow-hidden bg-slate-100 cursor-pointer shadow-stitch-sm"
+                    >
+                      <img
+                        src={att.fileUrl}
+                        alt="Resolution Proof"
+                        className="w-full h-44 object-cover group-hover:scale-102 transition duration-200"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                      <div className="absolute top-2 left-2 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                        VERIFIED RECTIFICATION
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent text-white text-[10px] flex items-center justify-between">
+                        <span className="truncate max-w-[200px] font-mono">{att.fileName}</span>
+                        <span>{formatBytes(att.size)}</span>
+                      </div>
+                      <div className="absolute top-2 right-2 p-1 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition">
+                        <span className="material-symbols-outlined text-[16px]">zoom_in</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Audit Trail Timeline */}
+          <div
+            className={`bg-white border border-border-divider rounded p-4 shadow-stitch-sm space-y-3 ${
+              mobileTab === 'timeline' ? 'block' : mobileTab === 'evidence' ? 'hidden lg:block' : ''
+            }`}
+          >
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5 pb-2 border-b border-border-divider">
+              <span className="material-symbols-outlined text-[16px] text-primary">history</span>
+              Chronological Audit Log
+            </h2>
+
+            <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+              {(!complaint.timeline || complaint.timeline.length === 0) ? (
+                <div className="text-xs text-slate-400 text-center py-4">No audit events recorded.</div>
+              ) : (
+                complaint.timeline.map((evt, idx) => (
+                  <div key={evt.id || idx} className="flex gap-2.5 text-xs">
+                    <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />
+                    <div className="flex-1 pb-2 border-b border-slate-100">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-slate-900">{evt.action}</span>
+                        <span className="text-[10px] text-slate-400 font-mono tnum">
+                          {new Date(evt.timestamp).toLocaleString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-600 mt-0.5">
+                        By <strong className="text-slate-800">{evt.actorName}</strong> ({evt.actorRole})
+                      </div>
+                      {evt.notes && (
+                        <div className="text-[11px] text-slate-700 bg-slate-50 p-1.5 rounded mt-1 border border-slate-100">
+                          {evt.notes}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Lightbox Modal */}
       {lightboxImage && (
         <ImageViewerModal
@@ -285,733 +985,6 @@ export const ComplaintDetailPage: React.FC<ComplaintDetailPageProps> = ({
           fileName={lightboxImage.fileName}
           onClose={() => setLightboxImage(null)}
         />
-      )}
-
-      {/* Top Navigation & Breadcrumbs */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <button
-          onClick={onBack}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--color-primary)',
-            cursor: 'pointer',
-            fontSize: '0.9rem',
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: 0,
-          }}
-        >
-          ← Back to Live Register
-        </button>
-
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          {complaint.assignedJePhone && (
-            <a
-              href={`tel:${complaint.assignedJePhone}`}
-              className="btn-secondary"
-              style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem', textDecoration: 'none' }}
-            >
-              📞 Call Assigned JE
-            </a>
-          )}
-          <button
-            onClick={() => window.print()}
-            className="btn-secondary"
-            style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}
-          >
-            🖨️ Print Dossier
-          </button>
-        </div>
-      </div>
-
-      {/* Primary Header Card */}
-      <div className="civic-card" style={{ marginBottom: '1.25rem', padding: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-              <h1 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, fontFamily: 'var(--font-mono)' }}>
-                {complaint.complaintNumber}
-              </h1>
-              <button
-                onClick={handleCopyId}
-                style={{
-                  background: copiedId ? '#22c55e' : 'var(--color-border)',
-                  color: copiedId ? '#fff' : 'var(--color-text)',
-                  border: 'none',
-                  borderRadius: '4px',
-                  padding: '2px 8px',
-                  fontSize: '0.75rem',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                }}
-              >
-                {copiedId ? '✓ Copied' : '📋 Copy'}
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.85rem' }}>
-              <span style={{ color: 'var(--color-text-muted)' }}>Branch:</span>
-              <strong style={{ color: 'var(--color-primary)' }}>{complaint.branch} Branch</strong>
-              <span style={{ color: 'var(--color-border)' }}>•</span>
-              <span style={{ color: 'var(--color-text-muted)' }}>Category:</span>
-              <strong>{complaint.categoryName}</strong>
-              <span style={{ color: 'var(--color-border)' }}>•</span>
-              <span style={{ color: 'var(--color-text-muted)' }}>Channel:</span>
-              <span>{complaint.mode}</span>
-            </div>
-          </div>
-
-          {/* Right Status & SLA block */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-            <StatusBadge status={complaint.status} size="lg" />
-
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                backgroundColor: complaint.isPaused ? '#fef3c7' : isBreached ? '#fee2e2' : diffHours <= 12 ? '#fef3c7' : '#e0f2fe',
-                color: complaint.isPaused ? '#b45309' : isBreached ? '#b91c1c' : diffHours <= 12 ? '#b45309' : '#0369a1',
-                border: `1px solid ${complaint.isPaused ? '#fde68a' : isBreached ? '#fca5a5' : diffHours <= 12 ? '#fde68a' : '#bae6fd'}`,
-              }}
-            >
-              ⏱️ {complaint.isPaused
-                ? 'SLA Clock Paused'
-                : complaint.status === 'CLOSED'
-                ? 'SLA Met (Closed)'
-                : isBreached
-                ? `SLA Breached by ${Math.abs(diffHours)}h`
-                : `${diffHours}h Remaining (48h Target)`}
-            </div>
-          </div>
-        </div>
-
-        {/* 5-Stage Visual Progress Stepper */}
-        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem', position: 'relative' }}>
-            {TIMELINE_STAGES.map((stage, idx) => {
-              const isPast = idx < currentStage;
-              const isCurrent = idx === currentStage;
-
-              return (
-                <div key={stage.key} style={{ textAlign: 'center' }}>
-                  <div
-                    style={{
-                      width: '28px',
-                      height: '28px',
-                      borderRadius: '50%',
-                      margin: '0 auto 8px auto',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '0.8rem',
-                      fontWeight: 800,
-                      backgroundColor: isPast ? 'var(--color-success)' : isCurrent ? 'var(--color-primary)' : 'var(--color-border)',
-                      color: isPast || isCurrent ? '#ffffff' : 'var(--color-text-muted)',
-                      border: isCurrent ? '3px solid #93c5fd' : 'none',
-                    }}
-                  >
-                    {isPast ? '✓' : idx + 1}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '0.75rem',
-                      fontWeight: isCurrent ? 800 : 600,
-                      color: isCurrent ? 'var(--color-primary)' : isPast ? 'var(--color-text)' : 'var(--color-text-muted)',
-                    }}
-                  >
-                    {stage.label}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs Navigation */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '2px solid var(--color-border)', paddingBottom: '2px' }}>
-        {[
-          { key: 'overview', label: '📌 Overview & Territory' },
-          { key: 'timeline', label: `⏱️ Audit Trail (${complaint.timeline?.length || 0})` },
-          { key: 'evidence', label: `📷 Evidence Gallery (${(complaint.attachments?.length || 0) + (complaint.resolutionProof?.length || 0)})` },
-          { key: 'actions', label: '⚙️ Work Console & Actions' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key as any)}
-            style={{
-              padding: '0.65rem 1.25rem',
-              fontWeight: 700,
-              fontSize: '0.88rem',
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              color: activeTab === tab.key ? 'var(--color-primary)' : 'var(--color-text-muted)',
-              borderBottom: activeTab === tab.key ? '3px solid var(--color-primary)' : '3px solid transparent',
-              marginBottom: '-5px',
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Action Success Toast */}
-      {actionSuccess && (
-        <div style={{ backgroundColor: '#dcfce7', color: '#166534', padding: '0.85rem 1.25rem', borderRadius: '8px', marginBottom: '1.25rem', fontWeight: 600, border: '1px solid #bbf7d0' }}>
-          ✓ {actionSuccess}
-        </div>
-      )}
-
-      {/* Tab 1: Overview */}
-      {activeTab === 'overview' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.2fr', gap: '1.25rem' }}>
-          {/* Left Column: Complaint Details & Citizen Profile */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div className="civic-card">
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-primary)' }}>
-                Citizen Grievance Description
-              </h3>
-              <p style={{ lineHeight: '1.6', fontSize: '0.95rem', color: 'var(--color-text)', whiteSpace: 'pre-wrap', margin: 0 }}>
-                {complaint.description}
-              </p>
-            </div>
-
-            <div className="civic-card">
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-primary)' }}>
-                Location &amp; Administrative Territory
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.9rem' }}>
-                <div>
-                  <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}>Ward Number</span>
-                  <strong>{complaint.wardNumber ? `Ward ${complaint.wardNumber}` : 'Unassigned Ward'}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}>Zone Jurisdiction</span>
-                  <strong>{complaint.zone ? `Zone ${complaint.zone} (MCL)` : 'Pending Zone'}</strong>
-                </div>
-                <div style={{ gridColumn: 'span 2' }}>
-                  <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}>Physical Address</span>
-                  <span>{complaint.address || 'Address details not provided'}</span>
-                </div>
-                {complaint.landmark && (
-                  <div style={{ gridColumn: 'span 2' }}>
-                    <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}>Prominent Landmark</span>
-                    <span style={{ color: 'var(--color-accent)', fontWeight: 600 }}>{complaint.landmark}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="civic-card">
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-primary)' }}>
-                Complainant Details
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.9rem' }}>
-                <div>
-                  <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}>Name</span>
-                  <strong>{complaint.complainantName}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}>Contact Phone</span>
-                  <strong style={{ fontFamily: 'var(--font-mono)' }}>{complaint.contactNumber}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}>Submission Mode</span>
-                  <span>{complaint.mode}</span>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}>Registered At</span>
-                  <span>{new Date(complaint.submittedAt).toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Assigned Officer Profile Card */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div className="civic-card" style={{ borderTop: '4px solid var(--color-primary)' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-primary)' }}>
-                Assigned Field Officer
-              </h3>
-
-              {complaint.assignedJeName ? (
-                <div>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{complaint.assignedJeName}</h4>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-                      Designated Junior Engineer • {complaint.branch} Branch
-                    </span>
-                  </div>
-
-                  {complaint.assignedJePhone && (
-                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
-                      <a
-                        href={`tel:${complaint.assignedJePhone}`}
-                        className="btn-primary"
-                        style={{ flex: 1, textAlign: 'center', padding: '0.5rem', textDecoration: 'none', fontSize: '0.85rem' }}
-                      >
-                        📞 Call ({complaint.assignedJePhone})
-                      </a>
-                      <a
-                        href={`https://wa.me/91${complaint.assignedJePhone.replace(/\D/g, '')}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-secondary"
-                        style={{ padding: '0.5rem 0.85rem', textDecoration: 'none', fontSize: '0.85rem' }}
-                      >
-                        💬 WhatsApp
-                      </a>
-                    </div>
-                  )}
-
-                  <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '0.75rem', fontSize: '0.85rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                      <span style={{ color: 'var(--color-text-muted)' }}>Acknowledgment:</span>
-                      {complaint.assignmentAcknowledgedAt ? (
-                        <span style={{ color: 'var(--color-success)', fontWeight: 700 }}>
-                          ✓ {new Date(complaint.assignmentAcknowledgedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      ) : (
-                        <span style={{ color: '#d97706', fontWeight: 700 }}>⏳ Pending Response</span>
-                      )}
-                    </div>
-
-                    {complaint.sdoName && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <span style={{ color: 'var(--color-text-muted)' }}>Supervising SDO:</span>
-                        <strong>{complaint.sdoName}</strong>
-                      </div>
-                    )}
-
-                    {complaint.xenName && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--color-text-muted)' }}>Executive Engineer (XEN):</span>
-                        <strong>{complaint.xenName}</strong>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div style={{ padding: '1rem', backgroundColor: '#fef3c7', borderRadius: '6px', color: '#b45309', fontSize: '0.88rem' }}>
-                  ⚠️ No primary officer assigned yet. Grievance flagged for manual Control Room review.
-                </div>
-              )}
-            </div>
-
-            {/* Resolution Summary Card if resolved */}
-            {complaint.resolutionNotes && (
-              <div className="civic-card" style={{ borderLeft: '4px solid var(--color-success)' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-success)', margin: '0 0 0.5rem 0' }}>
-                  Work Resolution Summary
-                </h4>
-                <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: '1.5', color: 'var(--color-text)' }}>
-                  {complaint.resolutionNotes}
-                </p>
-                {complaint.resolvedAt && (
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
-                    Submitted on {new Date(complaint.resolvedAt).toLocaleString()}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Tab 2: Timeline */}
-      {activeTab === 'timeline' && (
-        <div className="civic-card">
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '1.5rem', color: 'var(--color-primary)' }}>
-            Immutable Audit Trail &amp; Lifecycle Events
-          </h3>
-
-          {(!complaint.timeline || complaint.timeline.length === 0) ? (
-            <p style={{ color: 'var(--color-text-muted)' }}>No audit events logged.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', position: 'relative', paddingLeft: '1.5rem' }}>
-              <div style={{ position: 'absolute', top: 0, bottom: 0, left: '6px', width: '2px', backgroundColor: 'var(--color-border)' }} />
-
-              {complaint.timeline.map((evt) => (
-                <div key={evt.id} style={{ position: 'relative' }}>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: '-1.85rem',
-                      top: '4px',
-                      width: '12px',
-                      height: '12px',
-                      borderRadius: '50%',
-                      backgroundColor: 'var(--color-primary)',
-                      border: '2px solid #fff',
-                    }}
-                  />
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                    <strong style={{ fontSize: '0.92rem', color: 'var(--color-text)' }}>{evt.action}</strong>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
-                      {new Date(evt.timestamp).toLocaleString()}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '0.35rem' }}>
-                    By <strong style={{ color: 'var(--color-primary)' }}>{evt.actorName}</strong> ({evt.actorRole})
-                  </div>
-                  {evt.notes && (
-                    <div style={{ fontSize: '0.85rem', color: 'var(--color-text)', backgroundColor: 'var(--color-bg)', padding: '0.6rem 0.85rem', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
-                      {evt.notes}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab 3: Evidence Gallery */}
-      {activeTab === 'evidence' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Citizen Initial Intake Photos */}
-          <div className="civic-card">
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-primary)' }}>
-              Citizen Initial Evidence ({complaint.attachments?.length || 0})
-            </h3>
-            {(!complaint.attachments || complaint.attachments.length === 0) ? (
-              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-                No initial photo attachments were uploaded by citizen during registration.
-              </p>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
-                {complaint.attachments.map((file) => (
-                  <div
-                    key={file.fileId}
-                    onClick={() =>
-                      setLightboxImage({
-                        url: file.fileUrl,
-                        title: `Initial Evidence: ${file.fileName}`,
-                        fileName: file.fileName,
-                      })
-                    }
-                    style={{
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s',
-                      backgroundColor: 'var(--color-bg)',
-                    }}
-                  >
-                    <div style={{ height: '120px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <img
-                        src={file.fileUrl}
-                        alt={file.fileName}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          (e.target as any).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                    <div style={{ padding: '0.5rem 0.75rem', fontSize: '0.78rem' }}>
-                      <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {file.fileName}
-                      </div>
-                      <div style={{ color: 'var(--color-text-muted)' }}>{formatBytes(file.size)}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Officer Resolution Completion Photos */}
-          <div className="civic-card">
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-success)' }}>
-              Field Resolution Proof Photos ({complaint.resolutionProof?.length || 0})
-            </h3>
-            {(!complaint.resolutionProof || complaint.resolutionProof.length === 0) ? (
-              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-                Resolution proof photos have not yet been uploaded by field team.
-              </p>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
-                {complaint.resolutionProof.map((file) => (
-                  <div
-                    key={file.fileId}
-                    onClick={() =>
-                      setLightboxImage({
-                        url: file.fileUrl,
-                        title: `Resolution Proof: ${file.fileName}`,
-                        fileName: file.fileName,
-                      })
-                    }
-                    style={{
-                      border: '1px solid #bbf7d0',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      cursor: 'pointer',
-                      backgroundColor: '#f0fdf4',
-                    }}
-                  >
-                    <div style={{ height: '120px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <img
-                        src={file.fileUrl}
-                        alt={file.fileName}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          (e.target as any).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                    <div style={{ padding: '0.5rem 0.75rem', fontSize: '0.78rem' }}>
-                      <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {file.fileName}
-                      </div>
-                      <div style={{ color: 'var(--color-text-muted)' }}>{formatBytes(file.size)}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Tab 4: Work Console & Actions */}
-      {activeTab === 'actions' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-          {/* Field Staff Console */}
-          <div className="civic-card">
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-primary)' }}>
-              Field Officer Actions (JE / CSI)
-            </h3>
-
-            {/* Acknowledge Button */}
-            <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--color-border)' }}>
-              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>1. Assignment Acknowledgment</h4>
-              {complaint.assignmentAcknowledgedAt ? (
-                <div style={{ color: 'var(--color-success)', fontSize: '0.85rem', fontWeight: 600 }}>
-                  ✓ Acknowledged on {new Date(complaint.assignmentAcknowledgedAt).toLocaleString()}
-                </div>
-              ) : (
-                <button
-                  className="btn-primary"
-                  onClick={handleAcknowledge}
-                  disabled={actionLoading}
-                  style={{ width: '100%' }}
-                >
-                  {actionLoading ? 'Acknowledging...' : 'Acknowledge Assignment Now'}
-                </button>
-              )}
-            </div>
-
-            {/* Quick Status Buttons */}
-            <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--color-border)' }}>
-              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>2. Update Status</h4>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <button
-                  className="btn-secondary"
-                  onClick={() => handleStatusChange('IN_PROGRESS', 'Field machinery and team dispatched.')}
-                  disabled={actionLoading || complaint.status === 'IN_PROGRESS'}
-                >
-                  Set In Progress
-                </button>
-                <button
-                  className="btn-secondary"
-                  onClick={() => handleStatusChange('WAITING_FOR_INFORMATION', 'Awaiting citizen address clarification.')}
-                  disabled={actionLoading}
-                >
-                  Waiting Info
-                </button>
-              </div>
-            </div>
-
-            {/* Submit Resolution Form */}
-            <div>
-              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>3. Submit Resolution Report</h4>
-              <form onSubmit={handleSubmitResolution}>
-                <textarea
-                  className="form-textarea"
-                  placeholder="Describe resolution work performed (e.g. Patch work laid, drain cleared, light repaired)..."
-                  rows={3}
-                  value={resolutionNotes}
-                  onChange={(e) => setResolutionNotes(e.target.value)}
-                  required
-                  style={{ marginBottom: '0.75rem' }}
-                />
-
-                {/* Mandatory Resolution Proof Photos */}
-                <div style={{ marginBottom: '0.75rem', padding: '0.75rem', backgroundColor: '#F8FAFC', borderRadius: '6px', border: '1px dashed var(--color-border)' }}>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '0.35rem', color: 'var(--color-primary)' }}>
-                    📷 Completion Evidence Photos (Mandatory)
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    multiple
-                    onChange={(e) => setProofFiles(Array.from(e.target.files || []))}
-                    style={{ fontSize: '0.8rem', width: '100%' }}
-                    required
-                  />
-                  {proofFiles.length > 0 && (
-                    <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--color-success)', fontWeight: 600 }}>
-                      ✓ {proofFiles.length} photo(s) selected: {proofFiles.map((f) => f.name).join(', ')}
-                    </div>
-                  )}
-                </div>
-
-                <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={actionLoading}>
-                  {actionLoading ? 'Uploading & Submitting...' : 'Submit Resolution with Proof'}
-                </button>
-              </form>
-            </div>
-          </div>
-
-          {/* Supervisor / Control Room Console */}
-          <div className="civic-card">
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-primary)' }}>
-              Supervisor &amp; Control Room Actions
-            </h3>
-
-            {/* SLA Pause / Resume Control */}
-            <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: complaint.isPaused ? '#FEF3C7' : '#F8FAFC', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: 'var(--color-primary)' }}>
-                ⏱️ SLA Clock Management
-              </h4>
-              {complaint.isPaused ? (
-                <div>
-                  <div style={{ fontSize: '0.8rem', color: '#B45309', marginBottom: '0.5rem', fontWeight: 600 }}>
-                    ⏸️ SLA Clock is currently PAUSED.
-                    {complaint.pauseReason && ` Reason: "${complaint.pauseReason}"`}
-                  </div>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{ width: '100%', backgroundColor: 'var(--color-accent)' }}
-                    onClick={handleResumeSla}
-                    disabled={actionLoading}
-                  >
-                    ▶️ Resume SLA Clock
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handlePauseSla}>
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Mandatory reason for pausing SLA (e.g. Awaiting PWD road permission)..."
-                      value={pauseReason}
-                      onChange={(e) => setPauseReason(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="btn-secondary"
-                    style={{ width: '100%' }}
-                    disabled={actionLoading || !pauseReason.trim()}
-                  >
-                    ⏸️ Pause SLA Clock
-                  </button>
-                </form>
-              )}
-            </div>
-
-            {/* Verification and Closure */}
-            {complaint.status === 'RESOLUTION_SUBMITTED' && (
-              <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: 'var(--color-success)' }}>
-                  Verify Resolution &amp; Close Grievance
-                </h4>
-                <div style={{ marginBottom: '0.5rem' }}>
-                  <label style={{ fontSize: '0.8rem', display: 'block', marginBottom: '2px' }}>Citizen Satisfaction (1-5)</label>
-                  <select className="form-select" value={verifyRating} onChange={(e) => setVerifyRating(e.target.value)}>
-                    <option value="5">5 - Highly Satisfied</option>
-                    <option value="4">4 - Satisfied</option>
-                    <option value="3">3 - Neutral</option>
-                    <option value="2">2 - Unsatisfied</option>
-                    <option value="1">1 - Highly Unsatisfied</option>
-                  </select>
-                </div>
-                <div style={{ marginBottom: '0.75rem' }}>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="Citizen verification feedback or QC remarks..."
-                    value={verifyFeedback}
-                    onChange={(e) => setVerifyFeedback(e.target.value)}
-                  />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{ backgroundColor: 'var(--color-success)', width: '100%' }}
-                    onClick={() => handleVerifyClose('accepted')}
-                    disabled={actionLoading}
-                  >
-                    ✓ Accept &amp; Close
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', width: '100%' }}
-                    onClick={() => handleVerifyClose('disputed')}
-                    disabled={actionLoading}
-                  >
-                    ✕ Dispute Work
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Reassignment Form */}
-            <div>
-              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>Reassign Grievance</h4>
-              <form onSubmit={handleReassign}>
-                <div style={{ marginBottom: '0.5rem' }}>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="New Officer Name (e.g. Vikas Kumar JE)..."
-                    value={reassignName}
-                    onChange={(e) => setReassignName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div style={{ marginBottom: '0.5rem' }}>
-                  <input
-                    type="tel"
-                    className="form-input"
-                    placeholder="Officer Contact Number..."
-                    value={reassignPhone}
-                    onChange={(e) => setReassignPhone(e.target.value)}
-                  />
-                </div>
-                <div style={{ marginBottom: '0.75rem' }}>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="Reason for reassignment..."
-                    value={reassignReason}
-                    onChange={(e) => setReassignReason(e.target.value)}
-                    required
-                  />
-                </div>
-                <button type="submit" className="btn-secondary" style={{ width: '100%' }} disabled={actionLoading}>
-                  {actionLoading ? 'Reassigning...' : 'Reassign Officer'}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
