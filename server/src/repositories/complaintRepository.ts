@@ -27,6 +27,7 @@ export interface CreateComplaintDbInput {
   assignedJeId?: string;
   sourceSystem?: string;
   sourceId?: string;
+  isUnclaimed?: boolean;
   initialMedia?: {
     storageKey: string;
     mediaType: string;
@@ -34,6 +35,7 @@ export interface CreateComplaintDbInput {
     fileName: string;
     purpose: 'intake' | 'progress' | 'resolution' | 'dispute';
     uploadState?: 'pending' | 'uploaded' | 'failed';
+    driveFileId?: string;
   }[];
 }
 
@@ -81,16 +83,20 @@ export class ComplaintRepository {
     storageKey: string,
     uploadState: 'pending' | 'uploaded' | 'failed',
     driveFileId?: string,
-    errorMessage?: string
+    errorMessage?: string,
+    fileName?: string,
+    fileSizeBytes?: number
   ): Promise<void> {
     const pool = getDbPool();
     await pool.query(
       `UPDATE complaint_media 
        SET upload_state = $1,
-           storage_key = COALESCE($2, storage_key),
-           error_message = $3
-       WHERE storage_key = $4`,
-      [uploadState, driveFileId || null, errorMessage || null, storageKey]
+           drive_file_id = COALESCE($2, drive_file_id),
+           error_message = $3,
+           file_name = COALESCE($4, file_name),
+           file_size_bytes = COALESCE($5, file_size_bytes)
+       WHERE storage_key = $6 OR drive_file_id = $6`,
+      [uploadState, driveFileId || null, errorMessage || null, fileName || null, fileSizeBytes || null, storageKey]
     );
   }
 
@@ -145,10 +151,10 @@ export class ComplaintRepository {
           category_id, branch, current_status, mode,
           zone_code, ward_number, address, landmark,
           latitude, longitude, assigned_je_id,
-          submitted_at, due_at, sla_policy_version,
+          submitted_at, due_at, sla_policy_version, is_unclaimed,
           created_at, updated_at
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, NOW(), $19, 'v1.0', NOW(), NOW()
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, NOW(), $19, 'v1.0', $20, NOW(), NOW()
         ) RETURNING id`,
         [
           complaintNumber,
@@ -170,6 +176,7 @@ export class ComplaintRepository {
           input.longitude || null,
           input.assignedJeId || null,
           input.dueAt,
+          input.isUnclaimed || false,
         ]
       );
 
@@ -205,9 +212,9 @@ export class ComplaintRepository {
         for (const m of input.initialMedia) {
           await client.query(
             `INSERT INTO complaint_media (
-              complaint_id, storage_key, media_type, purpose, upload_state, created_at
-            ) VALUES ($1, $2, $3, $4, $5, NOW())`,
-            [complaintId, m.storageKey, m.mediaType, m.purpose, m.uploadState || 'pending']
+              complaint_id, storage_key, drive_file_id, file_name, file_size_bytes, media_type, purpose, upload_state, created_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+            [complaintId, m.storageKey, m.driveFileId || null, m.fileName || null, m.size || null, m.mediaType, m.purpose, m.uploadState || 'pending']
           );
         }
       }
@@ -311,12 +318,12 @@ export class ComplaintRepository {
 
     mediaRes.rows.forEach((m) => {
       const att: ComplaintAttachment = {
-        fileId: m.storage_key,
-        fileName: m.storage_key,
+        fileId: m.drive_file_id || m.storage_key,
+        fileName: m.file_name || m.storage_key,
         mimeType: m.media_type,
-        size: 250000,
+        size: m.file_size_bytes ? parseInt(m.file_size_bytes, 10) : 250000,
         category: m.purpose === 'resolution' ? 'res' : 'source',
-        fileUrl: `/api/drive/files/${m.storage_key}`,
+        fileUrl: `/api/drive/files/${m.drive_file_id || m.storage_key}`,
       };
 
       if (m.purpose === 'resolution') {
@@ -916,6 +923,71 @@ export class ComplaintRepository {
 
       const updated = await this.getComplaintById(complaintId);
       if (!updated) throw new Error('Failed to retrieve resumed complaint.');
+      return updated;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * Claim an unclaimed grievance by authenticated citizen whose verified phone matches
+   */
+  static async claimComplaint(
+    complaintId: string,
+    citizenUserId: string,
+    citizenPhone: string
+  ): Promise<Complaint> {
+    const pool = getDbPool();
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      const cleanPhone = citizenPhone.replace(/\D/g, '').slice(-10);
+      const compRes = await client.query<any>(
+        'SELECT id, contact_number, citizen_id, is_unclaimed FROM complaints WHERE id = $1 FOR UPDATE',
+        [complaintId]
+      );
+
+      if (compRes.rows.length === 0) throw new Error('Complaint not found.');
+
+      const row = compRes.rows[0];
+      const compPhone = (row.contact_number || '').replace(/\D/g, '').slice(-10);
+
+      if (compPhone !== cleanPhone) {
+        throw new Error('Verification failed: Complaint contact number does not match your verified citizen phone number.');
+      }
+
+      if (row.citizen_id && row.citizen_id !== citizenUserId && !row.is_unclaimed) {
+        throw new Error('Complaint has already been claimed by another registered citizen account.');
+      }
+
+      await client.query(
+        'UPDATE complaints SET citizen_id = $1, is_unclaimed = FALSE, updated_at = NOW() WHERE id = $2',
+        [citizenUserId, complaintId]
+      );
+
+      await client.query(
+        `INSERT INTO complaint_status_history (
+          complaint_id, previous_status, new_status, actor_user_id, action_reason, created_at
+        ) VALUES (
+          $1, 
+          (SELECT current_status FROM complaints WHERE id = $1), 
+          (SELECT current_status FROM complaints WHERE id = $1), 
+          $2, 
+          'Grievance ownership claimed by verified citizen account', 
+          NOW()
+        )`,
+        [complaintId, citizenUserId]
+      );
+
+      await client.query('COMMIT');
+
+      const updated = await this.getComplaintById(complaintId);
+      if (!updated) throw new Error('Failed to retrieve claimed complaint.');
       return updated;
     } catch (err) {
       await client.query('ROLLBACK');
