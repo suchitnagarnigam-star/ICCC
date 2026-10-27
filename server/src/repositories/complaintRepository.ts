@@ -978,6 +978,15 @@ export class ComplaintRepository {
     try {
       await client.query('BEGIN');
 
+      // Enforce Verified Phone Possession Gate
+      const userRes = await client.query<{ is_phone_verified: boolean }>(
+        'SELECT is_phone_verified FROM users WHERE id = $1',
+        [citizenUserId]
+      );
+      if (userRes.rows.length === 0 || !userRes.rows[0].is_phone_verified) {
+        throw new Error('Phone ownership verification required: You must verify your mobile number via OTP before claiming grievances.');
+      }
+
       const cleanPhone = citizenPhone.replace(/\D/g, '').slice(-10);
       const compRes = await client.query<any>(
         'SELECT id, contact_number, citizen_id, is_unclaimed FROM complaints WHERE id = $1 FOR UPDATE',

@@ -58,6 +58,7 @@ router.post('/login', checkLoginRateLimit, async (req: Request, res: Response): 
     branch: user.branch,
     designation: user.designation,
     allowedWards,
+    isPhoneVerified: true,
   };
 
   const token = jwt.sign(payload, ENV.JWT_SECRET, { expiresIn: ENV.JWT_EXPIRES_IN as any });
@@ -71,11 +72,77 @@ router.post('/login', checkLoginRateLimit, async (req: Request, res: Response): 
 });
 
 /**
+ * POST /api/auth/citizen/send-otp
+ * Generates and stores a 6-digit verification code with 5-minute validity
+ */
+router.post('/citizen/send-otp', checkLoginRateLimit, async (req: Request, res: Response): Promise<void> => {
+  const { phoneNumber } = req.body || {};
+  if (!phoneNumber) {
+    res.status(400).json({ success: false, error: 'Phone number is required.' });
+    return;
+  }
+
+  const cleanPhone = String(phoneNumber).trim().replace(/\D/g, '').slice(-10);
+  if (cleanPhone.length !== 10) {
+    res.status(400).json({ success: false, error: 'Please provide a valid 10-digit mobile number.' });
+    return;
+  }
+
+  try {
+    const otpCode = String(Math.floor(100000 + Math.random() * 900000));
+    await UserRepository.createPhoneVerificationOtp(cleanPhone, otpCode, 5);
+
+    // In production, integrate with SMS gateway; in dev/test, return OTP in response for automated verification
+    const isDev = ENV.NODE_ENV !== 'production';
+    res.json({
+      success: true,
+      message: 'Verification OTP sent successfully (valid for 5 minutes).',
+      phoneNumber: cleanPhone,
+      expiresInSeconds: 300,
+      ...(isDev ? { debugOtp: otpCode } : {}),
+    });
+  } catch (error: any) {
+    console.error('[AuthRoutes] Error sending OTP:', error);
+    res.status(500).json({ success: false, error: 'Failed to generate verification OTP.' });
+  }
+});
+
+/**
+ * POST /api/auth/citizen/verify-otp
+ * Confirms possession of mobile number and updates user verification state
+ */
+router.post('/citizen/verify-otp', checkLoginRateLimit, async (req: Request, res: Response): Promise<void> => {
+  const { phoneNumber, otp } = req.body || {};
+  if (!phoneNumber || !otp) {
+    res.status(400).json({ success: false, error: 'Both phoneNumber and otp are required.' });
+    return;
+  }
+
+  const cleanPhone = String(phoneNumber).trim().replace(/\D/g, '').slice(-10);
+  try {
+    const verified = await UserRepository.verifyPhoneOtp(cleanPhone, String(otp).trim());
+    if (!verified) {
+      res.status(400).json({ success: false, error: 'Invalid or expired verification OTP.' });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: 'Mobile number ownership verified successfully.',
+      phoneNumber: cleanPhone,
+    });
+  } catch (error: any) {
+    console.error('[AuthRoutes] Error verifying OTP:', error);
+    res.status(500).json({ success: false, error: 'Failed to verify OTP.' });
+  }
+});
+
+/**
  * POST /api/auth/citizen/register
- * Citizen Account Self-Registration
+ * Citizen Account Self-Registration (supports verified or unverified states)
  */
 router.post('/citizen/register', checkLoginRateLimit, async (req: Request, res: Response): Promise<void> => {
-  const { name, phoneNumber, pin } = req.body;
+  const { name, phoneNumber, pin, otp } = req.body;
 
   if (!name || !phoneNumber || !pin) {
     res.status(400).json({ success: false, error: 'Full name, phone number, and 4-digit PIN are required.' });
@@ -104,14 +171,25 @@ router.post('/citizen/register', checkLoginRateLimit, async (req: Request, res: 
   }
 
   try {
+    let isPhoneVerified = false;
+    if (otp) {
+      const verified = await UserRepository.verifyPhoneOtp(cleanPhone, String(otp).trim());
+      if (!verified) {
+        res.status(400).json({ success: false, error: 'Invalid or expired OTP provided during registration.' });
+        return;
+      }
+      isPhoneVerified = true;
+    }
+
     const pinHash = await bcrypt.hash(String(pin).trim(), 10);
-    const citizen = await UserRepository.createCitizenUser(String(name).trim(), cleanPhone, pinHash);
+    const citizen = await UserRepository.createCitizenUser(String(name).trim(), cleanPhone, pinHash, isPhoneVerified);
 
     const payload: JWTPayload = {
       userId: citizen.id,
       name: citizen.name,
       phoneNumber: citizen.phone_number,
       role: 'citizen',
+      isPhoneVerified,
     };
 
     const token = jwt.sign(payload, ENV.JWT_SECRET, { expiresIn: ENV.JWT_EXPIRES_IN as any });
@@ -163,6 +241,7 @@ router.post('/citizen/login', checkLoginRateLimit, async (req: Request, res: Res
     name: user.name,
     phoneNumber: user.phone_number,
     role: 'citizen',
+    isPhoneVerified: Boolean(user.is_phone_verified),
   };
 
   const token = jwt.sign(payload, ENV.JWT_SECRET, { expiresIn: ENV.JWT_EXPIRES_IN as any });
@@ -202,6 +281,7 @@ router.get('/me', authenticateToken, async (req: Request, res: Response): Promis
         branch: user.branch,
         designation: user.designation,
         allowedWards,
+        isPhoneVerified: Boolean(user.is_phone_verified),
         assignments,
       },
     });

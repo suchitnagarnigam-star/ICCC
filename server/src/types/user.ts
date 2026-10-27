@@ -21,6 +21,7 @@ export interface User {
   wardNumber?: number;
   branch?: string;
   isActive: boolean;
+  isPhoneVerified?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,5 +36,6 @@ export interface JWTPayload {
   branch?: string;
   designation?: string;
   allowedWards?: number[];
+  isPhoneVerified?: boolean;
 }
 

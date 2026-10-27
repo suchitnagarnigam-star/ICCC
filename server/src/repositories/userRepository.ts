@@ -14,6 +14,7 @@ export interface DbUser {
   ward_number?: number;
   branch?: string;
   is_active: boolean;
+  is_phone_verified?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -96,19 +97,59 @@ export class UserRepository {
   static async createCitizenUser(
     name: string,
     phoneNumber: string,
-    pinHash: string
+    pinHash: string,
+    isPhoneVerified: boolean = false
   ): Promise<DbUser> {
     const pool = getDbPool();
     const cleanPhone = phoneNumber.trim().replace(/\D/g, '').slice(-10);
 
     const res = await pool.query<DbUser>(
-      `INSERT INTO users (name, phone_number, role, designation, pin_hash, is_active)
-       VALUES ($1, $2, 'citizen', 'Citizen Complainant', $3, TRUE)
+      `INSERT INTO users (name, phone_number, role, designation, pin_hash, is_active, is_phone_verified)
+       VALUES ($1, $2, 'citizen', 'Citizen Complainant', $3, TRUE, $4)
        RETURNING *`,
-      [name.trim(), cleanPhone, pinHash]
+      [name.trim(), cleanPhone, pinHash, isPhoneVerified]
     );
 
     return res.rows[0];
+  }
+
+  /**
+   * Store a generated 6-digit OTP for phone ownership verification
+   */
+  static async createPhoneVerificationOtp(
+    phoneNumber: string,
+    otpCode: string,
+    expiryMinutes: number = 5
+  ): Promise<void> {
+    const pool = getDbPool();
+    const cleanPhone = phoneNumber.trim().replace(/\D/g, '').slice(-10);
+    // Invalidate prior unused OTPs for this phone
+    await pool.query('UPDATE phone_verification_otps SET is_used = TRUE WHERE phone_number = $1', [cleanPhone]);
+    await pool.query(
+      `INSERT INTO phone_verification_otps (phone_number, otp_code, expires_at)
+       VALUES ($1, $2, NOW() + ($3 || ' minutes')::interval)`,
+      [cleanPhone, otpCode, String(expiryMinutes)]
+    );
+  }
+
+  /**
+   * Verify an entered OTP and mark user as verified in database
+   */
+  static async verifyPhoneOtp(phoneNumber: string, otpCode: string): Promise<boolean> {
+    const pool = getDbPool();
+    const cleanPhone = phoneNumber.trim().replace(/\D/g, '').slice(-10);
+    const res = await pool.query<any>(
+      `SELECT id FROM phone_verification_otps 
+       WHERE phone_number = $1 AND otp_code = $2 AND is_used = FALSE AND expires_at > NOW() 
+       ORDER BY created_at DESC LIMIT 1`,
+      [cleanPhone, otpCode.trim()]
+    );
+    if (res.rows.length === 0) return false;
+
+    const otpId = res.rows[0].id;
+    await pool.query('UPDATE phone_verification_otps SET is_used = TRUE WHERE id = $1', [otpId]);
+    await pool.query('UPDATE users SET is_phone_verified = TRUE, updated_at = NOW() WHERE phone_number = $1', [cleanPhone]);
+    return true;
   }
 }
 
