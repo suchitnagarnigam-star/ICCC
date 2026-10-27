@@ -3,14 +3,13 @@ import multer from 'multer';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import {
-  Complaint,
   ComplaintStatus,
   DepartmentBranch,
-  ComplaintTimelineEvent,
-  ComplaintAttachment,
 } from '../types/complaint';
 import { INITIAL_COMPLAINT_CATEGORIES } from './referenceRoutes';
-import { resolveAssignedOfficer, getZoneForWard } from '../services/officerMappingService';
+import { getZoneForWard } from '../services/officerMappingService';
+import { ComplaintRepository, CreateComplaintDbInput } from '../repositories/complaintRepository';
+import { UserRepository } from '../repositories/userRepository';
 import {
   createComplaintDriveFolder,
   uploadComplaintFiles,
@@ -35,262 +34,89 @@ const upload = multer({
   limits: { fileSize: 15 * 1024 * 1024 }, // 15MB max per file
 });
 
-// Production complaint storage (in-memory baseline synced with PostgreSQL pool)
-const COMPLAINTS_STORE: Complaint[] = [
-  {
-    id: 'cmp-001',
-    complaintNumber: 'MCL-2026-0001',
-    complainantName: 'Amarjeet Singh',
-    contactNumber: '8146599777',
-    description: 'Road potholes near Bhai Ranjeet Singh Nagar DAV School. Severe road surface damage causing traffic congestion.',
-    categoryId: '6',
-    categoryName: 'Potholes',
-    branch: 'B&R',
-    status: 'ASSIGNED',
-    mode: '24/7 Hotline',
-    zone: 'D',
-    wardNumber: 64,
-    address: '16B Bhai Ranjeet Singh Nagar',
-    landmark: 'Near DAV School',
-    assignedJeId: 'je-br-w64',
-    assignedJeName: 'Ankush Sharma (JE B&R)',
-    assignedJePhone: '7986605351',
-    sdoName: 'Vaneet Kumar',
-    xenName: 'Arvind Kumar',
-    submittedAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-    dueAt: new Date(Date.now() + 3600000 * 36).toISOString(),
-    slaBreached: false,
-    attachments: [
-      {
-        fileId: 'mock-img-001',
-        fileName: 'pothole_evidence_1.jpg',
-        mimeType: 'image/jpeg',
-        size: 245000,
-        category: 'source',
-        fileUrl: '/api/drive/files/mock-img-001',
-      },
-    ],
-    timeline: [
-      {
-        id: 'tl-101',
-        complaintId: 'cmp-001',
-        timestamp: new Date(Date.now() - 3600000 * 12).toISOString(),
-        actorName: '24/7 Control Room Operator',
-        actorRole: 'OPERATOR',
-        action: 'REGISTERED',
-        newStatus: 'SUBMITTED',
-        notes: 'Grievance registered from citizen hotline call.',
-      },
-      {
-        id: 'tl-102',
-        complaintId: 'cmp-001',
-        timestamp: new Date(Date.now() - 3600000 * 11).toISOString(),
-        actorName: 'Automated Dispatch System',
-        actorRole: 'SYSTEM',
-        action: 'ASSIGNED',
-        previousStatus: 'SUBMITTED',
-        newStatus: 'ASSIGNED',
-        notes: 'Automatically mapped to Ward 64 B&R JE Ankush Sharma (7986605351).',
-      },
-    ],
-    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 11).toISOString(),
-  },
-  {
-    id: 'cmp-002',
-    complaintNumber: 'MCL-2026-0002',
-    complainantName: 'Ashwin Kumar',
-    contactNumber: '9988150511',
-    description: 'Sewerage overflow in street during rainy season. Water mixing with main street passage.',
-    categoryId: '12',
-    categoryName: 'Sewerage/Road Jalis Overchock.',
-    branch: 'O&M',
-    status: 'RESOLUTION_SUBMITTED',
-    mode: 'WhatsApp Helpline',
-    zone: 'B',
-    wardNumber: 7,
-    address: 'Jain nagar, Rahon road',
-    landmark: 'Near Dhawan Hospital',
-    assignedJeId: 'je-om-w7',
-    assignedJeName: 'Sh. Ramandeep Singh (JE O&M)',
-    assignedJePhone: '9855523213',
-    sdoName: 'Sukhdeep Singh',
-    xenName: 'Baljinder Singh',
-    submittedAt: new Date(Date.now() - 3600000 * 28).toISOString(),
-    dueAt: new Date(Date.now() + 3600000 * 20).toISOString(),
-    assignmentAcknowledgedAt: new Date(Date.now() - 3600000 * 26).toISOString(),
-    acknowledgedByOfficerId: 'je-om-w7',
-    resolvedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-    slaBreached: false,
-    resolutionNotes: 'Super suction machine deployed. Blockage cleared at Rahon road main line and street drain jali cleaned.',
-    attachments: [
-      {
-        fileId: 'mock-img-002',
-        fileName: 'sewer_overflow.jpg',
-        mimeType: 'image/jpeg',
-        size: 382000,
-        category: 'source',
-        fileUrl: '/api/drive/files/mock-img-002',
-      },
-    ],
-    resolutionProof: [
-      {
-        fileId: 'mock-img-res-002',
-        fileName: 'sewer_cleared_proof.jpg',
-        mimeType: 'image/jpeg',
-        size: 412000,
-        category: 'res',
-        fileUrl: '/api/drive/files/mock-img-res-002',
-      },
-    ],
-    timeline: [
-      {
-        id: 'tl-201',
-        complaintId: 'cmp-002',
-        timestamp: new Date(Date.now() - 3600000 * 28).toISOString(),
-        actorName: 'WhatsApp MCL Bot',
-        actorRole: 'SYSTEM',
-        action: 'REGISTERED',
-        newStatus: 'SUBMITTED',
-        notes: 'Inbound WhatsApp complaint with geotagged address.',
-      },
-      {
-        id: 'tl-202',
-        complaintId: 'cmp-002',
-        timestamp: new Date(Date.now() - 3600000 * 27).toISOString(),
-        actorName: 'System Router',
-        actorRole: 'SYSTEM',
-        action: 'ASSIGNED',
-        newStatus: 'ASSIGNED',
-        notes: 'Assigned to JE Ramandeep Singh (O&M Ward 7).',
-      },
-      {
-        id: 'tl-203',
-        complaintId: 'cmp-002',
-        timestamp: new Date(Date.now() - 3600000 * 26).toISOString(),
-        actorName: 'Sh. Ramandeep Singh',
-        actorRole: 'FIELD_OFFICER',
-        action: 'ACKNOWLEDGED',
-        previousStatus: 'ASSIGNED',
-        newStatus: 'ACKNOWLEDGED',
-        notes: 'Officer acknowledged assignment and scheduled super suction team.',
-      },
-      {
-        id: 'tl-204',
-        complaintId: 'cmp-002',
-        timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
-        actorName: 'Sh. Ramandeep Singh',
-        actorRole: 'FIELD_OFFICER',
-        action: 'RESOLUTION_SUBMITTED',
-        previousStatus: 'ACKNOWLEDGED',
-        newStatus: 'RESOLUTION_SUBMITTED',
-        notes: 'Blockage cleared, suction completed, and photo proof submitted.',
-      },
-    ],
-    createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-  },
-];
-
-// Helper: Calculate if SLA is breached
-function computeSlaBreached(c: Complaint): boolean {
-  if (c.status === 'CLOSED' || c.status === 'RESOLUTION_SUBMITTED') {
-    return false;
-  }
-  return new Date().getTime() > new Date(c.dueAt).getTime();
-}
-
 /**
  * GET /api/complaints
- * Filter complaints by status, branch, zone, ward, or search query.
+ * Filter complaints by status, branch, zone, ward, or search query directly from PostgreSQL.
  */
-router.get('/', (req: Request, res: Response) => {
-  const { status, branch, zone, wardNumber, search } = req.query;
-  let filtered = COMPLAINTS_STORE.map((c) => ({
-    ...c,
-    slaBreached: computeSlaBreached(c),
-  }));
+router.get('/', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { status, branch, zone, wardNumber, search, page, limit } = req.query;
 
-  if (status) {
-    filtered = filtered.filter((c) => c.status.toLowerCase() === String(status).toLowerCase());
-  }
-  if (branch) {
-    filtered = filtered.filter((c) => c.branch.toLowerCase() === String(branch).toLowerCase());
-  }
-  if (zone) {
-    filtered = filtered.filter((c) => c.zone?.toLowerCase() === String(zone).toLowerCase());
-  }
-  if (wardNumber) {
-    filtered = filtered.filter((c) => c.wardNumber === Number(wardNumber));
-  }
-  if (search) {
-    const q = String(search).toLowerCase();
-    filtered = filtered.filter(
-      (c) =>
-        c.complaintNumber.toLowerCase().includes(q) ||
-        c.complainantName.toLowerCase().includes(q) ||
-        c.contactNumber.includes(q) ||
-        c.description.toLowerCase().includes(q) ||
-        (c.address && c.address.toLowerCase().includes(q)) ||
-        (c.assignedJeName && c.assignedJeName.toLowerCase().includes(q))
-    );
-  }
+    const result = await ComplaintRepository.listComplaints({
+      status: status ? String(status) : undefined,
+      branch: branch ? String(branch) : undefined,
+      zone: zone ? String(zone) : undefined,
+      wardNumber: wardNumber ? parseInt(String(wardNumber), 10) : undefined,
+      search: search ? String(search) : undefined,
+      page: page ? parseInt(String(page), 10) : 1,
+      limit: limit ? parseInt(String(limit), 10) : 50,
+    });
 
-  res.json({
-    success: true,
-    data: filtered,
-    total: filtered.length,
-  });
+    res.json({
+      success: true,
+      data: result.data,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+    });
+  } catch (error: any) {
+    console.error('[ComplaintRoutes] Error listing complaints:', error);
+    res.status(500).json({ success: false, error: 'Failed to retrieve complaints from database.' });
+  }
 });
 
 /**
  * GET /api/complaints/:id
- * Retrieve single complaint with attachments, assigned staff, and timeline.
+ * Retrieve single complaint with attachments, assigned staff, and timeline from PostgreSQL.
  */
-router.get('/:id', (req: Request, res: Response): void => {
-  const id = req.params.id;
-  const complaint = COMPLAINTS_STORE.find(
-    (c) => c.id === id || c.complaintNumber.toLowerCase() === id.toLowerCase()
-  );
+router.get('/:id', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id;
+    const complaint = await ComplaintRepository.getComplaintById(id);
 
-  if (!complaint) {
-    res.status(404).json({ success: false, error: 'Complaint record not found.' });
-    return;
+    if (!complaint) {
+      res.status(404).json({ success: false, error: 'Complaint record not found.' });
+      return;
+    }
+
+    res.json({
+      success: true,
+      data: complaint,
+    });
+  } catch (error: any) {
+    console.error(`[ComplaintRoutes] Error fetching complaint ${req.params.id}:`, error);
+    res.status(500).json({ success: false, error: 'Failed to retrieve complaint record.' });
   }
-
-  res.json({
-    success: true,
-    data: {
-      ...complaint,
-      slaBreached: computeSlaBreached(complaint),
-    },
-  });
 });
 
 /**
  * GET /api/complaints/:id/timeline
  * Retrieve chronological audit trail for a complaint.
  */
-router.get('/:id/timeline', (req: Request, res: Response): void => {
-  const id = req.params.id;
-  const complaint = COMPLAINTS_STORE.find(
-    (c) => c.id === id || c.complaintNumber.toLowerCase() === id.toLowerCase()
-  );
+router.get('/:id/timeline', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id;
+    const complaint = await ComplaintRepository.getComplaintById(id);
 
-  if (!complaint) {
-    res.status(404).json({ success: false, error: 'Complaint not found.' });
-    return;
+    if (!complaint) {
+      res.status(404).json({ success: false, error: 'Complaint not found.' });
+      return;
+    }
+
+    res.json({
+      success: true,
+      data: complaint.timeline || [],
+    });
+  } catch (error: any) {
+    console.error(`[ComplaintRoutes] Error fetching timeline for ${req.params.id}:`, error);
+    res.status(500).json({ success: false, error: 'Failed to retrieve timeline.' });
   }
-
-  res.json({
-    success: true,
-    data: complaint.timeline || [],
-  });
 });
 
 /**
  * POST /api/complaints
  * Comprehensive multipart complaint registration with auto-routing and background Drive upload.
+ * Atomic PostgreSQL transaction across complaints, assignments, timeline, and media ledger.
  */
 router.post(
   '/',
@@ -299,14 +125,14 @@ router.post(
     { name: 'evidenceImages', maxCount: 5 },
   ]),
   async (req: Request, res: Response): Promise<void> => {
-    try {
-      const body = req.body || {};
-      const filesMap = (req.files as Record<string, Express.Multer.File[]>) || {};
-      const evidenceFiles: Express.Multer.File[] = [
-        ...(filesMap['evidence'] || []),
-        ...(filesMap['evidenceImages'] || []),
-      ];
+    const body = req.body || {};
+    const filesMap = (req.files as Record<string, Express.Multer.File[]>) || {};
+    const evidenceFiles: Express.Multer.File[] = [
+      ...(filesMap['evidence'] || []),
+      ...(filesMap['evidenceImages'] || []),
+    ];
 
+    try {
       const complainantName = (body.complainantName || body.citizenName || '').trim();
       const contactNumber = (body.contactNumber || body.phoneNumber || '').trim();
       const description = (body.description || '').trim();
@@ -317,7 +143,6 @@ router.post(
       const mode = body.mode || 'Citizen Portal';
 
       if (!complainantName || !contactNumber || !description) {
-        // Clean up uploaded files if validation fails
         void deleteTemporaryFiles(evidenceFiles);
         res.status(400).json({
           success: false,
@@ -334,65 +159,29 @@ router.post(
       // Server-side zone validation and automatic derivation
       const derivedZone = wardNumber ? getZoneForWard(wardNumber) || body.zone : body.zone;
 
-      // Auto-assign Field Officer from 95-Ward Roster
-      let assignedOfficer = wardNumber ? resolveAssignedOfficer(wardNumber, branch) : null;
+      // Auto-assign Field Officer from live Database Roster (staff_area_assignments)
+      let assignedOfficerUser = wardNumber ? await UserRepository.findOfficerForWardAndBranch(wardNumber, branch) : null;
 
-      const newSeq = COMPLAINTS_STORE.length + 1;
-      const newId = `cmp-${String(newSeq).padStart(3, '0')}`;
-      const complaintNumber = `MCL-2026-${String(newSeq).padStart(4, '0')}`;
-      const now = new Date().toISOString();
-      const dueAt = new Date(Date.now() + 48 * 3600000).toISOString(); // 48-Hour SLA
+      // 48-Hour SLA (working-calendar engine in Phase 4)
+      const dueAt = new Date(Date.now() + 48 * 3600000).toISOString();
 
-      const initialStatus: ComplaintStatus = assignedOfficer ? 'ASSIGNED' : 'NEEDS_REVIEW';
-
-      // Construct Initial Attachments (with local temp URLs, updated after background upload)
-      const initialAttachments: ComplaintAttachment[] = evidenceFiles.map((file, idx) => ({
-        fileId: `temp-${Date.now()}-${idx}`,
-        fileName: file.originalname,
-        mimeType: file.mimetype,
-        size: file.size,
-        category: 'source',
-        fileUrl: `/api/drive/files/temp-${idx}`,
+      // Prepare Initial Media records
+      const initialMedia = evidenceFiles.map((f, idx) => ({
+        storageKey: `temp-${Date.now()}-${idx}-${path.basename(f.filename)}`,
+        mediaType: f.mimetype || 'image/jpeg',
+        size: f.size,
+        fileName: f.originalname,
+        purpose: 'intake' as const,
+        uploadState: 'pending' as const,
       }));
 
-      // Build Initial Timeline
-      const initialTimeline: ComplaintTimelineEvent[] = [
-        {
-          id: `tl-${randomUUID().slice(0, 8)}`,
-          complaintId: newId,
-          timestamp: now,
-          actorName: complainantName,
-          actorRole: 'CITIZEN',
-          action: 'REGISTERED',
-          newStatus: 'SUBMITTED',
-          notes: `Grievance registered via ${mode}. Category: ${categoryName} (${branch}).`,
-        },
-      ];
-
-      if (assignedOfficer) {
-        initialTimeline.push({
-          id: `tl-${randomUUID().slice(0, 8)}`,
-          complaintId: newId,
-          timestamp: now,
-          actorName: 'Territorial Routing Engine',
-          actorRole: 'SYSTEM',
-          action: 'ASSIGNED',
-          previousStatus: 'SUBMITTED',
-          newStatus: 'ASSIGNED',
-          notes: `Territory auto-assigned: Ward ${wardNumber} (Zone ${derivedZone || 'MCL'}) to ${assignedOfficer.primaryOfficerName}. Contact: ${assignedOfficer.primaryOfficerPhone}.`,
-        });
-      }
-
-      const newComplaint: Complaint = {
-        id: newId,
-        complaintNumber,
+      const createInput: CreateComplaintDbInput = {
         complainantName,
         contactNumber,
         description,
         categoryId,
         categoryName,
         branch,
-        status: initialStatus,
         mode,
         zone: derivedZone,
         wardNumber,
@@ -400,54 +189,57 @@ router.post(
         landmark,
         latitude: body.latitude ? parseFloat(body.latitude) : undefined,
         longitude: body.longitude ? parseFloat(body.longitude) : undefined,
-        assignedJeId: assignedOfficer?.primaryOfficerId,
-        assignedJeName: assignedOfficer?.primaryOfficerName,
-        assignedJePhone: assignedOfficer?.primaryOfficerPhone,
-        sdoName: assignedOfficer?.supervisingSdoName,
-        xenName: assignedOfficer?.supervisingXenName,
-        submittedAt: now,
         dueAt,
-        slaBreached: false,
-        attachments: initialAttachments,
-        timeline: initialTimeline,
-        createdAt: now,
-        updatedAt: now,
+        citizenId: body.citizenId || undefined,
+        assignedJeId: assignedOfficerUser?.id,
+        sourceSystem: 'ICCC_WEB',
+        initialMedia,
       };
 
-      COMPLAINTS_STORE.unshift(newComplaint);
+      const createdComplaint = await ComplaintRepository.createComplaint(createInput);
 
       // Return HTTP 201 immediately so citizen/UI receives tracking number without waiting
       res.status(201).json({
         success: true,
         message: 'Grievance registered successfully.',
-        data: newComplaint,
+        data: createdComplaint,
       });
 
-      // Background Processing (Drive folder, file sync, cleanup)
+      // Background Processing (Drive folder, file sync, cleanup, and DB media status update)
       void (async () => {
         try {
           if (evidenceFiles.length > 0) {
-            await createComplaintDriveFolder(complaintNumber);
-            const uploadedFiles = await uploadComplaintFiles(complaintNumber, 'source', evidenceFiles);
+            await createComplaintDriveFolder(createdComplaint.complaintNumber);
+            const uploadedFiles = await uploadComplaintFiles(createdComplaint.complaintNumber, 'source', evidenceFiles);
 
-            if (uploadedFiles.length > 0) {
-              newComplaint.attachments = uploadedFiles.map((f) => ({
-                fileId: f.fileId,
-                fileName: f.fileName,
-                mimeType: f.mimeType,
-                size: f.size,
-                category: 'source',
-                fileUrl: f.fileUrl || `/api/drive/files/${f.fileId}`,
-              }));
+            for (let i = 0; i < uploadedFiles.length; i++) {
+              const u = uploadedFiles[i];
+              const origMedia = initialMedia[i];
+              if (origMedia && u) {
+                await ComplaintRepository.updateMediaUploadState(
+                  origMedia.storageKey,
+                  'uploaded',
+                  u.fileId
+                );
+              }
             }
           }
-        } catch (err) {
-          console.error(`[BackgroundSync] Upload failed for ${complaintNumber}:`, err);
+        } catch (err: any) {
+          console.error(`[BackgroundSync] Upload failed for ${createdComplaint.complaintNumber}:`, err);
+          for (const m of initialMedia) {
+            await ComplaintRepository.updateMediaUploadState(
+              m.storageKey,
+              'failed',
+              undefined,
+              err?.message || 'Drive upload error'
+            );
+          }
         } finally {
           void deleteTemporaryFiles(evidenceFiles);
         }
       })();
     } catch (error: any) {
+      void deleteTemporaryFiles(evidenceFiles);
       console.error('[ComplaintRoutes] Error submitting complaint:', error);
       res.status(500).json({ success: false, error: 'Internal server error while registering grievance.' });
     }
@@ -456,145 +248,108 @@ router.post(
 
 /**
  * POST /api/complaints/:id/acknowledge
- * Field officer acknowledges assigned complaint, recording response timestamp.
+ * Field officer acknowledges assigned complaint in PostgreSQL, locking response clock.
  */
-router.post('/:id/acknowledge', (req: Request, res: Response): void => {
-  const id = req.params.id;
-  const complaint = COMPLAINTS_STORE.find(
-    (c) => c.id === id || c.complaintNumber.toLowerCase() === id.toLowerCase()
-  );
+router.post('/:id/acknowledge', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id;
+    const complaint = await ComplaintRepository.getComplaintById(id);
 
-  if (!complaint) {
-    res.status(404).json({ success: false, error: 'Complaint not found.' });
-    return;
+    if (!complaint) {
+      res.status(404).json({ success: false, error: 'Complaint not found.' });
+      return;
+    }
+
+    const officerId = req.body.officerId || req.body.officerPhone || complaint.assignedJeId;
+    const updated = await ComplaintRepository.acknowledgeComplaint(complaint.id, officerId);
+
+    res.json({
+      success: true,
+      message: 'Assignment acknowledged successfully.',
+      data: updated,
+    });
+  } catch (error: any) {
+    console.error(`[ComplaintRoutes] Error acknowledging complaint ${req.params.id}:`, error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to acknowledge assignment.' });
   }
-
-  const officerName = req.body.officerName || complaint.assignedJeName || 'Field Officer';
-  const officerId = req.body.officerId || complaint.assignedJeId || 'field-officer';
-  const now = new Date().toISOString();
-
-  complaint.assignmentAcknowledgedAt = now;
-  complaint.acknowledgedByOfficerId = officerId;
-  const prevStatus = complaint.status;
-  if (complaint.status === 'ASSIGNED') {
-    complaint.status = 'ACKNOWLEDGED';
-  }
-  complaint.updatedAt = now;
-
-  complaint.timeline = complaint.timeline || [];
-  complaint.timeline.push({
-    id: `tl-${randomUUID().slice(0, 8)}`,
-    complaintId: complaint.id,
-    timestamp: now,
-    actorName: officerName,
-    actorRole: 'FIELD_OFFICER',
-    action: 'ACKNOWLEDGED',
-    previousStatus: prevStatus,
-    newStatus: complaint.status,
-    notes: `${officerName} acknowledged the assignment. Response clock locked.`,
-  });
-
-  res.json({
-    success: true,
-    message: 'Assignment acknowledged successfully.',
-    data: complaint,
-  });
 });
 
 /**
  * POST /api/complaints/:id/status
  * Update complaint status (e.g. IN_PROGRESS, ESCALATED) with mandatory remarks.
  */
-router.post('/:id/status', (req: Request, res: Response): void => {
-  const id = req.params.id;
-  const complaint = COMPLAINTS_STORE.find(
-    (c) => c.id === id || c.complaintNumber.toLowerCase() === id.toLowerCase()
-  );
+router.post('/:id/status', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id;
+    const complaint = await ComplaintRepository.getComplaintById(id);
 
-  if (!complaint) {
-    res.status(404).json({ success: false, error: 'Complaint not found.' });
-    return;
+    if (!complaint) {
+      res.status(404).json({ success: false, error: 'Complaint not found.' });
+      return;
+    }
+
+    const { status, remarks, actorName, actorId } = req.body;
+    if (!status) {
+      res.status(400).json({ success: false, error: 'Target status is required.' });
+      return;
+    }
+
+    const updated = await ComplaintRepository.updateStatus(
+      complaint.id,
+      status as ComplaintStatus,
+      remarks || `Status transitioned to ${status}`,
+      actorId || actorName
+    );
+
+    res.json({
+      success: true,
+      message: `Status updated to ${status}.`,
+      data: updated,
+    });
+  } catch (error: any) {
+    console.error(`[ComplaintRoutes] Error updating status for ${req.params.id}:`, error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to update complaint status.' });
   }
-
-  const { status, remarks, actorName, actorRole } = req.body;
-  if (!status) {
-    res.status(400).json({ success: false, error: 'Target status is required.' });
-    return;
-  }
-
-  const prevStatus = complaint.status;
-  const now = new Date().toISOString();
-  complaint.status = status as ComplaintStatus;
-  complaint.updatedAt = now;
-
-  complaint.timeline = complaint.timeline || [];
-  complaint.timeline.push({
-    id: `tl-${randomUUID().slice(0, 8)}`,
-    complaintId: complaint.id,
-    timestamp: now,
-    actorName: actorName || 'MCL Official',
-    actorRole: actorRole || 'OFFICIAL',
-    action: 'STATUS_UPDATED',
-    previousStatus: prevStatus,
-    newStatus: complaint.status,
-    notes: remarks || `Status changed from ${prevStatus} to ${status}.`,
-  });
-
-  res.json({
-    success: true,
-    message: `Status updated to ${status}.`,
-    data: complaint,
-  });
 });
 
 /**
  * POST /api/complaints/:id/assign
  * Supervisor or Control Room reassigns complaint to another officer with mandatory audit reason.
  */
-router.post('/:id/assign', (req: Request, res: Response): void => {
-  const id = req.params.id;
-  const complaint = COMPLAINTS_STORE.find(
-    (c) => c.id === id || c.complaintNumber.toLowerCase() === id.toLowerCase()
-  );
+router.post('/:id/assign', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id;
+    const complaint = await ComplaintRepository.getComplaintById(id);
 
-  if (!complaint) {
-    res.status(404).json({ success: false, error: 'Complaint not found.' });
-    return;
+    if (!complaint) {
+      res.status(404).json({ success: false, error: 'Complaint not found.' });
+      return;
+    }
+
+    const { officerName, officerPhone, officerId, reason, assignedById } = req.body;
+    const targetOfficerIdentifier = officerId || officerPhone || officerName;
+
+    if (!targetOfficerIdentifier) {
+      res.status(400).json({ success: false, error: 'Target officer identifier (id or phone) is required.' });
+      return;
+    }
+
+    const updated = await ComplaintRepository.reassignComplaint(
+      complaint.id,
+      targetOfficerIdentifier,
+      reason || 'Administrative reassignment',
+      assignedById || 'SUPERVISOR'
+    );
+
+    res.json({
+      success: true,
+      message: `Complaint reassigned successfully.`,
+      data: updated,
+    });
+  } catch (error: any) {
+    console.error(`[ComplaintRoutes] Error reassigning complaint ${req.params.id}:`, error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to reassign complaint.' });
   }
-
-  const { officerName, officerPhone, officerId, reason, assignedBy } = req.body;
-  if (!officerName) {
-    res.status(400).json({ success: false, error: 'New officer name is required.' });
-    return;
-  }
-
-  const prevOfficer = complaint.assignedJeName || 'Unassigned';
-  const now = new Date().toISOString();
-
-  complaint.assignedJeName = officerName;
-  complaint.assignedJePhone = officerPhone || complaint.assignedJePhone;
-  complaint.assignedJeId = officerId || `officer-${Date.now()}`;
-  complaint.status = 'ASSIGNED';
-  complaint.assignmentAcknowledgedAt = undefined;
-  complaint.acknowledgedByOfficerId = undefined;
-  complaint.updatedAt = now;
-
-  complaint.timeline = complaint.timeline || [];
-  complaint.timeline.push({
-    id: `tl-${randomUUID().slice(0, 8)}`,
-    complaintId: complaint.id,
-    timestamp: now,
-    actorName: assignedBy || 'Control Room Supervisor',
-    actorRole: 'SUPERVISOR',
-    action: 'REASSIGNED',
-    notes: `Reassigned from ${prevOfficer} to ${officerName}. Reason: ${reason || 'Administrative routing'}.`,
-  });
-
-  res.json({
-    success: true,
-    message: `Complaint reassigned to ${officerName}.`,
-    data: complaint,
-  });
 });
 
 /**
@@ -606,85 +361,72 @@ router.post(
   upload.fields([{ name: 'resolutionProof', maxCount: 5 }]),
   async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
-    const complaint = COMPLAINTS_STORE.find(
-      (c) => c.id === id || c.complaintNumber.toLowerCase() === id.toLowerCase()
-    );
-
-    if (!complaint) {
-      res.status(404).json({ success: false, error: 'Complaint not found.' });
-      return;
-    }
-
-    const body = req.body || {};
     const filesMap = (req.files as Record<string, Express.Multer.File[]>) || {};
     const proofFiles = filesMap['resolutionProof'] || [];
-    const resolutionNotes = (body.resolutionNotes || body.notes || '').trim();
-    const officerName = body.officerName || complaint.assignedJeName || 'Field Officer';
 
-    if (!resolutionNotes) {
-      void deleteTemporaryFiles(proofFiles);
-      res.status(400).json({ success: false, error: 'Resolution description is required.' });
-      return;
-    }
+    try {
+      const complaint = await ComplaintRepository.getComplaintById(id);
 
-    const now = new Date().toISOString();
-    complaint.resolutionNotes = resolutionNotes;
-    complaint.resolvedAt = now;
-    complaint.status = 'RESOLUTION_SUBMITTED';
-    complaint.updatedAt = now;
-
-    const initialResolutionProof: ComplaintAttachment[] = proofFiles.map((file, idx) => ({
-      fileId: `res-${Date.now()}-${idx}`,
-      fileName: file.originalname,
-      mimeType: file.mimetype,
-      size: file.size,
-      category: 'res',
-      fileUrl: `/api/drive/files/res-${idx}`,
-    }));
-
-    complaint.resolutionProof = initialResolutionProof;
-
-    complaint.timeline = complaint.timeline || [];
-    complaint.timeline.push({
-      id: `tl-${randomUUID().slice(0, 8)}`,
-      complaintId: complaint.id,
-      timestamp: now,
-      actorName: officerName,
-      actorRole: 'FIELD_OFFICER',
-      action: 'RESOLUTION_SUBMITTED',
-      previousStatus: 'ACKNOWLEDGED',
-      newStatus: 'RESOLUTION_SUBMITTED',
-      notes: `Resolution submitted: "${resolutionNotes}". Attached ${proofFiles.length} proof photo(s).`,
-    });
-
-    res.json({
-      success: true,
-      message: 'Resolution submitted successfully for verification.',
-      data: complaint,
-    });
-
-    // Background Drive upload for resolution proof
-    void (async () => {
-      try {
-        if (proofFiles.length > 0) {
-          const uploaded = await uploadComplaintFiles(complaint.complaintNumber, 'res', proofFiles);
-          if (uploaded.length > 0) {
-            complaint.resolutionProof = uploaded.map((f) => ({
-              fileId: f.fileId,
-              fileName: f.fileName,
-              mimeType: f.mimeType,
-              size: f.size,
-              category: 'res',
-              fileUrl: f.fileUrl || `/api/drive/files/${f.fileId}`,
-            }));
-          }
-        }
-      } catch (err) {
-        console.error(`[BackgroundSync] Resolution upload failed for ${complaint.complaintNumber}:`, err);
-      } finally {
+      if (!complaint) {
         void deleteTemporaryFiles(proofFiles);
+        res.status(404).json({ success: false, error: 'Complaint not found.' });
+        return;
       }
-    })();
+
+      const body = req.body || {};
+      const resolutionNotes = (body.resolutionNotes || body.notes || '').trim();
+      const officerId = body.officerId || body.officerPhone || complaint.assignedJeId;
+
+      if (!resolutionNotes) {
+        void deleteTemporaryFiles(proofFiles);
+        res.status(400).json({ success: false, error: 'Resolution description is required.' });
+        return;
+      }
+
+      const proofStorageKeys = proofFiles.map(
+        (f, idx) => `res-${Date.now()}-${idx}-${path.basename(f.filename)}`
+      );
+
+      const updated = await ComplaintRepository.submitResolution(
+        complaint.id,
+        resolutionNotes,
+        officerId,
+        proofStorageKeys
+      );
+
+      res.json({
+        success: true,
+        message: 'Resolution submitted successfully for verification.',
+        data: updated,
+      });
+
+      // Background Drive upload for resolution proof
+      void (async () => {
+        try {
+          if (proofFiles.length > 0) {
+            const uploaded = await uploadComplaintFiles(complaint.complaintNumber, 'res', proofFiles);
+            for (let i = 0; i < uploaded.length; i++) {
+              const u = uploaded[i];
+              const origKey = proofStorageKeys[i];
+              if (origKey && u) {
+                await ComplaintRepository.updateMediaUploadState(origKey, 'uploaded', u.fileId);
+              }
+            }
+          }
+        } catch (err: any) {
+          console.error(`[BackgroundSync] Resolution upload failed for ${complaint.complaintNumber}:`, err);
+          for (const k of proofStorageKeys) {
+            await ComplaintRepository.updateMediaUploadState(k, 'failed', undefined, err?.message);
+          }
+        } finally {
+          void deleteTemporaryFiles(proofFiles);
+        }
+      })();
+    } catch (error: any) {
+      void deleteTemporaryFiles(proofFiles);
+      console.error(`[ComplaintRoutes] Error submitting resolution for ${req.params.id}:`, error);
+      res.status(500).json({ success: false, error: error.message || 'Failed to submit resolution.' });
+    }
   }
 );
 
@@ -692,44 +434,37 @@ router.post(
  * POST /api/complaints/:id/verify-close
  * Citizen or Control Room quality verification to permanently close grievance.
  */
-router.post('/:id/verify-close', (req: Request, res: Response): void => {
-  const id = req.params.id;
-  const complaint = COMPLAINTS_STORE.find(
-    (c) => c.id === id || c.complaintNumber.toLowerCase() === id.toLowerCase()
-  );
+router.post('/:id/verify-close', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id;
+    const complaint = await ComplaintRepository.getComplaintById(id);
 
-  if (!complaint) {
-    res.status(404).json({ success: false, error: 'Complaint not found.' });
-    return;
+    if (!complaint) {
+      res.status(404).json({ success: false, error: 'Complaint not found.' });
+      return;
+    }
+
+    const { rating, feedback, closedBy, actorRole, verdict } = req.body;
+    const verificationVerdict = (verdict === 'disputed' || verdict === 'rejected') ? 'disputed' : 'accepted';
+    const comments = feedback || (rating ? `Citizen Rating: ${rating}/5` : 'Closure confirmed');
+
+    const updated = await ComplaintRepository.verifyAndClose(
+      complaint.id,
+      closedBy || 'VERIFIER',
+      (actorRole === 'officer' ? 'officer' : 'citizen'),
+      verificationVerdict,
+      comments
+    );
+
+    res.json({
+      success: true,
+      message: verificationVerdict === 'accepted' ? 'Grievance verified and permanently closed.' : 'Resolution disputed and reopened.',
+      data: updated,
+    });
+  } catch (error: any) {
+    console.error(`[ComplaintRoutes] Error verifying complaint ${req.params.id}:`, error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to verify complaint.' });
   }
-
-  const { rating, feedback, closedBy, actorRole } = req.body;
-  const now = new Date().toISOString();
-
-  complaint.status = 'CLOSED';
-  complaint.closedAt = now;
-  complaint.updatedAt = now;
-
-  complaint.timeline = complaint.timeline || [];
-  complaint.timeline.push({
-    id: `tl-${randomUUID().slice(0, 8)}`,
-    complaintId: complaint.id,
-    timestamp: now,
-    actorName: closedBy || 'Citizen / Verification Desk',
-    actorRole: actorRole || 'CITIZEN',
-    action: 'CLOSED',
-    previousStatus: 'RESOLUTION_SUBMITTED',
-    newStatus: 'CLOSED',
-    notes: `Work verified and closed.${rating ? ` Citizen Rating: ${rating}/5.` : ''}${
-      feedback ? ` Feedback: "${feedback}"` : ''
-    }`,
-  });
-
-  res.json({
-    success: true,
-    message: 'Grievance verified and permanently closed.',
-    data: complaint,
-  });
 });
 
 export default router;
