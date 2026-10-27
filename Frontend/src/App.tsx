@@ -9,6 +9,12 @@ import { LoginPage } from './pages/LoginPage';
 
 export const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<string>('home');
+  const [selectedComplaintId, setSelectedComplaintId] = useState<string | null>(null);
+
+  const handleViewComplaint = (id: string) => {
+    setSelectedComplaintId(id);
+    setCurrentTab('track');
+  };
 
   return (
     <AuthProvider>
@@ -16,8 +22,15 @@ export const App: React.FC = () => {
         <Navbar currentTab={currentTab} setCurrentTab={setCurrentTab} />
         <main className="main-content">
           {currentTab === 'home' && <HomePage setCurrentTab={setCurrentTab} />}
-          {currentTab === 'register' && <RegisterComplaintPage />}
-          {currentTab === 'track' && <TrackComplaintsPage />}
+          {currentTab === 'register' && (
+            <RegisterComplaintPage onViewComplaint={handleViewComplaint} />
+          )}
+          {currentTab === 'track' && (
+            <TrackComplaintsPage
+              initialComplaintId={selectedComplaintId}
+              onClearInitialId={() => setSelectedComplaintId(null)}
+            />
+          )}
           {currentTab === 'login' && <LoginPage setCurrentTab={setCurrentTab} />}
         </main>
         <Footer />
@@ -27,4 +40,3 @@ export const App: React.FC = () => {
 };
 
 export default App;
-
