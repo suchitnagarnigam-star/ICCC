@@ -23,17 +23,35 @@ export const DEFAULT_SLA_POLICY: SlaPolicyConfig = {
   timezone: 'Asia/Kolkata',
 };
 
-// Punjab State Government & MCL Official Gazetted Holidays for 2026 (YYYY-MM-DD)
-export const GAZETTED_HOLIDAYS_2026: Set<string> = new Set([
+// Punjab State Government & MCL Official Gazetted Holidays (2025, 2026, 2027) (YYYY-MM-DD)
+export const GAZETTED_HOLIDAYS: Set<string> = new Set([
+  // 2025 Gazetted Holidays
+  '2025-01-26', // Republic Day
+  '2025-02-12', // Guru Ravidas Jayanti
+  '2025-02-26', // Maha Shivratri
+  '2025-03-14', // Holi
+  '2025-03-31', // Id-ul-Fitr
+  '2025-04-06', // Ram Navami
+  '2025-04-13', // Baisakhi
+  '2025-04-14', // Dr. B.R. Ambedkar Jayanti
+  '2025-04-18', // Good Friday
+  '2025-05-01', // May Day
+  '2025-08-15', // Independence Day
+  '2025-10-02', // Mahatma Gandhi Jayanti
+  '2025-10-20', // Diwali
+  '2025-11-05', // Guru Nanak Dev Ji Parkash Purab
+  '2025-12-25', // Christmas Day
+
+  // 2026 Gazetted Holidays
   '2026-01-26', // Republic Day
   '2026-02-01', // Guru Ravidas Jayanti
   '2026-02-15', // Maha Shivratri
   '2026-03-04', // Holi
   '2026-03-20', // Id-ul-Fitr
   '2026-03-27', // Ram Navami
+  '2026-04-03', // Good Friday
   '2026-04-13', // Baisakhi
   '2026-04-14', // Dr. B.R. Ambedkar Jayanti
-  '2026-04-03', // Good Friday
   '2026-05-01', // May Day
   '2026-08-15', // Independence Day
   '2026-10-02', // Mahatma Gandhi Jayanti
@@ -42,7 +60,27 @@ export const GAZETTED_HOLIDAYS_2026: Set<string> = new Set([
   '2026-11-08', // Diwali
   '2026-11-24', // Guru Nanak Dev Ji Parkash Purab
   '2026-12-25', // Christmas Day
+
+  // 2027 Gazetted Holidays
+  '2027-01-26', // Republic Day
+  '2027-02-21', // Guru Ravidas Jayanti
+  '2027-03-06', // Maha Shivratri
+  '2027-03-22', // Holi
+  '2027-03-10', // Id-ul-Fitr
+  '2027-03-26', // Good Friday
+  '2027-04-13', // Baisakhi
+  '2027-04-14', // Dr. B.R. Ambedkar Jayanti
+  '2027-05-01', // May Day
+  '2027-08-15', // Independence Day
+  '2027-10-02', // Mahatma Gandhi Jayanti
+  '2027-10-09', // Dussehra
+  '2027-10-29', // Diwali
+  '2027-11-14', // Guru Nanak Dev Ji Parkash Purab
+  '2027-12-25', // Christmas Day
 ]);
+
+// Alias for 2026 backwards compatibility
+export const GAZETTED_HOLIDAYS_2026 = GAZETTED_HOLIDAYS;
 
 /**
  * Converts a UTC Date into IST components (year, month, day, dayOfWeek, hour, minute)

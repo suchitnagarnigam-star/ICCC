@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { getWardDetails, getZoneForWard } from '../services/officerMappingService';
+import { getDbPool } from '../config/db';
 import wardDataRaw from '../data/wardMasterData.json';
 
 const router = Router();
@@ -29,7 +30,32 @@ export const MUNICIPAL_ZONES = [
   { zone: 'D', commissioner: 'Sh.Jasdev Sekhon, AC', wards: Array.from({ length: 23 }, (_, i) => i + 73) },
 ];
 
-router.get('/categories', (req: Request, res: Response) => {
+router.get('/categories', async (_req: Request, res: Response) => {
+  try {
+    const pool = getDbPool();
+    const catRes = await pool.query<any>(
+      'SELECT id, code, name, branch, is_active FROM complaint_categories WHERE is_active = TRUE ORDER BY code ASC'
+    );
+    if (catRes.rows.length > 0) {
+      const cats = catRes.rows.map((c: any) => ({
+        id: c.code.replace('cat_', ''),
+        code: c.code,
+        uuid: c.id,
+        name: c.name,
+        branch: c.branch,
+        jointLabel: `${c.name} - ${c.branch}`,
+      }));
+      res.json({
+        success: true,
+        data: cats,
+        count: cats.length,
+      });
+      return;
+    }
+  } catch (err) {
+    // Database fallback
+  }
+
   res.json({
     success: true,
     data: INITIAL_COMPLAINT_CATEGORIES,
@@ -37,14 +63,68 @@ router.get('/categories', (req: Request, res: Response) => {
   });
 });
 
-router.get('/zones', (req: Request, res: Response) => {
+router.get('/zones', async (_req: Request, res: Response) => {
+  try {
+    const pool = getDbPool();
+    const zonesRes = await pool.query<{ zone_code: string; commissioner_name: string }>(
+      'SELECT zone_code, commissioner_name FROM municipal_zones ORDER BY zone_code ASC'
+    );
+    const wardsRes = await pool.query<{ ward_number: number; zone_code: string }>(
+      'SELECT ward_number, zone_code FROM municipal_wards ORDER BY ward_number ASC'
+    );
+
+    if (zonesRes.rows.length > 0) {
+      const wardsByZone = new Map<string, number[]>();
+      for (const w of wardsRes.rows) {
+        if (!wardsByZone.has(w.zone_code)) wardsByZone.set(w.zone_code, []);
+        wardsByZone.get(w.zone_code)!.push(w.ward_number);
+      }
+
+      const zonesData = zonesRes.rows.map((z) => ({
+        zone: z.zone_code,
+        commissioner: z.commissioner_name,
+        wards: wardsByZone.get(z.zone_code) || [],
+      }));
+
+      res.json({
+        success: true,
+        data: zonesData,
+      });
+      return;
+    }
+  } catch (err) {
+    // Database fallback
+  }
+
   res.json({
     success: true,
     data: MUNICIPAL_ZONES,
   });
 });
 
-router.get('/wards', (req: Request, res: Response) => {
+router.get('/wards', async (_req: Request, res: Response) => {
+  try {
+    const pool = getDbPool();
+    const wardsRes = await pool.query<any>(
+      `SELECT mw.ward_number, mw.zone_code as zone, mw.ward_name, mw.area_sq_km, mw.estimated_population,
+              mz.commissioner_name
+       FROM municipal_wards mw
+       LEFT JOIN municipal_zones mz ON mw.zone_code = mz.zone_code
+       ORDER BY mw.ward_number ASC`
+    );
+
+    if (wardsRes.rows.length > 0) {
+      res.json({
+        success: true,
+        data: wardsRes.rows,
+        total: wardsRes.rows.length,
+      });
+      return;
+    }
+  } catch (err) {
+    // Database fallback
+  }
+
   res.json({
     success: true,
     data: wardDataRaw,
@@ -70,4 +150,3 @@ router.get('/wards/:wardNumber', (req: Request, res: Response): void => {
 });
 
 export default router;
-

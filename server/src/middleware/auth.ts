@@ -176,7 +176,6 @@ export function authorizeComplaintAction(
 
       // 3. Supervisors (SDO, XEN, SE)
       if (role === 'sdo' || role === 'xen' || role === 'se') {
-        // Can read, update, reassign within branch / zone
         if (action === 'resolve') {
           res.status(403).json({
             success: false,
@@ -184,6 +183,25 @@ export function authorizeComplaintAction(
           });
           return;
         }
+
+        // Enforce branch/departmental boundary
+        if (req.user.branch && complaint.branch && req.user.branch !== complaint.branch) {
+          res.status(403).json({
+            success: false,
+            error: `Forbidden: Complaint branch (${complaint.branch}) is outside your authorized department (${req.user.branch}).`,
+          });
+          return;
+        }
+
+        // Enforce zone/territorial boundary
+        if (req.user.zone && complaint.zone && req.user.zone !== complaint.zone) {
+          res.status(403).json({
+            success: false,
+            error: `Forbidden: Complaint zone (${complaint.zone}) is outside your assigned municipal zone (${req.user.zone}).`,
+          });
+          return;
+        }
+
         return next();
       }
 
