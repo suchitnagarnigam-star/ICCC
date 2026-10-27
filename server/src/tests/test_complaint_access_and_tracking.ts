@@ -101,6 +101,30 @@ const server = app.listen(PORT, async () => {
       citizenToken = loginData.token;
     }
 
+    // Verify citizen phone via OTP
+    const otpRes = await fetch(`http://localhost:${PORT}/api/auth/citizen/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phoneNumber: '9812300099' }),
+    });
+    const otpData = await otpRes.json();
+    await fetch(`http://localhost:${PORT}/api/auth/citizen/verify-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${citizenToken}`,
+      },
+      body: JSON.stringify({ phoneNumber: '9812300099', otp: otpData.debugOtp }),
+    });
+
+    // Re-login to get updated JWT with verified status
+    const reloginRes = await fetch(`http://localhost:${PORT}/api/auth/citizen/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phoneNumber: '9812300099', pin: '4321' }),
+    });
+    citizenToken = (await reloginRes.json()).token;
+
     // 7. Authenticated citizen claims their unclaimed grievance
     res = await fetch(`http://localhost:${PORT}/api/complaints/${createdComplaint.id}/claim`, {
       method: 'POST',
@@ -159,3 +183,4 @@ const server = app.listen(PORT, async () => {
     process.exit(1);
   }
 });
+

@@ -152,16 +152,24 @@ const server = app.listen(PORT, async () => {
     });
     console.log('9. Authorized Ward 1 JE In Progress -> Status:', inProgRes.status);
 
-    // 10. Authorized Ward 1 JE submits resolution -> Expect 200
+    // 10. Authorized Ward 1 JE submits resolution with mandatory photographic proof -> Expect 200
+    const formData = new FormData();
+    formData.append('resolutionNotes', 'Road repaired and hot mix asphalt laid.');
+    const photoBlob = new Blob(['simulated-jpeg-binary-content'], { type: 'image/jpeg' });
+    formData.append('resolutionProof', photoBlob, 'repair_site.jpg');
+
     const resSubmit = await fetch(`http://localhost:${PORT}/api/complaints/${complaintId}/resolution`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${jeWard1Token}`,
       },
-      body: JSON.stringify({ resolutionNotes: 'Road repaired and hot mix asphalt laid.' }),
+      body: formData,
     });
     console.log('10. Authorized Resolution Submitted -> Status:', resSubmit.status);
+    if (resSubmit.status !== 200) {
+      const errJson = await resSubmit.json();
+      throw new Error(`Resolution failed with status ${resSubmit.status}: ${JSON.stringify(errJson)}`);
+    }
 
     // 11. Security Check: JE attempts to verify-close grievance -> Expect 403
     const illegalCloseRes = await fetch(`http://localhost:${PORT}/api/complaints/${complaintId}/verify-close`, {
@@ -170,18 +178,18 @@ const server = app.listen(PORT, async () => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${jeWard1Token}`,
       },
-      body: JSON.stringify({ rating: 5 }),
+      body: JSON.stringify({ verdict: 'accepted', rating: 5 }),
     });
     console.log('11. Security: JE verify-close forbidden -> Status:', illegalCloseRes.status, '(Expected 403)');
 
-    // 12. Citizen verifies their own grievance -> Expect 200
+    // 12. Citizen verifies their own grievance with explicit verdict -> Expect 200
     const citCloseRes = await fetch(`http://localhost:${PORT}/api/complaints/${complaintId}/verify-close`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${citizenToken}`,
       },
-      body: JSON.stringify({ rating: 5, feedback: 'Road is fixed smoothly!' }),
+      body: JSON.stringify({ verdict: 'accepted', rating: 5, feedback: 'Road is fixed smoothly!' }),
     });
     const citCloseJson = await citCloseRes.json();
     console.log('12. Citizen Verified & Closed Own Grievance -> Status:', citCloseRes.status, 'Final Status:', citCloseJson.data?.status, citCloseJson.error || '');
