@@ -101,6 +101,11 @@ CREATE TABLE IF NOT EXISTS complaints (
     resolved_at TIMESTAMPTZ,
     closed_at TIMESTAMPTZ,
     sla_breached BOOLEAN DEFAULT FALSE,
+    sla_policy_version VARCHAR(20) DEFAULT 'v1.0',
+    is_paused BOOLEAN DEFAULT FALSE,
+    paused_at TIMESTAMPTZ,
+    pause_reason TEXT,
+    total_paused_minutes INT DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -147,6 +152,10 @@ CREATE TABLE IF NOT EXISTS complaint_media (
     device_lng DOUBLE PRECISION,
     accuracy_meters DOUBLE PRECISION,
     location_status VARCHAR(30),
+    upload_state VARCHAR(20) DEFAULT 'pending', -- 'pending', 'uploaded', 'failed'
+    error_message TEXT,
+    retry_count INT DEFAULT 0,
+    sha256_checksum VARCHAR(64),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -211,7 +220,8 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     entity_type VARCHAR(50) NOT NULL,
     entity_id VARCHAR(100) NOT NULL,
     diff_json JSONB,
-    ip_address VARCHAR(50),
+    actor_ip VARCHAR(50),
+    user_agent TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
