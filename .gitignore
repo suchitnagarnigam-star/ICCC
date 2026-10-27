@@ -20,6 +20,9 @@ build/
 server/uploads/
 uploads/
 drive_cache/
+# Design reference packs and screenshots
+*.zip
+*.png
 stitch_extracted/
 
 # Credentials
