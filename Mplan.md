@@ -172,6 +172,35 @@ Category configuration should support active/inactive state, display name, origi
 12. JE submits resolution details and evidence. Status changes to awaiting verification—not automatically closed.
 13. Citizen verifies the result, or an authorized officer performs verification according to the approved policy. If the citizen says the issue is unresolved, the case enters review/rework and the responsible staff are notified.
 
+### Grievance Resolution Workflow Architecture
+
+```mermaid
+flowchart TD
+    A["Citizen / Operator Intake (Portal, Hotline, WhatsApp)"] --> B["Multipart Intake + Geotagged Ward 1-95"]
+    B --> C{"Ward & Branch Routing Engine"}
+    C -->|"Valid Ward + Mapped JE"| D["Auto-Assigned to Primary JE / CSI"]
+    C -->|"Missing Ward / Unmapped"| E["Flagged for Operator Manual Review (NEEDS_REVIEW)"]
+    E -->|"Operator Dispatches"| D
+    
+    D --> F["Field Officer Push / Call Alert (POST /:id/acknowledge)"]
+    F --> G["Field Officer Acknowledges (ACKNOWLEDGED)"]
+    G --> H["Field Team Dispatched (IN_PROGRESS)"]
+    
+    H --> I{"Work Resolution Complete?"}
+    I -->|"Temporary Blocker"| J["WAITING_FOR_INFORMATION / UNABLE_TO_RESOLVE"]
+    J -->|"Supervisor Reassigns"| D
+    
+    I -->|"Resolved"| K["Upload Completion Proof Photos (POST /:id/resolution)"]
+    K --> L["Background Google Drive Sync + Caching"]
+    L --> M["Status: RESOLUTION_SUBMITTED"]
+    
+    M --> N{"Two-Tier Verification Gate"}
+    N -->|"Citizen Confirms Satisfied (1-5 Stars)"| O["Status: CLOSED (SLA Met)"]
+    N -->|"QC / Control Room Officer Sign-off"| O
+    N -->|"Citizen Reports Issue Unresolved"| P["VERIFICATION_REJECTED / REOPENED"]
+    P -->|"Rework Dispatched"| H
+```
+
 ### Location and assignment rules
 
 - GPS coordinates do not by themselves prove the correct zone, ward, department, or JE.
@@ -207,25 +236,46 @@ Use explicit backend-enforced transitions. The following is the proposed baselin
 
 ```mermaid
 stateDiagram-v2
-    [*] --> SUBMITTED
-    SUBMITTED --> NEEDS_REVIEW: routing uncertain
-    NEEDS_REVIEW --> ASSIGNED: operator confirms mapping
-    SUBMITTED --> ASSIGNED: routing verified
-    ASSIGNED --> ACKNOWLEDGED
-    ACKNOWLEDGED --> IN_PROGRESS
-    IN_PROGRESS --> WAITING_FOR_INFORMATION
-    WAITING_FOR_INFORMATION --> IN_PROGRESS: information received
-    IN_PROGRESS --> UNABLE_TO_RESOLVE: reason required
-    UNABLE_TO_RESOLVE --> ASSIGNED: reassigned/unblocked
-    IN_PROGRESS --> RESOLUTION_SUBMITTED: note and evidence provided
-    RESOLUTION_SUBMITTED --> CLOSED: citizen/authorized officer verifies
-    RESOLUTION_SUBMITTED --> UNDER_REVIEW: dispute or manual review
-    UNDER_REVIEW --> CLOSED: reviewer verifies
-    UNDER_REVIEW --> VERIFICATION_REJECTED: evidence insufficient
-    VERIFICATION_REJECTED --> IN_PROGRESS: rework required
-    CLOSED --> REOPENED: authorized reopening
-    REOPENED --> ASSIGNED
+    [*] --> SUBMITTED: Citizen Registers Grievance
+    SUBMITTED --> ASSIGNED: Territory Routed to JE
+    SUBMITTED --> NEEDS_REVIEW: Incomplete Ward / Territory
+    NEEDS_REVIEW --> ASSIGNED: Operator Dispatches
+    
+    ASSIGNED --> ACKNOWLEDGED: Officer Acknowledges (POST /acknowledge)
+    ASSIGNED --> ASSIGNED: Supervisor Reassigns (POST /assign)
+    
+    ACKNOWLEDGED --> IN_PROGRESS: Field Machinery Deployed
+    IN_PROGRESS --> WAITING_FOR_INFORMATION: Citizen Clarification Needed
+    WAITING_FOR_INFORMATION --> IN_PROGRESS: Info Provided
+    IN_PROGRESS --> UNABLE_TO_RESOLVE: External Blocker
+    
+    IN_PROGRESS --> RESOLUTION_SUBMITTED: Work Completed + Proof Uploaded
+    RESOLUTION_SUBMITTED --> UNDER_REVIEW: Quality Audit
+    
+    RESOLUTION_SUBMITTED --> CLOSED: Citizen Confirms Resolution
+    UNDER_REVIEW --> CLOSED: Officer QC Verification
+    
+    RESOLUTION_SUBMITTED --> VERIFICATION_REJECTED: Citizen Reports Unfixed
+    VERIFICATION_REJECTED --> REOPENED: Supervisor Flags Rework
+    REOPENED --> IN_PROGRESS: Corrective Action
+    
+    SUBMITTED --> REJECTED: Malicious / Duplicate Entry
+    CLOSED --> [*]
+    REJECTED --> [*]
 ```
+
+### Lifecycle API Endpoints
+
+The state machine is driven by backend endpoints enforcing actor validation and mandatory audit logging:
+
+| Method | Endpoint | Allowed Roles | Description & Transition |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/complaints/:id/acknowledge` | Assigned JE, Field Staff | Records `assignmentAcknowledgedAt`, locks initial response latency, and transitions `ASSIGNED` &rarr; `ACKNOWLEDGED`. |
+| `POST` | `/api/complaints/:id/assign` | Supervisor, ZC, Control Room | Reassigns complaint to new officer with mandatory audit reason. |
+| `POST` | `/api/complaints/:id/status` | Assigned JE, Supervisor | Advances operational stage (`IN_PROGRESS`, `WAITING_FOR_INFORMATION`, `UNABLE_TO_RESOLVE`, etc.) with remarks. |
+| `POST` | `/api/complaints/:id/resolution` | Assigned JE, Resolver | Submits work description and uploads completion proof photos (`RESOLUTION_SUBMITTED`). |
+| `POST` | `/api/complaints/:id/verify-close` | Citizen, QC Officer | Verifies resolution, records citizen 1-5 rating, and permanently marks `CLOSED`. |
+| `GET` | `/api/complaints/:id/timeline` | All Authenticated | Returns chronological, tamper-proof audit events with timestamps, actors, and notes. |
 
 ### Lifecycle rules
 
@@ -258,6 +308,44 @@ Do not block every resolution solely because GPS permission is denied unless MCL
 - **Not resolved / evidence insufficient:** return to `UNDER_REVIEW` or `VERIFICATION_REJECTED`, record the reason, route back for rework, notify JE/operator, and preserve the previous resolution attempt.
 - **Citizen has not responded:** remain pending verification; reminders and a configurable review queue can be used. Do not auto-close.
 - **Authorized officer verifies:** record the official verifier, rationale, and policy basis. Citizen-facing messaging should accurately state the outcome and any available challenge/reopen path.
+
+### Media & Google Drive Proxy Pipeline
+
+Citizen intake photos and field resolution proof images are synchronized with Google Drive asynchronously and served via a high-performance local disk proxy:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client as Citizen / Officer
+    participant API as Express API Server
+    participant Cache as Local Drive Cache (/uploads)
+    participant GDrive as Google Drive API / Web App
+    
+    Client->>API: POST /api/complaints (multipart/form-data + binary photos)
+    API->>Cache: Save temporary files to /uploads/temp_uploads/
+    API->>API: Generate Complaint ID (MCL-2026-XXXX) & Resolve JE
+    API-->>Client: 201 Created (Instant Tracking Number)
+    
+    par Background Drive Sync
+        API->>GDrive: ensureFolder(complaintNumber)
+        API->>GDrive: uploadFile(base64Data, type: 'source' | 'res')
+        GDrive-->>API: fileId, webViewLink
+        API->>Cache: Cache buffer in /uploads/drive_cache/{fileId}
+        API->>Cache: Unlink temporary file from /uploads/temp_uploads/
+    end
+
+    Note over Client,API: Later: When Viewing Evidence in Dossier
+    Client->>API: GET /api/drive/files/{fileId}
+    alt In Local Cache
+        API->>Cache: stat & readFile(/uploads/drive_cache/{fileId})
+        API-->>Client: Stream binary with ETag + Cache-Control (200 OK)
+    else Cache Miss
+        API->>GDrive: getFile(fileId)
+        GDrive-->>API: Base64 payload
+        API->>Cache: Write to local disk cache
+        API-->>Client: Stream binary (200 OK)
+    end
+```
 
 ---
 
@@ -404,25 +492,54 @@ AI outputs should include review state and corrections and must not automaticall
 
 ---
 
-## 13. Proposed architecture and technology
+## 13. Active Architecture, Technology & Codebase Inventory
 
-These are recommended defaults, not an irreversible commitment. Confirm hosting, data residency, procurement, operational support, and provider costs with MCL before production.
+The implemented production stack is unified across the following architecture:
 
-| Layer | Proposed baseline | Responsibility |
+| Layer | Implemented Technology | Responsibility & Active Source Files |
 |---|---|---|
-| Citizen interface | Responsive React/Next.js web app for MVP; native app only if pilot requires it | Account, saved addresses, complaint form, My Complaints, verification |
-| Staff interface | React/TypeScript web portal, mobile-friendly | JE, operator, supervisor, admin workflows |
-| Backend | TypeScript Node.js API (Next.js Route Handlers or a separate service) | Validation, authorization, assignments, state transitions, deadlines, notifications |
-| Database | PostgreSQL, potentially through Supabase | Relational records, constraints, history, reporting |
-| Authentication | Approved account-based authentication provider | Citizen and individual staff identities |
-| Authorization | Backend permission checks plus PostgreSQL RLS where supported | Role and area/department isolation |
-| Media | Private object storage | Initial evidence, progress media, resolution evidence |
-| Maps | MCL-approved map/geocoding provider | Map pin, address display, optional geocoding |
-| Push | Web Push/FCM or selected provider appropriate to the clients | Best-effort push delivery |
-| Later SMS | Approved SMS provider behind a channel adapter | Add after initial notification system is operational |
-| Analytics | SQL-backed aggregates and a React chart library | Dashboard and reports |
-| Deployment | MCL-approved environment | Secure deployment, backups and operations |
-| Monitoring | Structured logs, error monitoring, health checks | Reliability and troubleshooting |
+| **Citizen & Staff UI** | React 19, TypeScript, Vite | Single-page civic portal: [`RegisterComplaintPage.tsx`](./Frontend/src/pages/RegisterComplaintPage.tsx), [`TrackComplaintsPage.tsx`](./Frontend/src/pages/TrackComplaintsPage.tsx), [`ComplaintDetailPage.tsx`](./Frontend/src/pages/ComplaintDetailPage.tsx) |
+| **Components & Modals** | React 19, Custom Civic Theme | [`ImageViewerModal.tsx`](./Frontend/src/components/ImageViewerModal.tsx) (zoom/pan lightbox), [`StatusBadge.tsx`](./Frontend/src/components/StatusBadge.tsx) |
+| **Backend API Server** | Node.js, Express 5, TypeScript | [`server/src/app.ts`](./server/src/app.ts), [`server/src/routes/complaintRoutes.ts`](./server/src/routes/complaintRoutes.ts), [`server/src/routes/authRoutes.ts`](./server/src/routes/authRoutes.ts) |
+| **Territorial Router** | 95-Ward Roster Engine | [`server/src/services/officerMappingService.ts`](./server/src/services/officerMappingService.ts) + [`server/src/data/wardMasterData.json`](./server/src/data/wardMasterData.json) |
+| **Media Storage & Proxy** | Google Drive + Local Cache | [`server/src/services/driveService.ts`](./server/src/services/driveService.ts) + [`server/src/routes/driveRoutes.ts`](./server/src/routes/driveRoutes.ts) (`uploads/drive_cache/`) |
+| **Database & Pooling** | PostgreSQL (Neon Cloud Pool) | [`server/src/config/database.ts`](./server/src/config/database.ts), versioned migrations in [`server/src/migrations/`](./server/src/migrations/) |
+| **Authentication** | JWT with 365-day persistence | PIN login, role-based guards in [`server/src/middleware/authMiddleware.ts`](./server/src/middleware/authMiddleware.ts) |
+| **Notifications** | Web Push (RFC-8291 VAPID) | [`server/src/services/pushService.ts`](./server/src/services/pushService.ts) + transactional event outbox |
+
+### Production Codebase Map
+
+```
+├── Frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ImageViewerModal.tsx    # Evidence lightbox with zoom/pan controls
+│   │   │   ├── StatusBadge.tsx         # Semantic 13-state municipal badges
+│   │   │   ├── Navbar.tsx & Footer.tsx # Punjab Government civic layout headers
+│   │   ├── context/
+│   │   │   └── AuthContext.tsx         # Persistent session auth provider
+│   │   ├── pages/
+│   │   │   ├── ComplaintDetailPage.tsx # 4-tab dossier, 5-stage progress stepper, action console
+│   │   │   ├── RegisterComplaintPage.tsx # Drag & drop file uploader, ward-to-zone auto derivation
+│   │   │   ├── TrackComplaintsPage.tsx # Multi-filter live register, SLA timers, direct dossier link
+│   │   │   └── LoginPage.tsx           # Staff PIN authentication
+│   │   └── types/index.ts              # Synchronized client-side TypeScript interfaces
+├── server/
+│   ├── src/
+│   │   ├── config/                     # Environment and Neon PostgreSQL pool
+│   │   ├── data/
+│   │   │   └── wardMasterData.json     # All 95 wards with B&R, O&M, Health, Light staff hierarchy
+│   │   ├── routes/
+│   │   │   ├── complaintRoutes.ts      # Complete grievance lifecycle and multipart handlers
+│   │   │   ├── driveRoutes.ts          # Secure streaming proxy for media files
+│   │   │   ├── referenceRoutes.ts      # 15 categories, 4 zones, 95 wards directory
+│   │   │   └── authRoutes.ts           # Staff PIN and user authentication
+│   │   ├── services/
+│   │   │   ├── officerMappingService.ts# Territorial resolver for JE, SDO, XEN
+│   │   │   └── driveService.ts         # Google Drive sync with disk cache fallback
+│   │   └── types/complaint.ts          # FSM states, branches, and timeline contracts
+└── MCL Control Room ICCC.xlsx          # 951 historical grievances and administrative master sheets
+```
 
 ### Architecture principles
 
